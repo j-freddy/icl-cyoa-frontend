@@ -1,0 +1,111 @@
+@import 'variables.css';
+
+body {
+  margin: 0px;
+  padding: 0px;
+}
+
+.WelcomePage {
+  background-color: var(--bg-dark);
+  margin: 0px;
+  padding: 0px;
+}
+
+.WelcomePage .Header {
+  background-color: white;
+  min-height: 20vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(4px + 2vmin);
+  color: black;
+}
+
+.content {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.WelcomePage.text {
+  position: relative;
+  max-width: 600px;
+}
+
+.WelcomePage .content .text h1 {
+  font-family: 'Poppins', sans-serif;
+  text-transform: uppercase;
+  font-weight: 800;
+  margin-top: 80px;
+  line-height: 1.5em;
+  letter-spacing: .1em;
+  font-size: 40px;
+  color: #fff;
+}
+
+.WelcomePage .content .text h2 {
+  font-family: 'Poppins', sans-serif;
+  text-transform: uppercase;
+  font-weight: 800;
+  margin-top: 80px;
+  line-height: 1.5em;
+  letter-spacing: .1em;
+  font-size: 40px;
+  color: #fff;
+}
+
+.WelcomePage .content .text h1 span {
+  font-size: 50px;
+}
+
+.WelcomePage .content .text p {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  margin-top: 40px;
+  color: #e7e3e3;
+}
+
+
+.WelcomePage .Header h1 {
+  font-family: 'Poppins', sans-serif;
+  text-transform: uppercase;
+  font-weight: 800;
+  margin-top: 80px;
+  line-height: 1.5em;
+  letter-spacing: .1em;
+  font-size: 40px;
+  color: black;
+}
+
+
+
+.Generator {
+  text-align: center;
+}
+
+.Generator .Header {
+  background-color: white;
+  min-height: 20vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(4px + 2vmin);
+  color: black;
+}
+
+.Generator .Header h1 {
+  color: red
+}
+
+.Generator .Body .Form textarea {
+  color: green;
+  min-height: 50vh;
+  min-width: 100vh;
+  resize: none;
+  font-size: calc(4px + 2vmin);
+}

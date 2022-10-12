@@ -1,0 +1,6 @@
+@import 'open-color/open-color.css';
+
+:root {
+  --bg-dark: var(--oc-gray-8);
+  --bg-darkest: var(--oc-gray-9);
+}

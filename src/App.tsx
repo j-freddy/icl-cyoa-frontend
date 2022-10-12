@@ -1,20 +1,21 @@
-import './App.css';
+import WelcomeView from './pages/Welcome';
+import GeneratorView from './pages/Generator';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from 'react-router-dom';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h2>
-          Welcome to create your own adventure book!
-        </h2>
-        <a
-          href='/'
-          className="App-link"
-        >
-          Get started
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<WelcomeView />} />
+        <Route path="/generator" element={<GeneratorView />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
