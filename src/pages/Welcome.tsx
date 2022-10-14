@@ -2,30 +2,27 @@ import '../style/base.css';
 import Button from 'react-bootstrap/Button';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import NavBar from '../components/NavBar';
+import Container from 'react-bootstrap/Container';
 
-class WelcomeView extends React.Component {
-
-  render() {
-    return (
-      <div className="WelcomePage">
-        <NavBar></NavBar>
-        <div className="titleCard">
-          <div className="content">
-            <div className="text">
-              <h1>Welcome to our <br /> Gamebook Generator!</h1>
-              <p>Quickly generate a complete, editable gamebook with a single prompt.</p>
-            </div>
-          </div>
-          <Link to='/generator'>
-            <Button variant="light" size="lg">
-              Get Started
-            </Button>
-          </Link>
-        </div>
-      </div >
-    );
-  }
+const WelcomeView = () => {
+  return (
+    <Container
+      id="welcome-section"
+      className="wrapper d-flex flex-column justify-content-center
+        align-items-center">
+      <div id="welcome-title">
+        <h1><span className="fancy">Choose Your Own Adventure</span> Story Generator</h1>
+        <p>
+          Quickly generate a complete, editable gamebook with a single prompt.
+        </p>
+      </div>
+      <Link to='/generator'>
+        <Button variant="light" size="lg">
+          Get Started
+        </Button>
+      </Link>
+    </Container>
+  );
 }
 
 export default WelcomeView;

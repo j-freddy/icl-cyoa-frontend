@@ -1,111 +1,70 @@
 @import 'variables.css';
 
-body {
-  margin: 0px;
-  padding: 0px;
+/* Utilities */
+a {
+  color: var(--my-link) !important;
 }
 
-.WelcomePage {
-  background-color: var(--bg-dark);
-  margin: 0px;
-  padding: 0px;
+a:hover {
+  color: var(--my-link-hover) !important;
 }
 
-.WelcomePage .Header {
-  background-color: white;
-  min-height: 20vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(4px + 2vmin);
-  color: black;
+.wrapper {
+  max-width: 880px !important;
+  padding-top: 2.5em;
+  padding-bottom: 2.5em;
 }
 
-.content {
-  position: relative;
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
+#page-container {
+  min-height: 100vh;
+  background-color: var(--bg-dark); 
 }
 
-.WelcomePage.text {
-  position: relative;
-  max-width: 600px;
+#footer {
+  background-color: var(--bg-darkest);
+  color: var(--my-light);
+  padding: 1em;
 }
 
-.WelcomePage .content .text h1 {
-  font-family: 'Poppins', sans-serif;
-  text-transform: uppercase;
-  font-weight: 800;
-  margin-top: 80px;
-  line-height: 1.5em;
-  letter-spacing: .1em;
-  font-size: 40px;
-  color: #fff;
+/* Navbar */
+.nav-link {
+  text-decoration: none;
 }
 
-.WelcomePage .content .text h2 {
-  font-family: 'Poppins', sans-serif;
-  text-transform: uppercase;
-  font-weight: 800;
-  margin-top: 80px;
-  line-height: 1.5em;
-  letter-spacing: .1em;
-  font-size: 40px;
-  color: #fff;
+/* Welcome */
+#welcome-section #welcome-title {
+  color: var(--my-light);
+  margin-bottom: 2em;
 }
 
-.WelcomePage .content .text h1 span {
-  font-size: 50px;
+#welcome-section #welcome-title .fancy {
+  font-weight: bold;
+  font-style: italic;
+  color: var(--my-theme);
 }
 
-.WelcomePage .content .text p {
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: .1em;
-  margin-top: 40px;
-  color: #e7e3e3;
+/* Generator */
+#generator-section {
+  color: var(--my-light);
 }
 
-
-.WelcomePage .Header h1 {
-  font-family: 'Poppins', sans-serif;
-  text-transform: uppercase;
-  font-weight: 800;
-  margin-top: 80px;
-  line-height: 1.5em;
-  letter-spacing: .1em;
-  font-size: 40px;
-  color: black;
-}
-
-
-
-.Generator {
+#generator-section #generator-title {
   text-align: center;
+  margin-bottom: 16px;
 }
 
-.Generator .Header {
-  background-color: white;
-  min-height: 20vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(4px + 2vmin);
-  color: black;
+#generator-section .input-form .example-text {
+  text-align: center;
+  margin-bottom: 16px;
 }
 
-.Generator .Header h1 {
-  color: red
+#generator-section .input-form .input-text {
+  background-color: rgba(255, 255, 255, 0.8);
+  width: 100%;
+  height: 160px;
 }
 
-.Generator .Body .Form textarea {
-  color: green;
-  min-height: 50vh;
-  min-width: 100vh;
-  resize: none;
-  font-size: calc(4px + 2vmin);
+#generator-section .input-form .submit-button {
+  margin-top: 4px;
+  float: right;
 }
