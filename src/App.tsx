@@ -10,12 +10,13 @@ import {
 } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import { exampleText } from './features/text/inputFormSlice';
 
 interface PageProps {
   children: ReactNode
 }
 
-const Page = ({children}: PageProps) => {
+const Page = ({ children }: PageProps) => {
   return (
     <main id="page-container" className="d-flex flex-column">
       <Header />
@@ -27,6 +28,8 @@ const Page = ({children}: PageProps) => {
   );
 }
 
+
+
 function App() {
   const wrapView = (content: ReactNode) => {
     return (
@@ -36,11 +39,13 @@ function App() {
     );
   };
 
+
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={wrapView(<WelcomeView />)} />
-        <Route path="/generator" element={wrapView(<GeneratorView />)} />
+        <Route path="/generator" element={wrapView(<GeneratorView exampleText={exampleText} />)} />
       </Routes>
     </BrowserRouter>
   );
