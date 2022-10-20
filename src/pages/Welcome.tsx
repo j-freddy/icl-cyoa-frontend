@@ -1,6 +1,5 @@
 import '../style/base.css';
 import Button from 'react-bootstrap/Button';
-import React from 'react';
 import { Link } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 

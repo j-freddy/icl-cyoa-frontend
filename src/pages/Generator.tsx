@@ -1,45 +1,93 @@
 import '../style/base.css';
-import { Accordion, Container } from 'react-bootstrap';
-import InputTextForm from '../components/InputTextForm';
-import { NodeData } from '../graph/types';
+import { Accordion, Button, Container } from 'react-bootstrap';
+import { NodeData, Graph } from '../graph/types';
 import StoryAccordionItem, { StoryParagraphNodeData } from '../components/StoryParagraph';
 import useWebSocket from 'react-use-websocket';
-import { useEffect } from 'react';
-import { useAppDispatch } from '../app/hooks';
-import { setNodeData } from '../features/text/storySlice';
-import { Graph } from '../graph/types'
+import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { exampleText, setNodeData } from '../features/storySlice';
 import { graphToNodeData } from '../graph/graphUtils';
-
-interface GeneratorViewProps {
-  exampleText: string,
-  storyGraph: Graph,
-}
 
 interface SocketResponse {
   nodes: NodeData[],
 }
 
-const GeneratorView = (props: GeneratorViewProps) => {
+interface InputTextFormProps {
+  handleGenerateText: (text: string) => void
+}
+
+const InputTextForm = (props: InputTextFormProps) => {
+  const [text, setText] = useState("");
+
+  const handleInputText = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    setText(event.target.value);
+  };
+
+  return (
+    <div className="input-form">
+      <p className="example-text">
+        <b>Example</b>
+        <br />
+        {exampleText}
+      </p>
+      <textarea
+        className="input-text"
+        value={text}
+        id="input-text"
+        disabled={false}
+        placeholder="Input your starting paragraph here"
+        onChange={handleInputText}
+      />
+      <Button className="submit-button" variant="light" onClick={() => props.handleGenerateText(text)}>
+        Generate
+      </Button>
+    </div>
+  );
+}
+
+const GeneratorView = () => {
+
+  const storyGraph = useAppSelector((state) => state.story.graph)
+  const dispatch = useAppDispatch();
 
   const { sendMessage, lastMessage } = useWebSocket("ws://localhost:8000/ws/");
-
   const sendExpandMessage = (nodeToExpand: number) => {
-    sendMessage(JSON.stringify({ type: "expandNode", data: { nodeToExpand, nodes: graphToNodeData(props.storyGraph) } }))
+    sendMessage(JSON.stringify({
+      type: "expandNode",
+      data: { nodeToExpand, nodes: graphToNodeData(storyGraph) }
+    }))
   }
 
-  const dispatch = useAppDispatch();
+  const handleGenerateText = (text: string) => {
+    const root: NodeData = {
+      nodeId: 0,
+      action: null,
+      paragraph: text,
+      parentId: null,
+      childrenIds: []
+    }
+    const graph: Graph = {
+      nodeLookup: { 0: root },
+    };
+
+    dispatch(setNodeData([root]));
+
+    sendMessage(JSON.stringify({
+      type: "expandNode",
+      data: { nodeToExpand: 0, nodes: graphToNodeData(graph) }
+    }))
+  };
 
   useEffect(() => {
     if (lastMessage !== null) {
       const resp = JSON.parse(lastMessage?.data) as SocketResponse
-
       dispatch(setNodeData(resp.nodes));
     }
   }, [lastMessage, dispatch])
 
   const buildStoryFromGraph = (): StoryParagraphNodeData[] => {
 
-    const record = props.storyGraph.nodeLookup;
+    const record = storyGraph.nodeLookup;
 
     const story: StoryParagraphNodeData[] = [];
     const queue = [record[0]];
@@ -73,17 +121,15 @@ const GeneratorView = (props: GeneratorViewProps) => {
       <header id="generator-title">
         <h1>Enter a paragraph</h1>
       </header>
-      <InputTextForm exampleText={props.exampleText} />
+      <InputTextForm handleGenerateText={handleGenerateText} />
       {
-        props.storyGraph.nodeLookup[0] &&
+        storyGraph.nodeLookup[0] &&
         (
-          <Container id="story-section">
-            <Accordion defaultActiveKey="0">
+          <Accordion defaultActiveKey="0" flush className="story-section">
               {
                 buildStoryFromGraph().map((section, i) => {
-                  console.log(section.paragraph)
                   if (section.paragraph == null) {
-                    return <></>
+                    return <div key={i}></div>;
                   }
                   return (
                     <StoryAccordionItem
@@ -100,7 +146,6 @@ const GeneratorView = (props: GeneratorViewProps) => {
                 })
               }
             </Accordion>
-          </Container>
         )
       }
     </Container>

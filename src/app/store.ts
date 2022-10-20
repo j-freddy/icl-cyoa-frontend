@@ -1,9 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
-import inputTextReducer from '../features/text/inputTextSlice'
-import storyReducer from '../features/text/storySlice'
+import storyReducer from '../features/storySlice'
 
 const reducer = {
-  inputText: inputTextReducer,
   story: storyReducer,
 }
 
