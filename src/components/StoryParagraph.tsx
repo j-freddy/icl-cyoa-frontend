@@ -36,11 +36,7 @@ function ToggleButton(props: ToggleButtonProps) {
   );
 
   return (
-    <Button
-      className="submit-button"
-      variant="light"
-      onClick={onClick}
-    >
+    <Button variant="light" className="toolbar-button" onClick={onClick}>
       {props.children}
     </Button>
   );
@@ -50,13 +46,11 @@ const ChildParagraph = (props: ChildParagraphProps) => {
   return (
     <li>
       <StoryParagraph text={props.action} editable={false} />
-      <Button className="submit-button" variant="light" onClick={() => props.onGenerateAction(props.id)}>
-        {props.id}
+      <Button className="toolbar-button me-2" variant="light" onClick={() => props.onGenerateAction(props.id)}>
         Generate
       </Button>
       <ToggleButton eventKey={`${props.id}`}>
-        Go to child
-        {props.id}
+        Go to child {props.id}
       </ToggleButton>
     </li >
   )
@@ -80,31 +74,37 @@ const StoryParagraph = (props: StoryParagraphProps) => {
   };
 
   return (
-    <div>
+    <>
       {
         editable
-          ? <textarea value={text} onChange={handleTextChange} />
+          ? <textarea value={text} className="edit-textarea" onChange={handleTextChange} />
           : <p>{text}</p>
       }
-      <Button variant="light" onClick={handleEdit}>
-        Edit
+      <Button variant="light" onClick={handleEdit} className="toolbar-button me-2">
+        {editable ? "Done" : "Edit"}
       </Button>
-    </div>
+    </>
   )
 
 }
 
 const StoryAccordionItem = (props: StoryAccordionItemProps) => {
-  const generateButton =
-    <Button className="submit-button" variant="light" onClick={props.onGenerateParagraph}>
-      Generate
-    </Button>;
+  const GenerateButton = () => {
+    return (
+      <Button className="toolbar-button me-2" variant="light" onClick={props.onGenerateParagraph}>
+        Generate
+      </Button>
+    );
+  }
 
-  const parrentButton =
-    <ToggleButton eventKey={`${props.parentId}`}>
-      Go to parent
-      {props.parentId}
-    </ToggleButton>
+  const ParentButton = () => {
+    return (
+      <ToggleButton eventKey={`${props.parentId}`}>
+        Go to parent
+        {props.parentId}
+      </ToggleButton>
+    );
+  }
 
   return (
     <Accordion.Item eventKey={`${props.nodeId}`} id={`${props.nodeId}`}>
@@ -114,26 +114,25 @@ const StoryAccordionItem = (props: StoryAccordionItemProps) => {
 
       <Accordion.Body>
         <StoryParagraph text={props.paragraph} editable={false} />
-
-        {generateButton}
-
-        <>{props.parentId != null && parrentButton}</>
-
-        <ul>
-          {
-            props.actions.map((action, i) => {
-              return (
-                <ChildParagraph
-                  key={i}
-                  index={i}
-                  id={props.childrenIds[i]}
-                  action={action}
-                  onGenerateAction={props.onGenerateAction}
-                />
-              );
-            })
-          }
-        </ul>
+        <GenerateButton />
+        {props.parentId !== null && <ParentButton />}
+        <div className="story-options mt-4">
+          <ul>
+            {
+              props.actions.map((action, i) => {
+                return (
+                  <ChildParagraph
+                    key={i}
+                    index={i}
+                    id={props.childrenIds[i]}
+                    action={action}
+                    onGenerateAction={props.onGenerateAction}
+                  />
+                );
+              })
+            }
+          </ul>
+        </div>
       </Accordion.Body>
     </Accordion.Item>
   );

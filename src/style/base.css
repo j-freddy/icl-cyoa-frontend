@@ -55,7 +55,7 @@ a:hover {
 
 #generator-section .input-form {
   /* TODO Refactor */
-  margin-bottom: 64px;
+  margin-bottom: 96px;
 }
 
 #generator-section .input-form .example-text {
@@ -67,6 +67,7 @@ a:hover {
   background-color: rgba(255, 255, 255, 0.8);
   width: 100%;
   height: 160px;
+  padding: 8px;
 }
 
 #generator-section .input-form .submit-button {
@@ -74,9 +75,14 @@ a:hover {
   float: right;
 }
 
-#generator-section #story-section .story-paragraph {
+#generator-section .story-section .toolbar-button {
+  background-color: var(--bg-light);
+}
+
+#generator-section .story-section .edit-textarea {
+  width: 100%;
   /* TODO Refactor */
-  background-color: #555;
-  padding: 8px;
-  margin: 8px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  min-height: 96px;
 }

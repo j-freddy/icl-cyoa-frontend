@@ -4,7 +4,7 @@ export default function Footer() {
     return (
         <Container fluid id="footer" className="text-center">
           <small>
-            Footer UwU
+            Footer
             <br />
             CYOA Story Generator
           </small>
