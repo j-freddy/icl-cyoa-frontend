@@ -15,12 +15,12 @@ interface ChildParagraphProps {
   index: number,
   id: number,
   action: string,
-  onGenerateAction: () => void,
+  onGenerateAction: (nodeToExpand: number) => void
 }
 
 export interface StoryAccordionItemProps extends StoryParagraphNodeData {
   onGenerateParagraph: () => void,
-  onGenerateAction: () => void,
+  onGenerateAction: (nodeToExpand: number) => void
 }
 
 interface ToggleButtonProps {
@@ -50,7 +50,7 @@ const ChildParagraph = (props: ChildParagraphProps) => {
   return (
     <li>
       <StoryParagraph text={props.action} editable={false} />
-      <Button className="submit-button" variant="light" onClick={props.onGenerateAction}>
+      <Button className="submit-button" variant="light" onClick={() => props.onGenerateAction(props.id)}>
         {props.id}
         Generate
       </Button>
@@ -58,7 +58,7 @@ const ChildParagraph = (props: ChildParagraphProps) => {
         Go to child
         {props.id}
       </ToggleButton>
-    </li>
+    </li >
   )
 }
 
