@@ -1,16 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../../app/store'
 
-interface InputFormState {
+interface InputTextState {
   value: string;
 }
 
-const initialState: InputFormState = {
-  value: ""
+const initialState: InputTextState = {
+  value: "",
 }
 
-export const inputFormSlice = createSlice({
-  name: 'inputForm',
+export const inputTextSlice = createSlice({
+  name: 'inputText',
   initialState,
   reducers: {
     editText: (state, action: PayloadAction<string>) => {
@@ -21,14 +21,14 @@ export const inputFormSlice = createSlice({
       state.value = state.value.concat("Generated Text ");
     }
   },
-})
+});
 
 // Action creators are generated for each case reducer function
-export const { editText, generateText } = inputFormSlice.actions;
+export const { editText, generateText } = inputTextSlice.actions;
 
-export const selectText = (state: RootState) => state.text.value;
+export const selectText = (state: RootState) => state.inputText.value;
 
-export default inputFormSlice.reducer;
+export default inputTextSlice.reducer;
 
 // Example text passed into GeneratorViewProps
 export const exampleText = `You are a commoner living in the large kingdom of

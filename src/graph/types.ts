@@ -9,3 +9,7 @@ export type NodeData = {
     parentId: number | null,
     childrenIds: number[]
 }
+
+export type Graph = {
+    nodeLookup: Record<number, NodeData>
+}

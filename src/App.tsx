@@ -10,7 +10,8 @@ import {
 } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import { exampleText } from './features/text/inputFormSlice';
+import { exampleText } from './features/text/inputTextSlice';
+import { useAppSelector } from './app/hooks';
 
 interface PageProps {
   children: ReactNode
@@ -28,8 +29,6 @@ const Page = ({ children }: PageProps) => {
   );
 }
 
-
-
 function App() {
   const wrapView = (content: ReactNode) => {
     return (
@@ -39,13 +38,20 @@ function App() {
     );
   };
 
-
-
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={wrapView(<WelcomeView />)} />
-        <Route path="/generator" element={wrapView(<GeneratorView exampleText={exampleText} />)} />
+        <Route path="/" element={
+          wrapView(<WelcomeView />)
+        } />
+        <Route path="/generator" element={
+          wrapView(
+            <GeneratorView
+              exampleText={exampleText}
+              storyGraph={useAppSelector((state) => state.story.graph)}
+            />
+          )
+        } />
       </Routes>
     </BrowserRouter>
   );
