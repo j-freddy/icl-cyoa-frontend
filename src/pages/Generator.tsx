@@ -24,7 +24,7 @@ const GeneratorView = (props: GeneratorViewProps) => {
   const { sendMessage, lastMessage } = useWebSocket("ws://localhost:8000/ws/");
 
   const sendExpandMessage = (nodeToExpand: number) => {
-    sendMessage(JSON.stringify({type: "expandNode", data: {nodeToExpand, nodes: graphToNodeData(props.storyGraph)}}))
+    sendMessage(JSON.stringify({ type: "expandNode", data: { nodeToExpand, nodes: graphToNodeData(props.storyGraph) } }))
   }
 
   const dispatch = useAppDispatch();
@@ -32,11 +32,13 @@ const GeneratorView = (props: GeneratorViewProps) => {
   useEffect(() => {
     if (lastMessage !== null) {
       const resp = JSON.parse(lastMessage?.data) as SocketResponse
+
       dispatch(setNodeData(resp.nodes));
     }
   }, [lastMessage, dispatch])
 
   const buildStoryFromGraph = (): StoryParagraphNodeData[] => {
+
     const record = props.storyGraph.nodeLookup;
 
     const story: StoryParagraphNodeData[] = [];
@@ -77,22 +79,26 @@ const GeneratorView = (props: GeneratorViewProps) => {
         (
           <Container id="story-section">
             <Accordion defaultActiveKey="0">
-            {
-              buildStoryFromGraph().map((section, i) => {
-                return (
-                  <StoryAccordionItem
-                    key={i}
-                    paragraph={section.paragraph}
-                    actions={section.actions}
-                    nodeId={section.nodeId}
-                    parentId={section.parentId}
-                    childrenIds={section.childrenIds}
-                    onGenerateParagraph={() => sendExpandMessage(section.nodeId)}
-                    onGenerateAction={() => sendExpandMessage(section.childrenIds[i])}
-                  />
-                );
-              })
-            }
+              {
+                buildStoryFromGraph().map((section, i) => {
+                  console.log(section.paragraph)
+                  if (section.paragraph == null) {
+                    return <></>
+                  }
+                  return (
+                    <StoryAccordionItem
+                      key={i}
+                      paragraph={section.paragraph}
+                      actions={section.actions}
+                      nodeId={section.nodeId}
+                      parentId={section.parentId}
+                      childrenIds={section.childrenIds}
+                      onGenerateParagraph={() => sendExpandMessage(section.nodeId)}
+                      onGenerateAction={sendExpandMessage}
+                    />
+                  );
+                })
+              }
             </Accordion>
           </Container>
         )

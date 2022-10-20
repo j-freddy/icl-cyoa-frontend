@@ -15,7 +15,7 @@ const InputTextForm = (props: InputTextFormProps) => {
   };
 
   const handleGenerate = (): void => {
-    dispatch(generateText());
+    dispatch(generateText())
   };
 
   return (
@@ -28,6 +28,8 @@ const InputTextForm = (props: InputTextFormProps) => {
       <textarea
         className="input-text"
         value={text}
+        id="input-text"
+        disabled={false}
         placeholder="Input your starting paragraph here"
         onChange={handleInputText}
       />
