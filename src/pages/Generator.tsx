@@ -3,11 +3,12 @@ import { Accordion, Button, Container } from 'react-bootstrap';
 import { NodeData, Graph } from '../graph/types';
 import StoryAccordionItem, { StoryParagraphNodeData } from '../components/StoryParagraph';
 import useWebSocket from 'react-use-websocket';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { exampleText, setNodeData } from '../features/storySlice';
+import { setNodeData } from '../features/storySlice';
 import { graphToNodeData } from '../graph/graphUtils';
 
+const wsServerUrl: string = "wss://cyoa-api-prod.herokuapp.com/ws/";
 interface SocketResponse {
   nodes: NodeData[],
 }
@@ -17,7 +18,7 @@ interface InputTextFormProps {
 }
 
 const InputTextForm = (props: InputTextFormProps) => {
-  const [text, setText] = useState("");
+  const [text, setText] = useState('');
 
   const handleInputText = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
     setText(event.target.value);
@@ -28,7 +29,7 @@ const InputTextForm = (props: InputTextFormProps) => {
       <p className="example-text">
         <b>Example</b>
         <br />
-        {exampleText}
+        "You are a commoner living in the large kingdom of Garion. Your kingdom has been in bitter war with the neighboring kingdom, Liore, for the past year. You dream of doing something great and going on an adventure. You walk around town and see warning posters about the dangers of the dark forest at the edge of town. You go to the market and see military representatives signing people up for the army."
       </p>
       <textarea
         className="input-text"
@@ -50,13 +51,15 @@ const GeneratorView = () => {
   const storyGraph = useAppSelector((state) => state.story.graph)
   const dispatch = useAppDispatch();
 
-  const { sendMessage, lastMessage } = useWebSocket("ws://localhost:8000/ws/");
-  const sendExpandMessage = (nodeToExpand: number) => {
+  const { sendMessage, lastMessage } = 
+    useWebSocket(wsServerUrl, {shouldReconnect: () => true,});
+
+  const sendExpandMessage = useCallback((nodeToExpand: number) => {
     sendMessage(JSON.stringify({
       type: "expandNode",
       data: { nodeToExpand, nodes: graphToNodeData(storyGraph) }
     }))
-  }
+  }, [storyGraph, sendMessage])
 
   const handleGenerateText = (text: string) => {
     const root: NodeData = {
@@ -104,13 +107,15 @@ const GeneratorView = () => {
         actions.push(record[child].action!);
       }
 
-      story.push({
-        paragraph: currNode.paragraph,
-        actions,
-        nodeId: currNode.nodeId,
-        parentId: currNode.parentId,
-        childrenIds: currNode.childrenIds,
-      });
+      if (currNode.paragraph !== null) {      
+        story.push({
+          paragraph: currNode.paragraph,
+          actions,
+          nodeId: currNode.nodeId,
+          parentId: currNode.parentId,
+          childrenIds: currNode.childrenIds,
+        });
+      }
     }
 
     return story;

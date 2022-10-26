@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { Accordion, Button } from "react-bootstrap";
 import { useAccordionButton } from 'react-bootstrap/AccordionButton';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '../app/hooks';
+import { setGraph, setAction, setParagraph } from '../features/storySlice';
+import { deleteNodeInPlace } from '../graph/graphUtils';
 
 export interface StoryParagraphNodeData {
   nodeId: number,
@@ -13,7 +17,7 @@ export interface StoryParagraphNodeData {
 interface ChildParagraphProps {
   key: number,
   index: number,
-  id: number,
+  nodeId: number;
   action: string,
   onGenerateAction: (nodeToExpand: number) => void
 }
@@ -45,12 +49,12 @@ function ToggleButton(props: ToggleButtonProps) {
 const ChildParagraph = (props: ChildParagraphProps) => {
   return (
     <li>
-      <StoryParagraph text={props.action} editable={false} />
-      <Button className="toolbar-button me-2" variant="light" onClick={() => props.onGenerateAction(props.id)}>
+      <StoryParagraph text={props.action} editable={false} nodeId={props.nodeId} isAction={true}/>
+      <Button className="toolbar-button me-2" variant="light" onClick={() => props.onGenerateAction(props.nodeId)}>
         Generate
       </Button>
-      <ToggleButton eventKey={`${props.id}`}>
-        Go to child {props.id}
+      <ToggleButton eventKey={`${props.nodeId}`}>
+        Go to child {props.nodeId}
       </ToggleButton>
     </li >
   )
@@ -59,17 +63,34 @@ const ChildParagraph = (props: ChildParagraphProps) => {
 interface StoryParagraphProps {
   text: string,
   editable: boolean,
+  nodeId: number,
+  isAction: boolean,
 }
 
 const StoryParagraph = (props: StoryParagraphProps) => {
   const [text, setText] = useState(props.text);
   const [editable, changeEditable] = useState(props.editable);
 
+  const storyGraph = useAppSelector((state) => state.story.graph);
+  const dispatch = useDispatch();
+
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
     setText(event.target.value);
   };
 
   const handleEdit = (): void => {
+    // delete graph after this node
+    if (editable) {
+      const newGraph = deleteNodeInPlace(storyGraph, props.nodeId, !props.isAction);
+      dispatch(setGraph(newGraph));
+
+      if (props.isAction) {
+        dispatch(setAction({nodeId: props.nodeId, action: text}));
+      } else {
+        dispatch(setParagraph({nodeId: props.nodeId, paragraph: text}));
+      }
+    }
+
     changeEditable(!editable);
   };
 
@@ -113,7 +134,7 @@ const StoryAccordionItem = (props: StoryAccordionItemProps) => {
       </Accordion.Header>
 
       <Accordion.Body>
-        <StoryParagraph text={props.paragraph} editable={false} />
+        <StoryParagraph text={props.paragraph} editable={false} nodeId={props.nodeId} isAction={false} />
         <GenerateButton />
         {props.parentId !== null && <ParentButton />}
         <div className="story-options mt-4">
@@ -124,7 +145,7 @@ const StoryAccordionItem = (props: StoryAccordionItemProps) => {
                   <ChildParagraph
                     key={i}
                     index={i}
-                    id={props.childrenIds[i]}
+                    nodeId={props.childrenIds[i]}
                     action={action}
                     onGenerateAction={props.onGenerateAction}
                   />
