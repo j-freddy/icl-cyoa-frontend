@@ -22,6 +22,6 @@ const WelcomeView = () => {
       </Link>
     </Container>
   );
-}
+};
 
 export default WelcomeView;
