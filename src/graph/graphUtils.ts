@@ -7,7 +7,7 @@ export const nodeDataToGraph = (nodeDataList: NodeData[]): Graph => {
     }
 
     return { nodeLookup };
-}
+};
 
 export const graphToNodeData = (graph: Graph): NodeData[] => {
     return Object.values(graph.nodeLookup);

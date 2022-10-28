@@ -10,4 +10,4 @@ export default function Footer() {
           </small>
         </Container>
     );
-}
+};

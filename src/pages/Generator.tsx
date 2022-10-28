@@ -1,49 +1,18 @@
 import '../style/base.css';
-import { Accordion, Button, Container } from 'react-bootstrap';
+import { Accordion, Container } from 'react-bootstrap';
 import { NodeData, Graph } from '../graph/types';
 import StoryAccordionItem, { StoryParagraphNodeData } from '../components/StoryParagraph';
 import useWebSocket from 'react-use-websocket';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { setNodeData } from '../features/storySlice';
 import { graphToNodeData } from '../graph/graphUtils';
+import { Queue } from 'queue-typescript';
+import InputTextForm from '../components/InputTextForm';
 
 const wsServerUrl: string = "wss://cyoa-api-prod.herokuapp.com/ws/";
 interface SocketResponse {
   nodes: NodeData[],
-}
-
-interface InputTextFormProps {
-  handleGenerateText: (text: string) => void
-}
-
-const InputTextForm = (props: InputTextFormProps) => {
-  const [text, setText] = useState('');
-
-  const handleInputText = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
-    setText(event.target.value);
-  };
-
-  return (
-    <div className="input-form">
-      <p className="example-text">
-        <b>Example</b>
-        <br />
-        "You are a commoner living in the large kingdom of Garion. Your kingdom has been in bitter war with the neighboring kingdom, Liore, for the past year. You dream of doing something great and going on an adventure. You walk around town and see warning posters about the dangers of the dark forest at the edge of town. You go to the market and see military representatives signing people up for the army."
-      </p>
-      <textarea
-        className="input-text"
-        value={text}
-        id="input-text"
-        disabled={false}
-        placeholder="Input your starting paragraph here"
-        onChange={handleInputText}
-      />
-      <Button className="submit-button" variant="light" onClick={() => props.handleGenerateText(text)}>
-        Generate
-      </Button>
-    </div>
-  );
 }
 
 const GeneratorView = () => {
@@ -93,17 +62,16 @@ const GeneratorView = () => {
     const record = storyGraph.nodeLookup;
 
     const story: StoryParagraphNodeData[] = [];
-    const queue = [record[0]];
+    const queue = new Queue<NodeData>(record[0]);
     let currNode: NodeData;
 
     while (queue.length !== 0) {
-      // TODO This is yikes cause shift is O(n), refactor this
-      currNode = queue.shift()!;
+      currNode = queue.dequeue();
       const actions: string[] = [];
 
       // Note: For loops are much faster than functional programming in Node.js
       for (const child of currNode.childrenIds) {
-        queue.push(record[child]);
+        queue.enqueue(record[child]);
         actions.push(record[child].action!);
       }
 
@@ -131,26 +99,28 @@ const GeneratorView = () => {
         storyGraph.nodeLookup[0] &&
         (
           <Accordion defaultActiveKey="0" flush className="story-section">
-              {
-                buildStoryFromGraph().map((section, i) => {
-                  if (section.paragraph == null) {
-                    return <div key={i}></div>;
-                  }
-                  return (
-                    <StoryAccordionItem
-                      key={i}
-                      paragraph={section.paragraph}
-                      actions={section.actions}
-                      nodeId={section.nodeId}
-                      parentId={section.parentId}
-                      childrenIds={section.childrenIds}
-                      onGenerateParagraph={() => sendExpandMessage(section.nodeId)}
-                      onGenerateAction={sendExpandMessage}
-                    />
-                  );
-                })
-              }
-            </Accordion>
+            {
+              buildStoryFromGraph().map((section, i) => {
+                if (section.paragraph == null) {
+                  return <div key={i}></div>;
+                }
+                return (
+                  <StoryAccordionItem
+                    key={i}
+                    paragraph={section.paragraph}
+                    actions={section.actions}
+                    nodeId={section.nodeId}
+                    parentId={section.parentId}
+                    childrenIds={section.childrenIds}
+                    onGenerateParagraph={
+                      () => sendExpandMessage(section.nodeId)
+                    }
+                    onGenerateAction={sendExpandMessage}
+                  />
+                );
+              })
+            }
+          </Accordion>
         )
       }
     </Container>

@@ -12,26 +12,26 @@ export interface StoryParagraphNodeData {
   paragraph: string,
   actions: string[],
   childrenIds: number[],
-}
+};
 
 interface ChildParagraphProps {
   key: number,
   index: number,
   nodeId: number;
   action: string,
-  onGenerateAction: (nodeToExpand: number) => void
-}
+  onGenerateAction: (nodeToExpand: number) => void,
+};
 
 export interface StoryAccordionItemProps extends StoryParagraphNodeData {
   onGenerateParagraph: () => void,
-  onGenerateAction: (nodeToExpand: number) => void
-}
+  onGenerateAction: (nodeToExpand: number) => void,
+};
 
 interface ToggleButtonProps {
   // TODO: Change 'any'.
   children: any,
   eventKey: string,
-}
+};
 
 function ToggleButton(props: ToggleButtonProps) {
   const onClick = useAccordionButton(
@@ -44,7 +44,7 @@ function ToggleButton(props: ToggleButtonProps) {
       {props.children}
     </Button>
   );
-}
+};
 
 const ChildParagraph = (props: ChildParagraphProps) => {
   return (
@@ -57,8 +57,8 @@ const ChildParagraph = (props: ChildParagraphProps) => {
         Go to child {props.nodeId}
       </ToggleButton>
     </li >
-  )
-}
+  );
+};
 
 interface StoryParagraphProps {
   text: string,
@@ -105,9 +105,8 @@ const StoryParagraph = (props: StoryParagraphProps) => {
         {editable ? "Done" : "Edit"}
       </Button>
     </>
-  )
-
-}
+  );
+};
 
 const StoryAccordionItem = (props: StoryAccordionItemProps) => {
   const GenerateButton = () => {
@@ -116,7 +115,7 @@ const StoryAccordionItem = (props: StoryAccordionItemProps) => {
         Generate
       </Button>
     );
-  }
+  };
 
   const ParentButton = () => {
     return (
@@ -125,7 +124,7 @@ const StoryAccordionItem = (props: StoryAccordionItemProps) => {
         {props.parentId}
       </ToggleButton>
     );
-  }
+  };
 
   return (
     <Accordion.Item eventKey={`${props.nodeId}`} id={`${props.nodeId}`}>

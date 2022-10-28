@@ -8,4 +8,5 @@
   --my-theme: var(--oc-yellow-2);
   --my-link: var(--oc-cyan-3);
   --my-link-hover: var(--oc-cyan-6);
+  --grid-size: 16px;
 }
