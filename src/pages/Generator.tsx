@@ -1,14 +1,15 @@
 import '../style/base.css';
 import { Accordion, Container } from 'react-bootstrap';
-import { NodeData, Graph } from '../graph/types';
+import { NodeData, Graph, SectionType } from '../graph/types';
 import StoryAccordionItem, { StoryParagraphNodeData } from '../components/StoryParagraph';
 import useWebSocket from 'react-use-websocket';
 import { useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { setNodeData } from '../features/storySlice';
+import { addLoadingSection, setNodeDataFromGPT } from '../features/storySlice';
 import { graphToNodeData } from '../graph/graphUtils';
-import { Queue } from 'queue-typescript';
 import InputTextForm from '../components/InputTextForm';
+import LoadingMessage from '../components/LoadingMessage';
+import { Queue } from 'queue-typescript';
 
 const wsServerUrl: string = "wss://cyoa-api-prod.herokuapp.com/ws/";
 interface SocketResponse {
@@ -17,18 +18,24 @@ interface SocketResponse {
 
 const GeneratorView = () => {
 
-  const storyGraph = useAppSelector((state) => state.story.graph)
+  const storyGraph = useAppSelector((state) => state.story.graph);
+  const loadingSections = useAppSelector(
+    (state) => state.story.loadingSections
+  );
   const dispatch = useAppDispatch();
 
   const { sendMessage, lastMessage } = 
     useWebSocket(wsServerUrl, {shouldReconnect: () => true,});
 
-  const sendExpandMessage = useCallback((nodeToExpand: number) => {
+  const sendExpandMessage = useCallback(
+    (sectionType: SectionType, nodeToExpand: number) => {
     sendMessage(JSON.stringify({
       type: "expandNode",
       data: { nodeToExpand, nodes: graphToNodeData(storyGraph) }
-    }))
-  }, [storyGraph, sendMessage])
+    }));
+
+    dispatch(addLoadingSection(sectionType));
+  }, [storyGraph, sendMessage, dispatch])
 
   const handleGenerateText = (text: string) => {
     const root: NodeData = {
@@ -42,18 +49,20 @@ const GeneratorView = () => {
       nodeLookup: { 0: root },
     };
 
-    dispatch(setNodeData([root]));
+    dispatch(setNodeDataFromGPT([root]));
 
     sendMessage(JSON.stringify({
       type: "expandNode",
       data: { nodeToExpand: 0, nodes: graphToNodeData(graph) }
-    }))
+    }));
+
+    dispatch(addLoadingSection(SectionType.Actions));
   };
 
   useEffect(() => {
     if (lastMessage !== null) {
       const resp = JSON.parse(lastMessage?.data) as SocketResponse
-      dispatch(setNodeData(resp.nodes));
+      dispatch(setNodeDataFromGPT(resp.nodes));
     }
   }, [lastMessage, dispatch])
 
@@ -113,7 +122,7 @@ const GeneratorView = () => {
                     parentId={section.parentId}
                     childrenIds={section.childrenIds}
                     onGenerateParagraph={
-                      () => sendExpandMessage(section.nodeId)
+                      () => sendExpandMessage(SectionType.Paragraph, section.nodeId)
                     }
                     onGenerateAction={sendExpandMessage}
                   />
@@ -123,6 +132,15 @@ const GeneratorView = () => {
           </Accordion>
         )
       }
+      <>
+        {
+          loadingSections.length > 0 &&
+          <LoadingMessage
+            sectionType={loadingSections[0]}
+            numSections={loadingSections.length}
+          /> 
+        }
+      </>
     </Container>
   );
 };

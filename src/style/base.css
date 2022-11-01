@@ -26,6 +26,15 @@ a:hover {
   padding: 1em;
 }
 
+/* Loading message */
+
+.loading-message {
+  position: fixed;
+  bottom: 1.5em;
+  right: 1.5em;
+  font-size: 24px;
+}
+
 /* Navbar */
 .nav-link {
   text-decoration: none;

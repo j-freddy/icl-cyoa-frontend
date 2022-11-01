@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../app/hooks';
 import { setGraph, setAction, setParagraph } from '../features/storySlice';
 import { deleteNodeInPlace } from '../graph/graphUtils';
+import { SectionType } from '../graph/types';
 
 export interface StoryParagraphNodeData {
   nodeId: number,
@@ -19,12 +20,12 @@ interface ChildParagraphProps {
   index: number,
   nodeId: number;
   action: string,
-  onGenerateAction: (nodeToExpand: number) => void,
+  onGenerateAction: (sectionType: SectionType, nodeToExpand: number) => void,
 };
 
 export interface StoryAccordionItemProps extends StoryParagraphNodeData {
   onGenerateParagraph: () => void,
-  onGenerateAction: (nodeToExpand: number) => void,
+  onGenerateAction: (sectionType: SectionType, nodeToExpand: number) => void,
 };
 
 interface ToggleButtonProps {
@@ -50,7 +51,7 @@ const ChildParagraph = (props: ChildParagraphProps) => {
   return (
     <li>
       <StoryParagraph text={props.action} editable={false} nodeId={props.nodeId} isAction={true}/>
-      <Button className="toolbar-button me-2" variant="light" onClick={() => props.onGenerateAction(props.nodeId)}>
+      <Button className="toolbar-button me-2" variant="light" onClick={() => props.onGenerateAction(SectionType.Actions, props.nodeId)}>
         Generate
       </Button>
       <ToggleButton eventKey={`${props.nodeId}`}>

@@ -13,3 +13,8 @@ export type NodeData = {
 export type Graph = {
     nodeLookup: Record<number, NodeData>
 }
+
+export enum SectionType {
+    Paragraph = "paragraph",
+    Actions = "actions",
+}
