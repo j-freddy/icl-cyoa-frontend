@@ -1,62 +1,39 @@
 import { useState } from 'react';
 import { Accordion, Button } from "react-bootstrap";
-import { useAccordionButton } from 'react-bootstrap/AccordionButton';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../app/hooks';
 import { setGraph, setAction, setParagraph } from '../features/storySlice';
 import { deleteNodeInPlace } from '../graph/graphUtils';
 import { SectionType } from '../graph/types';
-
-export interface StoryParagraphNodeData {
-  nodeId: number,
-  parentId: number | null,
-  paragraph: string,
-  actions: string[],
-  childrenIds: number[],
-};
+import { NodeData } from '../graph/types';
 
 interface ChildParagraphProps {
   key: number,
   index: number,
-  nodeId: number;
+  nodeId: number,
   action: string,
   onGenerateAction: (sectionType: SectionType, nodeToExpand: number) => void,
+  activeNodeId: number | null,
+  setActiveNodeId: (nodeId: number | null) => void,
 };
 
-export interface StoryAccordionItemProps extends StoryParagraphNodeData {
+export interface StoryItemProps extends NodeData {
+  activeNodeId: number | null,
+  setActiveNodeId: (nodeId: number | null) => void,
   onGenerateParagraph: () => void,
   onGenerateAction: (sectionType: SectionType, nodeToExpand: number) => void,
-};
-
-interface ToggleButtonProps {
-  // TODO: Change 'any'.
-  children: any,
-  eventKey: string,
-};
-
-function ToggleButton(props: ToggleButtonProps) {
-  const onClick = useAccordionButton(
-    props.eventKey,
-    () => { },
-  );
-
-  return (
-    <Button variant="light" className="toolbar-button" onClick={onClick}>
-      {props.children}
-    </Button>
-  );
 };
 
 const ChildParagraph = (props: ChildParagraphProps) => {
   return (
     <li>
       <StoryParagraph text={props.action} editable={false} nodeId={props.nodeId} isAction={true}/>
-      <Button className="toolbar-button me-2" variant="light" onClick={() => props.onGenerateAction(SectionType.Actions, props.nodeId)}>
+      <Button className="toolbar-button me-2" variant="light" onClick={() => props.onGenerateAction(SectionType.Paragraph, props.nodeId)}>
         Generate
       </Button>
-      <ToggleButton eventKey={`${props.nodeId}`}>
+      <Button onClick={() => props.setActiveNodeId(props.activeNodeId === props.nodeId ? null : props.nodeId)}>
         Go to child {props.nodeId}
-      </ToggleButton>
+      </Button>
     </li >
   );
 };
@@ -109,7 +86,7 @@ const StoryParagraph = (props: StoryParagraphProps) => {
   );
 };
 
-const StoryAccordionItem = (props: StoryAccordionItemProps) => {
+const StoryAccordionItem = (props: StoryItemProps) => {
   const GenerateButton = () => {
     return (
       <Button className="toolbar-button me-2" variant="light" onClick={props.onGenerateParagraph}>
@@ -120,16 +97,17 @@ const StoryAccordionItem = (props: StoryAccordionItemProps) => {
 
   const ParentButton = () => {
     return (
-      <ToggleButton eventKey={`${props.parentId}`}>
+      <Button onClick={() => {if (props.parentId !== null) { props.setActiveNodeId(props.parentId) }}}>
         Go to parent
         {props.parentId}
-      </ToggleButton>
+      </Button>
     );
   };
 
   return (
     <Accordion.Item eventKey={`${props.nodeId}`} id={`${props.nodeId}`}>
-      <Accordion.Header>
+      <Accordion.Header onClick={() => 
+          {props.setActiveNodeId(props.nodeId === props.activeNodeId ? null : props.nodeId)}}>
         Section {props.nodeId}
       </Accordion.Header>
 
@@ -140,7 +118,7 @@ const StoryAccordionItem = (props: StoryAccordionItemProps) => {
         <div className="story-options mt-4">
           <ul>
             {
-              props.actions.map((action, i) => {
+              props.actions!.map((action, i) => {
                 return (
                   <ChildParagraph
                     key={i}
@@ -148,6 +126,8 @@ const StoryAccordionItem = (props: StoryAccordionItemProps) => {
                     nodeId={props.childrenIds[i]}
                     action={action}
                     onGenerateAction={props.onGenerateAction}
+                    activeNodeId={props.activeNodeId}
+                    setActiveNodeId={props.setActiveNodeId}
                   />
                 );
               })

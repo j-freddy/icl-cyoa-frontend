@@ -1,7 +1,7 @@
-import { Graph, NodeData } from "./types";
+import { Graph, NodeDataMessage } from "./types";
 
-export const nodeDataToGraph = (nodeDataList: NodeData[]): Graph => {
-    const nodeLookup: Record<number, NodeData> = {};
+export const nodeDataToGraph = (nodeDataList: NodeDataMessage[]): Graph => {
+    const nodeLookup: Record<number, NodeDataMessage> = {};
     for (const nodeData of nodeDataList) {
         nodeLookup[nodeData.nodeId] = nodeData;
     }
@@ -9,9 +9,9 @@ export const nodeDataToGraph = (nodeDataList: NodeData[]): Graph => {
     return { nodeLookup };
 };
 
-export const graphToNodeData = (graph: Graph): NodeData[] => {
+export const graphToNodeData = (graph: Graph): NodeDataMessage[] => {
     return Object.values(graph.nodeLookup);
-}
+};
 
 export const deleteNodeInPlace = (graph: Graph, nodeId: number, keepParagraph: boolean): Graph => {
     let nodeLookup = {...graph.nodeLookup};
@@ -39,4 +39,4 @@ export const deleteNodeInPlace = (graph: Graph, nodeId: number, keepParagraph: b
 
     return { nodeLookup }
 
-}
+};
