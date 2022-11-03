@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import WelcomeView from './pages/Welcome';
 import GeneratorView from './pages/Generator';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'reactflow/dist/style.css';
 
 import {
   BrowserRouter,

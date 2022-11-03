@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { nodeDataToGraph } from '../graph/graphUtils';
-import { Graph, NodeData, SectionType } from '../graph/types';
+import { Graph, NodeDataMessage, SectionType } from '../graph/types';
 
 interface StoryState {
   graph: Graph;
@@ -10,12 +10,21 @@ interface StoryState {
   loadingSections: SectionType[];
 };
 
-const initialState: StoryState = {
-  graph: nodeDataToGraph([]),
-  loadingSections: [],
-};
-
 export const exampleText = "You are a commoner living in the large kingdom of Garion. Your kingdom has been in bitter war with the neighboring kingdom, Liore, for the past year. You dream of doing something great and going on an adventure. You walk around town and see warning posters about the dangers of the dark forest at the edge of town. You go to the market and see military representatives signing people up for the army.";
+
+// const initialState: StoryState = {
+//   graph: nodeDataToGraph([]),
+//   loadingSections: [],
+// };
+
+const initialState: StoryState = {
+  graph: nodeDataToGraph([
+    { nodeId: 0, action: null, paragraph: exampleText, childrenIds: [1, 2], parentId: null },
+    { nodeId: 1, action: "null", paragraph: exampleText, childrenIds: [], parentId: 0 },
+    { nodeId: 2, action: "null", paragraph: exampleText, childrenIds: [], parentId: 0 },
+  ]),
+  loadingSections: []
+};
 
 export const storySlice = createSlice({
   name: 'story',
@@ -32,7 +41,7 @@ export const storySlice = createSlice({
 
     setNodeDataFromGPT: (
       state,
-      action: PayloadAction<NodeData[]>,
+      action: PayloadAction<NodeDataMessage[]>,
     ) => {
       state.graph = nodeDataToGraph(action.payload);
       // Section has loaded

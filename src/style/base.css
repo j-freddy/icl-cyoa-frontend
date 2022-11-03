@@ -53,9 +53,6 @@ a:hover {
 }
 
 /* Generator */
-#generator-section {
-  color: var(--my-light);
-}
 
 #generator-section #generator-title {
   text-align: center;
@@ -63,7 +60,6 @@ a:hover {
 }
 
 #generator-section .input-form {
-  /* TODO Refactor */
   margin-bottom: calc(6 * var(--grid-size));
 }
 
@@ -93,4 +89,10 @@ a:hover {
   margin-top: 12px;
   margin-bottom: 12px;
   min-height: calc(6 * var(--grid-size));
+}
+
+/* Graph visualisation */
+.layoutflow {
+  /* TODO Refactor */
+  border: 1px solid white;
 }
