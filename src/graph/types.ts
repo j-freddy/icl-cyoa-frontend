@@ -7,7 +7,9 @@ export type NodeDataMessage = {
     paragraph: string | null,
 
     parentId: number | null,
-    childrenIds: number[]
+    childrenIds: number[],
+
+    endingParagraph: boolean,
 }
 
 export type GraphMessage = {
@@ -20,6 +22,7 @@ export type NodeData = {
     paragraph: string,
     actions: string[] | null,
     childrenIds: number[],
+    endingParagraph: boolean,
 };
 
 export type Graph = {
@@ -30,4 +33,4 @@ export type Graph = {
 export enum SectionType {
     Paragraph = "paragraph",
     Actions = "actions",
-}
+};

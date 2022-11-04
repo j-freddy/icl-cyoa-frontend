@@ -15,6 +15,7 @@ interface ChildParagraphProps {
   onGenerateAction: (sectionType: SectionType, nodeToExpand: number) => void,
   activeNodeId: number | null,
   setActiveNodeId: (nodeId: number | null) => void,
+  onGenerateEndingParagraph: (sectionType: SectionType, nodeToExpand: number) => void,
 };
 
 export interface StoryItemProps extends NodeData {
@@ -22,14 +23,18 @@ export interface StoryItemProps extends NodeData {
   setActiveNodeId: (nodeId: number | null) => void,
   onGenerateParagraph: () => void,
   onGenerateAction: (sectionType: SectionType, nodeToExpand: number) => void,
+  onGenerateEndingParagraph: (sectionType: SectionType, nodeToExpand: number) => void,
 };
 
 const ChildParagraph = (props: ChildParagraphProps) => {
   return (
     <li>
-      <StoryParagraph text={props.action} editable={false} nodeId={props.nodeId} isAction={true}/>
+      <StoryParagraph text={props.action} editable={false} nodeId={props.nodeId} isAction={true} />
       <Button className="toolbar-button me-2" variant="light" onClick={() => props.onGenerateAction(SectionType.Paragraph, props.nodeId)}>
         Generate
+      </Button>
+      <Button className="toolbar-button me-2" variant="light" onClick={() => props.onGenerateEndingParagraph(SectionType.Paragraph, props.nodeId)}>
+        End Path
       </Button>
       <Button onClick={() => props.setActiveNodeId(props.activeNodeId === props.nodeId ? null : props.nodeId)}>
         Go to child {props.nodeId}
@@ -63,9 +68,9 @@ const StoryParagraph = (props: StoryParagraphProps) => {
       dispatch(setGraph(newGraph));
 
       if (props.isAction) {
-        dispatch(setAction({nodeId: props.nodeId, action: text}));
+        dispatch(setAction({ nodeId: props.nodeId, action: text }));
       } else {
-        dispatch(setParagraph({nodeId: props.nodeId, paragraph: text}));
+        dispatch(setParagraph({ nodeId: props.nodeId, paragraph: text }));
       }
     }
 
@@ -113,7 +118,7 @@ const StoryAccordionItem = (props: StoryItemProps) => {
 
       <Accordion.Body>
         <StoryParagraph text={props.paragraph} editable={false} nodeId={props.nodeId} isAction={false} />
-        <GenerateButton />
+        {!props.endingParagraph && <GenerateButton />}
         {props.parentId !== null && <ParentButton />}
         <div className="story-options mt-4">
           <ul>
@@ -128,6 +133,7 @@ const StoryAccordionItem = (props: StoryItemProps) => {
                     onGenerateAction={props.onGenerateAction}
                     activeNodeId={props.activeNodeId}
                     setActiveNodeId={props.setActiveNodeId}
+                    onGenerateEndingParagraph={props.onGenerateEndingParagraph}
                   />
                 );
               })
