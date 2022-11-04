@@ -53,8 +53,6 @@ const GraphViz = (props: GraphVizProps) => {
 
     dfsBuildNodesAndEdges(0);
 
-    console.log({...nodes})
-
     return { nodes, edges };
   }, [graph]);
 

@@ -53,6 +53,9 @@ a:hover {
 }
 
 /* Generator */
+#generator-section {
+  color: var(--my-light);
+}
 
 #generator-section #generator-title {
   text-align: center;
@@ -60,6 +63,7 @@ a:hover {
 }
 
 #generator-section .input-form {
+  /* TODO Refactor */
   margin-bottom: calc(6 * var(--grid-size));
 }
 
