@@ -1,4 +1,4 @@
-import { Badge } from "react-bootstrap";
+import { Toast, ToastContainer } from 'react-bootstrap';
 import { SectionType } from "../graph/types";
 
 interface LoadingMessageProps {
@@ -8,10 +8,10 @@ interface LoadingMessageProps {
 
 export default function LoadingMessage(props: LoadingMessageProps) {
   return (
-    <div className="loading-message">
-      <Badge bg="info">
-        Generating {props.sectionType}... ({props.numSections} left)
-      </Badge>
-    </div>
+    <ToastContainer position={'bottom-start'} className='position-fixed'>
+      <Toast>
+        <Toast.Body style={{ color: '#000', fontSize: '1rem' }}><strong>Generating {props.sectionType}</strong>, ({props.numSections}) left</Toast.Body>
+      </Toast>
+    </ToastContainer>
   );
 }

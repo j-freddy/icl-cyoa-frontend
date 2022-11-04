@@ -1,14 +1,16 @@
-import { Queue } from "queue-typescript";
-import { useMemo, useState, useCallback } from "react";
-import { Accordion, Container } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
-import GraphViz from "../components/GraphViz";
-import InputTextForm from "../components/InputTextForm";
-import LoadingMessage from "../components/LoadingMessage";
-import StoryAccordionItem from "../components/StoryParagraph";
-import { addLoadingSection, setNodeDataFromGPT } from "../features/storySlice";
-import { graphToNodeData } from "../graph/graphUtils";
-import { Graph, GraphMessage, NodeData, NodeDataMessage, SectionType } from "../graph/types";
+import { Queue } from 'queue-typescript';
+import { useCallback, useMemo, useState } from 'react';
+import { Accordion, Container } from 'react-bootstrap';
+// import useWebSocket from 'react-use-websocket';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import GraphViz from '../components/GraphViz';
+import InputTextForm from '../components/InputTextForm';
+import LoadingMessage from '../components/LoadingMessage';
+import StoryAccordionItem from '../components/StoryParagraph';
+import { addLoadingSection, setNodeDataFromGPT } from '../features/storySlice';
+import { graphToNodeData } from '../graph/graphUtils';
+import { Graph, GraphMessage, NodeData, NodeDataMessage, SectionType } from '../graph/types';
+import '../style/base.css';
 
 const wsServerUrl: string = "https://cyoa-api-int-stable.herokuapp.com/";
 
@@ -162,17 +164,15 @@ const GeneratorView = () => {
               })
             }
           </Accordion>
-
-          <>
-            {
-              loadingSections.length > 0 &&
-              <LoadingMessage
-                sectionType={loadingSections[0]}
-                numSections={loadingSections.length}
-              /> 
-            }
-          </>
-
+      <>
+        {
+          loadingSections.length > 0 &&
+            <LoadingMessage
+              sectionType={loadingSections[0]}
+              numSections={loadingSections.length}
+                /> 
+        }
+      </>
     </Container>
   );
 }

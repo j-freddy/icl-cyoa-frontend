@@ -1,22 +1,32 @@
-import { useState } from 'react';
-import { Accordion, Button } from "react-bootstrap";
+import React, { useState } from 'react';
+import { Accordion, Button, Dropdown, ListGroup } from "react-bootstrap";
+import { useAccordionButton } from 'react-bootstrap/AccordionButton';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../app/hooks';
-import { setGraph, setAction, setParagraph } from '../features/storySlice';
+import { setAction, setGraph, setParagraph } from '../features/storySlice';
 import { deleteNodeInPlace } from '../graph/graphUtils';
 import { SectionType } from '../graph/types';
+import { CustomToggle } from './CustomDropdown';
 import { NodeData } from '../graph/types';
 
-interface ChildParagraphProps {
-  key: number,
-  index: number,
+export interface StoryParagraphNodeData {
   nodeId: number,
-  action: string,
-  onGenerateAction: (sectionType: SectionType, nodeToExpand: number) => void,
-  activeNodeId: number | null,
-  setActiveNodeId: (nodeId: number | null) => void,
-  onGenerateEndingParagraph: (sectionType: SectionType, nodeToExpand: number) => void,
+  parentId: number | null,
+  paragraph: string,
+  actions: string[],
+  childrenIds: number[],
 };
+
+// interface ChildParagraphProps {
+//   key: number,
+//   index: number,
+//   nodeId: number,
+//   action: string,
+//   onGenerateAction: (sectionType: SectionType, nodeToExpand: number) => void,
+//   activeNodeId: number | null,
+//   setActiveNodeId: (nodeId: number | null) => void,
+//   onGenerateEndingParagraph: (sectionType: SectionType, nodeToExpand: number) => void,
+// };
 
 export interface StoryItemProps extends NodeData {
   activeNodeId: number | null,
@@ -26,33 +36,117 @@ export interface StoryItemProps extends NodeData {
   onGenerateEndingParagraph: (sectionType: SectionType, nodeToExpand: number) => void,
 };
 
-const ChildParagraph = (props: ChildParagraphProps) => {
-  return (
-    <li>
-      <StoryParagraph text={props.action} editable={false} nodeId={props.nodeId} isAction={true} />
-      <Button className="toolbar-button me-2" variant="light" onClick={() => props.onGenerateAction(SectionType.Paragraph, props.nodeId)}>
-        Generate
-      </Button>
-      <Button className="toolbar-button me-2" variant="light" onClick={() => props.onGenerateEndingParagraph(SectionType.Paragraph, props.nodeId)}>
-        End Path
-      </Button>
-      <Button onClick={() => props.setActiveNodeId(props.activeNodeId === props.nodeId ? null : props.nodeId)}>
-        Go to child {props.nodeId}
-      </Button>
-    </li >
-  );
+interface ToggleButtonProps {
+  // TODO: Change 'any'.
+  children: any,
+  eventKey: string,
+};
+
+interface ActionParagraphProps {
+  key: number,
+  index: number,
+  nodeId: number,
+  activeNodeId: number | null,
+  action: string,
+  onGenerateAction: (sectionType: SectionType, nodeToExpand: number) => void,
+  onGenerateEndingParagraph: (sectionType: SectionType, nodeToExpand: number) => void,
+  setActiveNodeId: (nodeId: number | null) => void,
 };
 
 interface StoryParagraphProps {
   text: string,
-  editable: boolean,
   nodeId: number,
-  isAction: boolean,
+  parentId: number | null,
+  childrenIds: number[],
+  onGenerateParagraph: (sectionType: SectionType, nodeToExpand: number) => void,
+  setActiveNodeId: (nodeId: number | null) => void
 }
+
+function ToggleButton(props: ToggleButtonProps) {
+  const onClick = useAccordionButton(
+    props.eventKey,
+    () => { },
+  );
+
+  return (
+    <Button size="sm" variant="light" className="toolbar-button" onClick={onClick}>
+      {props.children}
+    </Button>
+  );
+};
+
+const ActionParagraph = (props: ActionParagraphProps) => {
+
+  const [text, setText] = useState(props.action);
+  const [editable, changeEditable] = useState(false);
+
+  const storyGraph = useAppSelector((state) => state.story.graph);
+  const dispatch = useDispatch();
+  const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    setText(event.target.value);
+  };
+
+  const onGenerateClick = () => { props.onGenerateAction(SectionType.Actions, props.nodeId) }
+  const onGenerateEndingClick = () => {
+  }
+  const onEditClick = (): void => {
+    changeEditable(true);
+  };
+  const onDoneClick = (): void => {
+    // TODO: Change this.
+    // Delete graph after this node.
+    const newGraph = deleteNodeInPlace(storyGraph, props.nodeId, false);
+    dispatch(setGraph(newGraph));
+    dispatch(setAction({ nodeId: props.nodeId, action: text }));
+
+    changeEditable(false);
+  };
+
+  return (
+    <li
+      style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
+      className="show-toggle"
+    >
+      {
+        <Dropdown align={"start"} style={{ marginRight: '0.3em' }} drop={"start"}>
+          <Dropdown.Toggle as={CustomToggle} variant="secondary">
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu>
+            <ListGroup variant="flush">
+              <ListGroup.Item className='action-item' action as={"button"} onClick={onGenerateClick}>Generate</ListGroup.Item>
+
+              <ListGroup.Item className='action-item' action as={"button"} onClick={onEditClick}>Edit</ListGroup.Item>
+              <ListGroup.Item className='action-item' action as={"button"} onClick={onGenerateEndingClick}>
+                Generate Ending
+              </ListGroup.Item>
+              <ToggleButton eventKey={`${props.nodeId}`}>
+                Go to child {props.nodeId}
+              </ToggleButton>
+            </ListGroup>
+          </Dropdown.Menu>
+        </Dropdown>
+      }
+
+      {
+        editable
+          ?
+          <div>
+            <textarea value={text} className="edit-textarea" onChange={handleTextChange} />
+            <Button variant="light" onClick={onDoneClick} className="toolbar-button me-2">
+              Done
+            </Button>
+          </div>
+          : <p className='editable-text'>{text}</p>
+      }
+    </li >
+  );
+};
+
 
 const StoryParagraph = (props: StoryParagraphProps) => {
   const [text, setText] = useState(props.text);
-  const [editable, changeEditable] = useState(props.editable);
+  const [editable, changeEditable] = useState(false);
 
   const storyGraph = useAppSelector((state) => state.story.graph);
   const dispatch = useDispatch();
@@ -61,43 +155,20 @@ const StoryParagraph = (props: StoryParagraphProps) => {
     setText(event.target.value);
   };
 
-  const handleEdit = (): void => {
-    // delete graph after this node
-    if (editable) {
-      const newGraph = deleteNodeInPlace(storyGraph, props.nodeId, !props.isAction);
-      dispatch(setGraph(newGraph));
-
-      if (props.isAction) {
-        dispatch(setAction({ nodeId: props.nodeId, action: text }));
-      } else {
-        dispatch(setParagraph({ nodeId: props.nodeId, paragraph: text }));
-      }
-    }
-
-    changeEditable(!editable);
+  const onGenerateClick = () => {
+    props.onGenerateParagraph(SectionType.Actions, props.nodeId)
+  }
+  const onEditClick = (): void => {
+    changeEditable(true);
   };
+  const onDoneClick = (): void => {
+    // TODO: Change this.
+    // Delete graph after this node.
+    const newGraph = deleteNodeInPlace(storyGraph, props.nodeId, true);
+    dispatch(setGraph(newGraph));
+    dispatch(setParagraph({ nodeId: props.nodeId, paragraph: text }));
 
-  return (
-    <>
-      {
-        editable
-          ? <textarea value={text} className="edit-textarea" onChange={handleTextChange} />
-          : <p>{text}</p>
-      }
-      <Button variant="light" onClick={handleEdit} className="toolbar-button me-2">
-        {editable ? "Done" : "Edit"}
-      </Button>
-    </>
-  );
-};
-
-const StoryAccordionItem = (props: StoryItemProps) => {
-  const GenerateButton = () => {
-    return (
-      <Button className="toolbar-button me-2" variant="light" onClick={props.onGenerateParagraph}>
-        Generate
-      </Button>
-    );
+    changeEditable(false);
   };
 
   const ParentButton = () => {
@@ -107,8 +178,47 @@ const StoryAccordionItem = (props: StoryItemProps) => {
         {props.parentId}
       </Button>
     );
-  };
+  }
 
+  return (
+    <div
+      style={{ display: 'flex', alignContent: 'center', justifyContent: 'space-between', alignItems: 'center' }}
+      className="show-toggle"
+    >
+      {
+        <Dropdown style={{ marginRight: '0.5em' }}>
+          <Dropdown.Toggle as={CustomToggle} id="dropdown-basic">
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu align={'start'}>
+            <ListGroup variant="flush">
+              <ListGroup.Item className='action-item' action as={"button"} onClick={onGenerateClick}>
+                {props.childrenIds.length === 0 ? "Generate" : "Regenerate"}
+              </ListGroup.Item>
+
+              <ListGroup.Item className='action-item' action as={"button"} onClick={onEditClick}>Edit</ListGroup.Item>
+              {props.parentId !== null ? <ParentButton />: <></>}
+            </ListGroup>
+          </Dropdown.Menu>
+
+        </Dropdown>
+      }
+      {
+        editable
+          ? <div>
+            <textarea value={text} className="edit-textarea" onChange={handleTextChange} />
+            <Button variant="light" onClick={onDoneClick} className="toolbar-button me-2">
+              Done
+            </Button>
+          </div>
+          : <p className='editable-text'>{text}</p>
+      }
+
+    </div>
+  );
+};
+
+const StoryAccordionItem = (props: StoryItemProps) => {
   return (
     <Accordion.Item eventKey={`${props.nodeId}`} id={`${props.nodeId}`}>
       <Accordion.Header onClick={() => 
@@ -117,15 +227,21 @@ const StoryAccordionItem = (props: StoryItemProps) => {
       </Accordion.Header>
 
       <Accordion.Body>
-        <StoryParagraph text={props.paragraph} editable={false} nodeId={props.nodeId} isAction={false} />
-        {!props.endingParagraph && <GenerateButton />}
-        {props.parentId !== null && <ParentButton />}
-        <div className="story-options mt-4">
+        <StoryParagraph
+          text={props.paragraph}
+          nodeId={props.nodeId}
+          parentId={props.parentId}
+          childrenIds={props.childrenIds}
+          onGenerateParagraph={props.onGenerateParagraph}
+          setActiveNodeId={props.setActiveNodeId}
+        />
+
+        <div className="story-options mt-2">
           <ul>
             {
               props.actions!.map((action, i) => {
                 return (
-                  <ChildParagraph
+                  <ActionParagraph
                     key={i}
                     index={i}
                     nodeId={props.childrenIds[i]}
