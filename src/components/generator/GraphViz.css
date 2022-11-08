@@ -1,0 +1,22 @@
+.layoutflow {
+  border: 2px solid var(--my-light);
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  margin-bottom: var(--grid-size);
+}
+
+.react-flow__panel {
+  display: none;
+}
+
+.react-flow-ctrls button {
+  width: calc(var(--grid-size) * 2.5);
+  height: calc(var(--grid-size) * 2.5);
+  padding: 0;
+  margin: 0;
+  font-size: 1.5em;
+}
+
+.layoutflow .selected {
+  background-color: var(--my-theme);
+}

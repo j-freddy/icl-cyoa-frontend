@@ -1,5 +1,6 @@
+import './LoadingMessage.css'
 import { Toast, ToastContainer } from 'react-bootstrap';
-import { SectionType } from "../graph/types";
+import { SectionType } from '../../graph/types';
 
 interface LoadingMessageProps {
   sectionType: SectionType;
@@ -8,9 +9,11 @@ interface LoadingMessageProps {
 
 export default function LoadingMessage(props: LoadingMessageProps) {
   return (
-    <ToastContainer position={'bottom-start'} className='position-fixed'>
+    <ToastContainer className="loading-message">
       <Toast>
-        <Toast.Body style={{ color: '#000', fontSize: '1rem' }}><strong>Generating {props.sectionType}</strong>, ({props.numSections}) left</Toast.Body>
+        <Toast.Body>
+          <strong>Generating {props.sectionType}</strong>, ({props.numSections}) left
+        </Toast.Body>
       </Toast>
     </ToastContainer>
   );
