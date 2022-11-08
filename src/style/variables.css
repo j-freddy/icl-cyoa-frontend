@@ -3,7 +3,7 @@
 :root {
   --my-light: #fff;
   --bg-light: var(--oc-gray-1);
-  --bg-light-200: var(--oc-gray-3);
+  --bg-lighter: var(--oc-gray-3);
   --bg-dark: var(--oc-gray-8);
   --bg-darkest: var(--oc-gray-9);
   --my-theme: var(--oc-yellow-2);

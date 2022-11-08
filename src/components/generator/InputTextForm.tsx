@@ -1,6 +1,7 @@
+import './InputTextForm.css'
 import { useState } from "react";
 import { Button } from "react-bootstrap";
-import { exampleText } from "../features/storySlice";
+import { exampleText } from '../../features/storySlice';
 
 interface InputTextFormProps {
   handleGenerateText: (text: string) => void

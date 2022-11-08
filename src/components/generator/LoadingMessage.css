@@ -1,0 +1,8 @@
+.loading-message {
+  /* Override default Toast */
+  position: fixed !important;
+  bottom: 1.5em;
+  right: 1.5em;
+  font-size: 24px;
+  color: var(--bg-darkest);
+}

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import WelcomeView from './pages/Welcome';
-import GeneratorView from './pages/Generator';
+import WelcomeView from './pages/welcome/Welcome';
+import GeneratorView from './pages/generator/Generator';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'reactflow/dist/style.css';
 

@@ -1,6 +1,6 @@
-import { Graph } from "../graph/types";
-
+import './GraphViz.css'
 import dagre from 'dagre';
+import { MdAlignHorizontalLeft, MdAlignVerticalTop } from "react-icons/md";
 
 import ReactFlow, {
   Node,
@@ -14,6 +14,7 @@ import ReactFlow, {
 } from 'reactflow';
 import { useCallback, useEffect, useMemo } from "react";
 import { Button } from "react-bootstrap";
+import { Graph } from '../../graph/types';
 
 type GraphVizProps = {
   graph: Graph,
@@ -147,9 +148,13 @@ const GraphViz = (props: GraphVizProps) => {
           connectionLineType={ConnectionLineType.SmoothStep}
           fitView
         />
-        <div className="controls">
-          <Button onClick={() => onLayout('TB')}>vertical layout</Button>
-          <Button onClick={() => onLayout('LR')}>horizontal layout</Button>
+        <div className="controls react-flow-ctrls">
+          <Button variant="light" onClick={() => onLayout('TB')}>
+            <MdAlignVerticalTop />
+          </Button>
+          <Button variant="light" onClick={() => onLayout('LR')}>
+            <MdAlignHorizontalLeft />
+          </Button>
         </div>
       </div>
     );
