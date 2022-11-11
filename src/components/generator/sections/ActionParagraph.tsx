@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { Button, Dropdown, ListGroup } from "react-bootstrap";
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../app/hooks';
-import { setGraph, setAction } from '../../../features/storySlice';
-import { deleteNodeInPlace } from '../../../graph/graphUtils';
+import { setData, setGraph } from '../../../features/storySlice';
+import { deleteNode } from '../../../graph/graphUtils';
 import { SectionType } from '../../../graph/types';
 import { CustomToggle } from '../CustomDropdown';
-import ToggleButton from '../ToggleButton';
 
 
 interface ActionParagraphProps {
@@ -17,7 +16,7 @@ interface ActionParagraphProps {
     action: string,
     onGenerateAction: (sectionType: SectionType, nodeToExpand: number) => void,
     onGenerateEndingParagraph: (sectionType: SectionType, nodeToExpand: number) => void,
-    setActiveNodeId: (nodeId: number | null) => void,
+    setActiveNodeId: (nodeId: number | null, goToChild: boolean) => void,
 };
 
 
@@ -45,9 +44,9 @@ const ActionParagraph = (props: ActionParagraphProps) => {
     const onDoneClick = (): void => {
         // TODO: Change this.
         // Delete graph after this node.
-        const newGraph = deleteNodeInPlace(storyGraph, props.nodeId, false);
+        const newGraph = deleteNode(storyGraph, props.nodeId);
         dispatch(setGraph(newGraph));
-        dispatch(setAction({ nodeId: props.nodeId, action: text }));
+        dispatch(setData({ nodeId: props.nodeId, data: text }));
 
         changeEditable(false);
     };
@@ -70,9 +69,9 @@ const ActionParagraph = (props: ActionParagraphProps) => {
                             <ListGroup.Item className='action-item' action as={"button"} onClick={onGenerateEndingClick}>
                                 Generate Ending
                             </ListGroup.Item>
-                            <ToggleButton eventKey={`${props.nodeId}`}>
+                            <ListGroup.Item className='action-item' action as={"button"} onClick={() => {props.setActiveNodeId(props.nodeId, true)}}>
                                 Go to child {props.nodeId}
-                            </ToggleButton>
+                            </ListGroup.Item>
                         </ListGroup>
                     </Dropdown.Menu>
                 </Dropdown>

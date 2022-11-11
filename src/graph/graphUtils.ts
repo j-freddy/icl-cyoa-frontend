@@ -1,42 +1,68 @@
-import { Graph, NodeDataMessage } from "./types";
+import { Graph, GraphMessage, NodeData, ActionNode, NarrativeNode, NodeId, NodeType } from "./types";
 
-export const nodeDataToGraph = (nodeDataList: NodeDataMessage[]): Graph => {
-    const nodeLookup: Record<number, NodeDataMessage> = {};
-    for (const nodeData of nodeDataList) {
+export const makeNarrativeNode = (params: Omit<NarrativeNode, "type">) => {
+    return {
+        type: NodeType.Paragraph,
+        ...params
+    }
+};
+
+export const makeActionNode = (params: Omit<ActionNode, "type">) => {
+    return {
+        type: NodeType.Action,
+        ...params
+    }
+};
+
+export const isAction = (node: NodeData) => {
+    return node.type === NodeType.Action;
+}
+
+export const graphMessageToGraphLookup = (graphMessage: GraphMessage): Graph => {
+    const nodeLookup: Record<number, NodeData> = {};
+    for (const nodeData of graphMessage.nodes) {
         nodeLookup[nodeData.nodeId] = nodeData;
     }
 
     return { nodeLookup };
 };
 
-export const graphToNodeData = (graph: Graph): NodeDataMessage[] => {
-    return Object.values(graph.nodeLookup);
+export const graphToGraphMessage = (graph: Graph): GraphMessage => {
+    const nodes: NodeData[] = [];
+    for (const node of Object.values(graph.nodeLookup)) {
+        nodes.push(node as ActionNode);
+    }
+    return { nodes };
 };
 
-export const deleteNodeInPlace = (graph: Graph, nodeId: number, keepParagraph: boolean): Graph => {
-    let nodeLookup = {...graph.nodeLookup};
+export const deleteNode = (graph: Graph, nodeId: number): Graph => {
+    const toKeep = new Set<NodeId>();
 
-    const dfsDelete = (currId: number) => {
+    const dfsNodesToKeep = (currId: number) => {
         const node = graph.nodeLookup[currId];
 
+        toKeep.add(currId);
+
         if (currId === nodeId) {
-            if (!keepParagraph) {
-                nodeLookup = {...nodeLookup, [currId]: {...nodeLookup[currId], paragraph: null, childrenIds: []}};
-            } else {
-                nodeLookup = {...nodeLookup, [currId]: {...nodeLookup[currId], childrenIds: []}};
-            }
-        } else {
-            // hack since we cant delete - probably has bad complexity
-            const { [currId]: _, ...rest } = nodeLookup;  
-            nodeLookup = rest;
+            return;
         }
 
         for (const childId of node.childrenIds) {
-            dfsDelete(childId);
+            dfsNodesToKeep(childId);
         }
     }
-    dfsDelete(nodeId);
+    dfsNodesToKeep(0);
 
-    return { nodeLookup }
-
+    return {
+        nodeLookup: Object.fromEntries(
+            Object.entries(graph.nodeLookup)
+                .filter(([id, _]) => {
+                    return toKeep.has(parseInt(id));
+                }).map(
+                    ([id, v]) => {
+                        return parseInt(id) === nodeId ? [id, { ...v, childrenIds: [] }] : [id, v];
+                    }
+                )
+        )
+    };
 };

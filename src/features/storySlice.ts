@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { nodeDataToGraph } from '../graph/graphUtils';
-import { Graph, NodeDataMessage, SectionType } from '../graph/types';
+import { graphMessageToGraphLookup } from '../graph/graphUtils';
+import { Graph, GraphMessage, SectionType } from '../graph/types';
 
 interface StoryState {
   graph: Graph;
@@ -13,7 +13,7 @@ interface StoryState {
 export const exampleText = "You are a commoner living in the large kingdom of Garion. Your kingdom has been in bitter war with the neighboring kingdom, Liore, for the past year. You dream of doing something great and going on an adventure. You walk around town and see warning posters about the dangers of the dark forest at the edge of town. You go to the market and see military representatives signing people up for the army.";
 
 const initialState: StoryState = {
-  graph: nodeDataToGraph([]),
+  graph: { nodeLookup: {} },
   loadingSections: [],
 };
 
@@ -31,29 +31,21 @@ export const storySlice = createSlice({
 
     setNodeDataFromGPT: (
       state,
-      action: PayloadAction<NodeDataMessage[]>,
+      action: PayloadAction<GraphMessage>,
     ) => {
-      state.graph = nodeDataToGraph(action.payload);
+      state.graph = graphMessageToGraphLookup(action.payload);
       // Section has loaded
       if (state.loadingSections.length > 0) {
         state.loadingSections.shift();
       }
     },
 
-    setAction: (
+    setData: (
       state,
-      action: PayloadAction<{nodeId: number, action: string}>
+      action: PayloadAction<{nodeId: number, data: string}>
     ) => {
-      state.graph.nodeLookup[action.payload.nodeId].action
-        = action.payload.action;
-    },
-
-    setParagraph: (
-      state,
-      action: PayloadAction<{nodeId: number, paragraph: string}>
-    ) => {
-      state.graph.nodeLookup[action.payload.nodeId].paragraph
-        = action.payload.paragraph;
+      state.graph.nodeLookup[action.payload.nodeId].data
+        = action.payload.data;
     },
   },
 });
@@ -62,8 +54,7 @@ export const {
   addLoadingSection,
   setNodeDataFromGPT,
   setGraph,
-  setAction,
-  setParagraph
+  setData,
 } = storySlice.actions;
 
 export default storySlice.reducer;

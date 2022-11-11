@@ -1,9 +1,9 @@
 import { Accordion } from "react-bootstrap";
 import StoryParagraph from './StoryParagraph';
 import ActionParagraph from './ActionParagraph';
-import { NodeData, SectionType } from "../../../graph/types";
+import { SectionType, StoryNode } from "../../../graph/types";
 
-export interface StoryItemProps extends NodeData {
+export interface StoryItemProps extends StoryNode {
     activeNodeId: number | null,
     setActiveNodeId: (nodeId: number | null) => void,
     onGenerateParagraph: () => void,
@@ -23,10 +23,8 @@ const StoryAccordionItem = (props: StoryItemProps) => {
                 <StoryParagraph
                     text={props.paragraph}
                     nodeId={props.nodeId}
-                    parentId={props.parentId}
                     childrenIds={props.childrenIds}
                     onGenerateParagraph={props.onGenerateParagraph}
-                    setActiveNodeId={props.setActiveNodeId}
                 />
 
                 <div className="story-options mt-2">
