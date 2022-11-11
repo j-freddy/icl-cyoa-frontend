@@ -1,34 +1,42 @@
-export type NodeId = number
+export type NodeId = number;
 
-export type NodeDataMessage = {
-    nodeId: number,
-
-    action: string | null,
-    paragraph: string | null,
-
-    parentId: number | null,
-    childrenIds: number[],
-
-    endingParagraph: boolean,
+export enum NodeType {
+    Paragraph = "narrative",
+    Action = "action"
 }
+
+export type NodeBase = {
+    nodeId: NodeId,
+    data: string,
+    childrenIds: NodeId[],
+    type: NodeType
+};
+
+export type NarrativeNode = NodeBase & {
+    isEnding: boolean,
+};
+
+export type ActionNode = NodeBase;
+
+export type NodeData = NarrativeNode | ActionNode;
 
 export type GraphMessage = {
-    nodes: NodeDataMessage[]
+    nodes: NodeData[]
+};
+
+export type StoryNode = {
+    nodeId: NodeId,
+
+    paragraph: string,
+    actions: string[],
+
+    childrenIds: NodeId[],
+    isEnding: boolean,
 }
 
-export type NodeData = {
-    nodeId: number,
-    parentId: number | null,
-    paragraph: string,
-    actions: string[] | null,
-    childrenIds: number[],
-    endingParagraph: boolean,
-};
-
 export type Graph = {
-    nodeLookup: Record<number, NodeDataMessage>
+    nodeLookup: Record<NodeId, NodeData>
 };
-
 
 export enum SectionType {
     Paragraph = "paragraph",

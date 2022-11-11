@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Button, Dropdown, ListGroup } from "react-bootstrap";
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../app/hooks';
-import { setGraph, setParagraph } from '../../../features/storySlice';
-import { deleteNodeInPlace } from '../../../graph/graphUtils';
+import { setData, setGraph } from '../../../features/storySlice';
+import { deleteNode } from '../../../graph/graphUtils';
 import { SectionType } from '../../../graph/types';
 import { CustomToggle } from '../CustomDropdown';
 
@@ -15,24 +15,11 @@ export interface StoryParagraphNodeData {
   childrenIds: number[],
 };
 
-// interface ChildParagraphProps {
-//   key: number,
-//   index: number,
-//   nodeId: number,
-//   action: string,
-//   onGenerateAction: (sectionType: SectionType, nodeToExpand: number) => void,
-//   activeNodeId: number | null,
-//   setActiveNodeId: (nodeId: number | null) => void,
-//   onGenerateEndingParagraph: (sectionType: SectionType, nodeToExpand: number) => void,
-// };
-
 interface StoryParagraphProps {
   text: string,
   nodeId: number,
-  parentId: number | null,
   childrenIds: number[],
   onGenerateParagraph: (sectionType: SectionType, nodeToExpand: number) => void,
-  setActiveNodeId: (nodeId: number | null) => void
 }
 
 const StoryParagraph = (props: StoryParagraphProps) => {
@@ -55,21 +42,12 @@ const StoryParagraph = (props: StoryParagraphProps) => {
   const onDoneClick = (): void => {
     // TODO: Change this.
     // Delete graph after this node.
-    const newGraph = deleteNodeInPlace(storyGraph, props.nodeId, true);
+    const newGraph = deleteNode(storyGraph, props.nodeId);
     dispatch(setGraph(newGraph));
-    dispatch(setParagraph({ nodeId: props.nodeId, paragraph: text }));
+    dispatch(setData({ nodeId: props.nodeId, data: text }));
 
     changeEditable(false);
   };
-
-  const ParentButton = () => {
-    return (
-      <Button variant="light" onClick={() => { if (props.parentId !== null) { props.setActiveNodeId(props.parentId) } }}>
-        Go to parent
-        {props.parentId}
-      </Button>
-    );
-  }
 
   return (
     <div
@@ -88,7 +66,6 @@ const StoryParagraph = (props: StoryParagraphProps) => {
               </ListGroup.Item>
 
               <ListGroup.Item className='action-item' action as={"button"} onClick={onEditClick}>Edit</ListGroup.Item>
-              {props.parentId !== null ? <ParentButton /> : <></>}
             </ListGroup>
           </Dropdown.Menu>
 

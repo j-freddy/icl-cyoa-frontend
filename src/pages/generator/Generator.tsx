@@ -2,11 +2,10 @@ import './Generator.css'
 import { Queue } from 'queue-typescript';
 import { useCallback, useMemo, useState } from 'react';
 import { Accordion, Container } from 'react-bootstrap';
-// import useWebSocket from 'react-use-websocket';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { addLoadingSection, setNodeDataFromGPT } from '../../features/storySlice';
-import { graphToNodeData } from '../../graph/graphUtils';
-import { Graph, GraphMessage, NodeData, NodeDataMessage, SectionType } from '../../graph/types';
+import { addLoadingSection, setGraph, setNodeDataFromGPT } from '../../features/storySlice';
+import { graphToGraphMessage, isAction, makeNarrativeNode } from '../../graph/graphUtils';
+import { Graph, GraphMessage, NarrativeNode, NodeData, NodeId, SectionType, StoryNode } from '../../graph/types';
 import '../../style/base.css';
 import GraphViz from '../../components/generator/GraphViz';
 import InputTextForm from '../../components/generator/InputTextForm';
@@ -36,8 +35,8 @@ const GeneratorView = () => {
       }
     });
     response.json()
-      .then((graph: GraphMessage) => {
-        dispatch(setNodeDataFromGPT(graph.nodes));
+      .then((msg: { graph: GraphMessage }) => {
+        dispatch(setNodeDataFromGPT(msg.graph));
       });
   }, [dispatch]);
 
@@ -45,7 +44,7 @@ const GeneratorView = () => {
     (sectionType: SectionType, nodeToExpand: number) => {
       sendMessage(JSON.stringify({
         type: "expandNode",
-        data: { nodeToExpand, nodes: graphToNodeData(storyGraph) }
+        data: { nodeToExpand, graph: graphToGraphMessage(storyGraph) }
       }));
 
       dispatch(addLoadingSection(sectionType));
@@ -54,62 +53,88 @@ const GeneratorView = () => {
   const sendEndPathMessage = useCallback((sectionType: SectionType, nodeToEnd: number) => {
     sendMessage(JSON.stringify({
       type: "endNode",
-      data: { nodeToEnd, nodes: graphToNodeData(storyGraph) }
+      data: { nodeToEnd, graph: graphToGraphMessage(storyGraph) }
     }));
     dispatch(addLoadingSection(sectionType));
   }, [storyGraph, sendMessage, dispatch]);
 
+  const sendConnectNodesMessage = useCallback(
+    (fromNode: number, toNode: number) => {
+      sendMessage(JSON.stringify({
+        type: "connectNode",
+        data: { fromNode, toNode, graph: graphToGraphMessage(storyGraph) }
+      }));
+
+      dispatch(addLoadingSection(SectionType.Paragraph));
+    }, [storyGraph, sendMessage, dispatch]);
+
   const handleGenerateText = (text: string) => {
-    const root: NodeDataMessage = {
+    const root: NarrativeNode = makeNarrativeNode({
       nodeId: 0,
-      action: null,
-      paragraph: text,
-      parentId: null,
+      data: text,
       childrenIds: [],
-      endingParagraph: false,
-    }
+      isEnding: false,
+    });
     const graph: Graph = {
       nodeLookup: { 0: root },
     };
 
-    dispatch(setNodeDataFromGPT([root]));
+    dispatch(setGraph(graph));
 
     sendMessage(JSON.stringify({
       type: "expandNode",
-      data: { nodeToExpand: 0, nodes: graphToNodeData(graph) }
+      data: { nodeToExpand: 0, graph: graphToGraphMessage(graph) }
     }));
 
     dispatch(addLoadingSection(SectionType.Actions));
   };
 
-  const story: NodeData[] = useMemo((): NodeData[] => {
+  const story: StoryNode[] = useMemo((): StoryNode[] => {
 
     if (graphEmpty) return [];
 
-    const record = storyGraph.nodeLookup;
+    const nodeLookup = storyGraph.nodeLookup;
 
-    const story: NodeData[] = [];
-    const queue = new Queue<NodeDataMessage>(record[0]);
-    let currNode: NodeDataMessage;
+    const story: StoryNode[] = [];
+    const queue = new Queue<NodeData>(nodeLookup[0]);
+    const visited = new Set<NodeId>();
 
     while (queue.length !== 0) {
-      currNode = queue.dequeue();
+      const currNode = queue.dequeue();
+
+      if (currNode === undefined || visited.has(currNode.nodeId)) continue;
+
+      visited.add(currNode.nodeId);
+
+      if (isAction(currNode)) {
+        // just recurse since we already added the action text
+        for (const childId of currNode.childrenIds) {
+          const child = nodeLookup[childId];
+          queue.enqueue(child);
+        }
+        continue;
+      }
+
+      const narrativeNode = (currNode as NarrativeNode)
+
       const actions: string[] = [];
 
       // Note: For loops are much faster than functional programming in Node.js
-      for (const child of currNode.childrenIds) {
-        queue.enqueue(record[child]);
-        actions.push(record[child].action!);
+      for (const childId of narrativeNode.childrenIds) {
+        const child = nodeLookup[childId];
+        queue.enqueue(child);
+        if (isAction(child)) {
+          actions.push(child.data);
+        }
       }
 
-      if (currNode.paragraph !== null) {
+      if (narrativeNode.data !== null) {
         story.push({
-          paragraph: currNode.paragraph,
+          paragraph: narrativeNode.data,
           actions,
-          nodeId: currNode.nodeId,
-          parentId: currNode.parentId,
-          childrenIds: currNode.childrenIds,
-          endingParagraph: currNode.endingParagraph
+          nodeId: narrativeNode.nodeId,
+          childrenIds: narrativeNode.childrenIds,
+          isEnding: narrativeNode.isEnding
         });
       }
     }
@@ -119,11 +144,44 @@ const GeneratorView = () => {
 
   const [activeNodeId, setActiveNodeId] = useState<number | null>(0);
 
+  const accordianActiveNode = useMemo(() => {
+    if (activeNodeId === 0) return 0;
+    if (activeNodeId === null) return null;
+
+    const node = storyGraph.nodeLookup[activeNodeId];
+    if (isAction(node)) return Object.values(storyGraph.nodeLookup)
+                               .find((parent) => parent.childrenIds.includes(activeNodeId))!.nodeId
+    return activeNodeId;
+  }, [storyGraph, activeNodeId])
+
   const FlowGraph = useMemo(() => {
-    return <GraphViz graph={storyGraph} setActiveNodeId={setActiveNodeId} />;
+    if (graphEmpty) return <></>
+
+    return <GraphViz graph={storyGraph} setActiveNodeId={setActiveNodeId} onConnectNodes={sendConnectNodesMessage} />;
   },
-    [storyGraph, setActiveNodeId]
+    [storyGraph, setActiveNodeId, graphEmpty, sendConnectNodesMessage]
   );
+
+  const storySetActiveNodeId = useCallback((nodeId: NodeId | null) => {
+    if (!nodeId) {
+      setActiveNodeId(null);
+      return;
+    }
+
+    const node = storyGraph.nodeLookup[nodeId];
+
+    if (isAction(node)) {
+      const children = node.childrenIds;
+      
+      if (children.length === 0) {
+        setActiveNodeId(null);
+        return;
+      }
+
+      nodeId = node.childrenIds[0];
+    }
+    setActiveNodeId(nodeId);
+  }, [storyGraph, setActiveNodeId]);
 
   if (graphEmpty) {
     return (
@@ -136,7 +194,7 @@ const GeneratorView = () => {
   return (
     <Container id="generator-section" className="wrapper">
       {FlowGraph}
-      <Accordion activeKey={activeNodeId?.toString()} flush className="story-section">
+      <Accordion activeKey={accordianActiveNode?.toString()} flush className="story-section">
         {
           story.map((section, i) => {
             if (section.paragraph == null) {
@@ -148,16 +206,14 @@ const GeneratorView = () => {
                 paragraph={section.paragraph}
                 actions={section.actions}
                 nodeId={section.nodeId}
-                parentId={section.parentId}
                 childrenIds={section.childrenIds}
-                endingParagraph={section.endingParagraph}
+                isEnding={section.isEnding}
                 onGenerateParagraph={
                   () => sendExpandMessage(SectionType.Actions, section.nodeId)
                 }
                 onGenerateAction={sendExpandMessage}
-                activeNodeId={activeNodeId}
-                setActiveNodeId={setActiveNodeId}
-                //TODO
+                activeNodeId={accordianActiveNode}
+                setActiveNodeId={storySetActiveNodeId}
                 onGenerateEndingParagraph={sendEndPathMessage}
               />
             );
