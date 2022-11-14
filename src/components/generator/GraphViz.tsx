@@ -8,6 +8,8 @@ import ReactFlow, {
   ConnectionLineType,
   Connection,
   Position,
+  useReactFlow,
+  ReactFlowProvider,
 } from 'reactflow';
 import { useCallback, useMemo, useState } from "react";
 import { Button } from "react-bootstrap";
@@ -25,16 +27,26 @@ type GraphVizProps = {
 };
 
 const GraphViz = (props: GraphVizProps) => {
+  return (
+    <ReactFlowProvider>
+      <GraphVizInner {...props}></GraphVizInner>
+    </ReactFlowProvider>
+  )
+}
+
+const GraphVizInner = (props: GraphVizProps) => {
   const { graph } = props;
 
   const edgeType = 'smoothstep';
 
-  const [layout, setLayout] = useState<Layout>(Layout.LR)
+  const [layout, setLayout] = useState<Layout>(Layout.LR);
 
-  const dagreGraph = useMemo(() => new dagre.graphlib.Graph(), []);
-  dagreGraph.setDefaultEdgeLabel(() => ({}));
+  const reactFlowInstance = useReactFlow();
 
   const { nodes, edges } = useMemo(() => {
+    const dagreGraph = new dagre.graphlib.Graph();
+    dagreGraph.setDefaultEdgeLabel(() => ({}));
+
     const position = { x: 0, y: 0 };
 
     const nodes: Node[] = [];
@@ -91,8 +103,12 @@ const GraphViz = (props: GraphVizProps) => {
       return node;
     });
 
+    // TODO: focus on newly generated nodes (and highlight them)
+    // render component and then call fitView
+    setTimeout(() => reactFlowInstance.fitView(), 0);
+
     return { nodes, edges };
-  }, [dagreGraph, layout, graph]);
+  }, [layout, graph, reactFlowInstance]);
 
   const onConnect =
     (params: Edge<any> | Connection) => {
@@ -111,23 +127,25 @@ const GraphViz = (props: GraphVizProps) => {
 
     return (
       <div className="layoutflow" style={{ height: 400 }}>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodeClick={onNodeClick}
-          onNodeDragStart={onNodeClick}
-          onConnect={onConnect}
-          connectionLineType={ConnectionLineType.SmoothStep}
-          fitView
-        />
-        <div className="controls react-flow-ctrls">
-          <Button variant="light" onClick={() => onLayout(Layout.TB)}>
-            <MdAlignVerticalTop />
-          </Button>
-          <Button variant="light" onClick={() => onLayout(Layout.LR)}>
-            <MdAlignHorizontalLeft />
-          </Button>
-        </div>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodeClick={onNodeClick}
+            onNodeDragStart={onNodeClick}
+            onConnect={onConnect}
+            connectionLineType={ConnectionLineType.SmoothStep}
+            fitViewOptions={{
+              minZoom: 120,
+            }}
+          />
+          <div className="controls react-flow-ctrls">
+            <Button variant="light" onClick={() => onLayout(Layout.TB)}>
+              <MdAlignVerticalTop />
+            </Button>
+            <Button variant="light" onClick={() => onLayout(Layout.LR)}>
+              <MdAlignHorizontalLeft />
+            </Button>
+          </div>
       </div>
     );
 }
