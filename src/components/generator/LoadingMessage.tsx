@@ -1,18 +1,26 @@
 import './LoadingMessage.css'
 import { Toast, ToastContainer } from 'react-bootstrap';
-import { SectionType } from '../../graph/types';
+import { LoadingType } from '../../graph/types';
 
 interface LoadingMessageProps {
-  sectionType: SectionType;
+  sectionType: LoadingType;
   numSections: number;
 }
 
 export default function LoadingMessage(props: LoadingMessageProps) {
+  const typeMessage = new Map<LoadingType, string>([
+    [LoadingType.GenerateParagraph, "Generating paragraph"],
+    [LoadingType.GenerateActions, "Generating actions"],
+    [LoadingType.GenerateEnding, "Generating ending"],
+    [LoadingType.ConnectingNodes, "Connecting nodes"],
+  ]);
+  const message = typeMessage.get(props.sectionType)
+
   return (
     <ToastContainer className="loading-message">
       <Toast>
         <Toast.Body>
-          <strong>Generating {props.sectionType}</strong>, ({props.numSections}) left
+          <strong>{message}</strong>, ({props.numSections}) left
         </Toast.Body>
       </Toast>
     </ToastContainer>

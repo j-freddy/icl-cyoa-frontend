@@ -1,18 +1,16 @@
 import './Generator.css'
+import '../../style/base.css';
 import { Queue } from 'queue-typescript';
 import { useCallback, useMemo, useState } from 'react';
 import { Accordion, Container } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { addLoadingSection, setGraph, setNodeDataFromGPT } from '../../features/storySlice';
-import { graphToGraphMessage, isAction, makeNarrativeNode } from '../../graph/graphUtils';
-import { Graph, GraphMessage, NarrativeNode, NodeData, NodeId, SectionType, StoryNode } from '../../graph/types';
-import '../../style/base.css';
+import { connectNodes, setGraph } from '../../features/storySlice';
+import { isAction, makeNarrativeNode } from '../../graph/graphUtils';
+import { Graph, NarrativeNode, NodeData, NodeId, StoryNode } from '../../graph/types';
 import GraphViz from '../../components/generator/GraphViz';
 import InputTextForm from '../../components/generator/InputTextForm';
 import LoadingMessage from '../../components/generator/LoadingMessage';
 import StoryAccordionItem from '../../components/generator/sections/StoryAccordionItem';
-
-const apiUrl: string = "https://cyoa-api-prod.herokuapp.com/";
 
 const GeneratorView = () => {
 
@@ -26,47 +24,11 @@ const GeneratorView = () => {
     return Object.keys(storyGraph.nodeLookup).length === 0;
   }, [storyGraph]);
 
-  const sendMessage = useCallback(async (jsonMsg: string) => {
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      body: jsonMsg,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    response.json()
-      .then((msg: { graph: GraphMessage }) => {
-        dispatch(setNodeDataFromGPT(msg.graph));
-      });
-  }, [dispatch]);
-
-  const sendExpandMessage = useCallback(
-    (sectionType: SectionType, nodeToExpand: number) => {
-      sendMessage(JSON.stringify({
-        type: "expandNode",
-        data: { nodeToExpand, graph: graphToGraphMessage(storyGraph) }
-      }));
-
-      dispatch(addLoadingSection(sectionType));
-    }, [storyGraph, sendMessage, dispatch]);
-
-  const sendEndPathMessage = useCallback((sectionType: SectionType, nodeToEnd: number) => {
-    sendMessage(JSON.stringify({
-      type: "endNode",
-      data: { nodeToEnd, graph: graphToGraphMessage(storyGraph) }
-    }));
-    dispatch(addLoadingSection(sectionType));
-  }, [storyGraph, sendMessage, dispatch]);
-
   const sendConnectNodesMessage = useCallback(
     (fromNode: number, toNode: number) => {
-      sendMessage(JSON.stringify({
-        type: "connectNode",
-        data: { fromNode, toNode, graph: graphToGraphMessage(storyGraph) }
-      }));
+      dispatch(connectNodes({ fromNode: fromNode, toNode: toNode }))
+    }, [dispatch]);
 
-      dispatch(addLoadingSection(SectionType.Paragraph));
-    }, [storyGraph, sendMessage, dispatch]);
 
   const handleGenerateText = (text: string) => {
     const root: NarrativeNode = makeNarrativeNode({
@@ -80,13 +42,6 @@ const GeneratorView = () => {
     };
 
     dispatch(setGraph(graph));
-
-    sendMessage(JSON.stringify({
-      type: "expandNode",
-      data: { nodeToExpand: 0, graph: graphToGraphMessage(graph) }
-    }));
-
-    dispatch(addLoadingSection(SectionType.Actions));
   };
 
   const story: StoryNode[] = useMemo((): StoryNode[] => {
@@ -150,7 +105,7 @@ const GeneratorView = () => {
 
     const node = storyGraph.nodeLookup[activeNodeId];
     if (isAction(node)) return Object.values(storyGraph.nodeLookup)
-                               .find((parent) => parent.childrenIds.includes(activeNodeId))!.nodeId
+      .find((parent) => parent.childrenIds.includes(activeNodeId))!.nodeId
     return activeNodeId;
   }, [storyGraph, activeNodeId])
 
@@ -172,7 +127,7 @@ const GeneratorView = () => {
 
     if (isAction(node)) {
       const children = node.childrenIds;
-      
+
       if (children.length === 0) {
         setActiveNodeId(null);
         return;
@@ -208,13 +163,8 @@ const GeneratorView = () => {
                 nodeId={section.nodeId}
                 childrenIds={section.childrenIds}
                 isEnding={section.isEnding}
-                onGenerateParagraph={
-                  () => sendExpandMessage(SectionType.Actions, section.nodeId)
-                }
-                onGenerateAction={sendExpandMessage}
                 activeNodeId={accordianActiveNode}
                 setActiveNodeId={storySetActiveNodeId}
-                onGenerateEndingParagraph={sendEndPathMessage}
               />
             );
           })

@@ -38,7 +38,9 @@ export type Graph = {
     nodeLookup: Record<NodeId, NodeData>
 };
 
-export enum SectionType {
-    Paragraph = "paragraph",
-    Actions = "actions",
+export enum LoadingType {
+    GenerateParagraph = "paragraph",
+    GenerateActions = "actions",
+    GenerateEnding = "ending",
+    ConnectingNodes = "connecting nodes",
 };

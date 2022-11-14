@@ -35,7 +35,7 @@ export const graphToGraphMessage = (graph: Graph): GraphMessage => {
     return { nodes };
 };
 
-export const deleteNode = (graph: Graph, nodeId: number): Graph => {
+export const deleteNodeFromGraph = (graph: Graph, nodeId: number): Graph => {
     const toKeep = new Set<NodeId>();
 
     const dfsNodesToKeep = (currId: number) => {

@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Dropdown, ListGroup } from "react-bootstrap";
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../../app/hooks';
-import { setData, setGraph } from '../../../features/storySlice';
-import { deleteNode } from '../../../graph/graphUtils';
-import { SectionType } from '../../../graph/types';
+import { useAppDispatch } from '../../../app/hooks';
+import { generateActions, regenerateActions } from '../../../features/storySlice';
 import { CustomToggle } from '../CustomDropdown';
 
 export interface StoryParagraphNodeData {
@@ -19,35 +16,34 @@ interface StoryParagraphProps {
   text: string,
   nodeId: number,
   childrenIds: number[],
-  onGenerateParagraph: (sectionType: SectionType, nodeToExpand: number) => void,
 }
 
 const StoryParagraph = (props: StoryParagraphProps) => {
   const [text, setText] = useState(props.text);
   const [editable, changeEditable] = useState(false);
 
-  const storyGraph = useAppSelector((state) => state.story.graph);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
     setText(event.target.value);
   };
 
+
   const onGenerateClick = () => {
-    props.onGenerateParagraph(SectionType.Actions, props.nodeId)
+    dispatch(generateActions(props.nodeId));
+  }
+  const onRegenerateClick = () => {
+    dispatch(regenerateActions(props.nodeId));
   }
   const onEditClick = (): void => {
     changeEditable(true);
   };
   const onDoneClick = (): void => {
-    // TODO: Change this.
-    // Delete graph after this node.
-    const newGraph = deleteNode(storyGraph, props.nodeId);
-    dispatch(setGraph(newGraph));
-    dispatch(setData({ nodeId: props.nodeId, data: text }));
-
+    dispatch(regenerateActions(props.nodeId));
     changeEditable(false);
   };
+
 
   return (
     <div
@@ -61,11 +57,33 @@ const StoryParagraph = (props: StoryParagraphProps) => {
 
           <Dropdown.Menu align={'start'}>
             <ListGroup variant="flush">
-              <ListGroup.Item className='action-item' action as={"button"} onClick={onGenerateClick}>
-                {props.childrenIds.length === 0 ? "Generate" : "Regenerate"}
-              </ListGroup.Item>
+              {
+                props.childrenIds.length === 0
+                  ?
+                  <ListGroup.Item
+                    className='action-item'
+                    action as="button"
+                    onClick={onGenerateClick}
+                  >
+                    Generate
+                  </ListGroup.Item>
+                  :
+                  <ListGroup.Item
+                    className='action-item'
+                    action as="button"
+                    onClick={onRegenerateClick}
+                  >
+                    Regenerate
+                  </ListGroup.Item>
+              }
 
-              <ListGroup.Item className='action-item' action as={"button"} onClick={onEditClick}>Edit</ListGroup.Item>
+              <ListGroup.Item
+                className='action-item'
+                action as="button"
+                onClick={onEditClick}
+              >
+                Edit
+              </ListGroup.Item>
             </ListGroup>
           </Dropdown.Menu>
 
@@ -73,13 +91,23 @@ const StoryParagraph = (props: StoryParagraphProps) => {
       }
       {
         editable
-          ? <div className="edit-textarea-wrapper">
-            <textarea value={text} className="edit-textarea" onChange={handleTextChange} />
-            <Button variant="light" onClick={onDoneClick} className="toolbar-button me-2">
+          ?
+          <div className="edit-textarea-wrapper">
+            <textarea
+              className="edit-textarea"
+              value={text}
+              onChange={handleTextChange}
+            />
+            <Button
+              className="toolbar-button me-2"
+              variant="light"
+              onClick={onDoneClick}
+            >
               Done
             </Button>
           </div>
-          : <p className='editable-text'>{text}</p>
+          :
+          <p className='editable-text'>{text}</p>
       }
 
     </div>
