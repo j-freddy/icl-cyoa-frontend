@@ -23,7 +23,7 @@ export const generateParagraph = createAsyncThunk(
   'story/generateParagraph',
   async (nodeToExpand: number, { getState }) => {
     const state = getState() as { story: StoryState }
-    const response = await API.generateNode(state.story.graph, nodeToExpand);
+    const response = await API.generateParagraph(state.story.graph, nodeToExpand);
     const json = await response.json();
 
     return json;
