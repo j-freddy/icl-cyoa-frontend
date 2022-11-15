@@ -5,11 +5,11 @@ const API_URL: string = "https://cyoa-api-prod.herokuapp.com/";
 
 export class API {
 
-  static generateNode = async (graph: Graph, nodeToExpand: number) => {
+  static generateParagraph = async (graph: Graph, nodeToExpand: number) => {
     return fetch(API_URL, {
       method: 'POST',
       body: JSON.stringify({
-        type: "expandNode",
+        type: "generateNarrative",
         data: {
           nodeToExpand,
           graph: graphToGraphMessage(graph)
@@ -25,7 +25,7 @@ export class API {
     return fetch(API_URL, {
       method: 'POST',
       body: JSON.stringify({
-        type: "expandNode",
+        type: "generateActions",
         data: {
           nodeToExpand,
           graph: graphToGraphMessage(graph)
