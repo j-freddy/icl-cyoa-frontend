@@ -37,6 +37,21 @@ export class API {
     });
   }
 
+  static generateStartParagraph = async (prompt: string) => {
+    return fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        type: "startNode",
+        data: {
+          prompt: prompt
+        }
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+
   static endPath = async (graph: Graph, nodeToEnd: number) => {
     return fetch(API_URL, {
       method: 'POST',

@@ -4,11 +4,10 @@ import { Queue } from 'queue-typescript';
 import { useCallback, useMemo, useState } from 'react';
 import { Accordion, Container } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { connectNodes, setGraph } from '../../features/storySlice';
+import { connectNodes } from '../../features/storySlice';
 import { isAction, makeNarrativeNode } from '../../graph/graphUtils';
 import { Graph, NarrativeNode, NodeData, NodeId, StoryNode } from '../../graph/types';
 import GraphViz from '../../components/generator/GraphViz';
-import InputTextForm from '../../components/generator/InputTextForm';
 import LoadingMessage from '../../components/generator/LoadingMessage';
 import StoryAccordionItem from '../../components/generator/sections/StoryAccordionItem';
 
@@ -29,20 +28,6 @@ const GeneratorView = () => {
       dispatch(connectNodes({ fromNode: fromNode, toNode: toNode }))
     }, [dispatch]);
 
-
-  const handleGenerateText = (text: string) => {
-    const root: NarrativeNode = makeNarrativeNode({
-      nodeId: 0,
-      data: text,
-      childrenIds: [],
-      isEnding: false,
-    });
-    const graph: Graph = {
-      nodeLookup: { 0: root },
-    };
-
-    dispatch(setGraph(graph));
-  };
 
   const story: StoryNode[] = useMemo((): StoryNode[] => {
 
@@ -128,6 +113,7 @@ const GeneratorView = () => {
     if (isAction(node)) {
       const children = node.childrenIds;
 
+
       if (children.length === 0) {
         setActiveNodeId(null);
         return;
@@ -139,9 +125,32 @@ const GeneratorView = () => {
   }, [storyGraph, setActiveNodeId]);
 
   if (graphEmpty) {
+    // An empty initial graph means that the initial paragraph is being generated
+    const root: NarrativeNode = makeNarrativeNode({
+      nodeId: 0,
+      data: "",
+      childrenIds: [],
+      isEnding: false,
+    });
+    const emptyGraph: Graph = {
+      nodeLookup: { 0: root },
+    };
+
     return (
       <Container id="generator-section" className="wrapper">
-        <InputTextForm handleGenerateText={handleGenerateText} />
+        <GraphViz graph={emptyGraph} setActiveNodeId={setActiveNodeId} onConnectNodes={sendConnectNodesMessage} />
+        <Accordion flush className="story-section">
+          <StoryAccordionItem
+            key={0}
+            paragraph={""}
+            actions={[]}
+            nodeId={0}
+            childrenIds={[]}
+            isEnding={false}
+            activeNodeId={accordianActiveNode}
+            setActiveNodeId={storySetActiveNodeId}
+          />
+        </Accordion>
       </Container>
     );
   }

@@ -2,6 +2,7 @@ import './InputTextForm.css'
 import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { exampleText } from '../../features/storySlice';
+import { Link } from 'react-router-dom';
 
 interface InputTextFormProps {
   handleGenerateText: (text: string) => void
@@ -29,12 +30,14 @@ const InputTextForm = (props: InputTextFormProps) => {
         placeholder="Input your starting paragraph here"
         onChange={handleInputText}
       />
-      <Button
-        className="submit-button"
-        variant="light"
-        onClick={() => props.handleGenerateText(text)}>
-        Generate
-      </Button>
+      <Link to='/generator'>
+        <Button
+          className="submit-button"
+          variant="light"
+          onClick={() => props.handleGenerateText(text)}>
+          Generate
+        </Button>
+      </Link>
     </div>
   );
 };

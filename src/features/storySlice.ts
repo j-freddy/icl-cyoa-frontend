@@ -18,6 +18,14 @@ const initialState: StoryState = {
   loadingSections: [],
 };
 
+export const generateStartParagraph = createAsyncThunk(
+  'story/generateStartParagraph',
+  async (prompt: string) => {
+    const response = await API.generateStartParagraph(prompt);
+    const json = await response.json();
+    return json;
+  }
+)
 
 export const generateParagraph = createAsyncThunk(
   'story/generateParagraph',
@@ -65,7 +73,7 @@ export const regenerateActions = createAsyncThunk(
 )
 export const connectNodes = createAsyncThunk(
   'story/connectNodes',
-  async (data: { fromNode: number, toNode: number} , { getState }) => {
+  async (data: { fromNode: number, toNode: number }, { getState }) => {
     const { fromNode, toNode } = data;
     const state = getState() as { story: StoryState }
     const response = await API.connectNodes(state.story.graph, fromNode, toNode);
@@ -92,6 +100,17 @@ export const storySlice = createSlice({
       state.loadingSections.push(LoadingType.GenerateParagraph);
     })
     builder.addCase(generateParagraph.fulfilled, (state, action) => {
+      state.graph = graphMessageToGraphLookup(action.payload.graph)
+      if (state.loadingSections.length > 0) {
+        state.loadingSections.shift();
+      }
+    })
+
+    builder.addCase(generateStartParagraph.pending, (state) => {
+      state.loadingSections.push(LoadingType.GenerateParagraph);
+    })
+
+    builder.addCase(generateStartParagraph.fulfilled, (state, action) => {
       state.graph = graphMessageToGraphLookup(action.payload.graph)
       if (state.loadingSections.length > 0) {
         state.loadingSections.shift();
