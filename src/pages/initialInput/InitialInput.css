@@ -1,0 +1,42 @@
+#input-section {
+    color: var(--my-light);
+    margin-bottom: 2em;
+}
+
+#input-section #welcome-title .fancy {
+    font-weight: bold;
+    font-style: italic;
+    color: var(--my-theme);
+}
+
+#input-section #submit-button {
+    width: 100%;
+    margin-top: 4px;
+    margin-bottom: 12px;
+}
+
+#input-section #submit-button #button {
+    float: right;
+    margin-right: 60px;
+}
+
+#genre-options {
+    width: 100%;
+    margin-top: 12px;
+    margin-left: 60px;
+    margin-bottom: 12px;
+}
+
+#genre-options #dropdown {
+    margin-top: 12px;
+}
+
+#genre-options #instruction {
+    color: var(--my-light);
+    font-size: large;
+}
+
+.genre-button {
+    margin-top: 4px;
+    display: block;
+}

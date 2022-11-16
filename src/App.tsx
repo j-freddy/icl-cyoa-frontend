@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import WelcomeView from './pages/welcome/Welcome';
+import InitialInputView from './pages/initialInput/InitialInput';
 import GeneratorView from './pages/generator/Generator';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'reactflow/dist/style.css';
@@ -40,14 +41,18 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={
-          wrapView(<WelcomeView />)
-        } />
-        <Route path="/generator" element={
-          wrapView(
-            <GeneratorView />
-          )
-        } />
+        <Route
+          path="/"
+          element={wrapView(<WelcomeView />)}
+        />
+        <Route
+          path="/initial-input"
+          element={wrapView(<InitialInputView />)}
+        />
+        <Route
+          path="/generator"
+          element={wrapView(<GeneratorView />)}
+        />
       </Routes>
     </BrowserRouter>
   );

@@ -16,7 +16,7 @@ const WelcomeView = () => {
           Quickly generate a complete, editable gamebook with a single prompt.
         </p>
       </div>
-      <Link to='/generator'>
+      <Link to='/initial-input'>
         <Button variant="light" size="lg">
           Get Started
         </Button>
