@@ -5,11 +5,12 @@ import { useCallback, useMemo, useState } from 'react';
 import { Accordion, Container } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { connectNodes } from '../../features/storySlice';
-import { isAction } from '../../graph/graphUtils';
-import { NarrativeNode, NodeData, NodeId, StoryNode } from '../../graph/types';
 import GraphViz from '../../components/generator/GraphViz';
 import LoadingMessage from '../../components/generator/LoadingMessage';
 import StoryAccordionItem from '../../components/generator/sections/StoryAccordionItem';
+import Downloader from '../../components/generator/Downloader';
+import { isAction } from '../../utils/graph/graphUtils';
+import { StoryNode, NodeData, NodeId, NarrativeNode, SectionIdOrNull } from '../../utils/graph/types';
 
 const GeneratorView = () => {
 
@@ -40,6 +41,7 @@ const GeneratorView = () => {
     const story: StoryNode[] = [];
     const queue = new Queue<NodeData>(nodeLookup[0]);
     const visited = new Set<NodeId>();
+    let narrativeNodeCount = 0;
 
     while (queue.length !== 0) {
       const currNode = queue.dequeue();
@@ -54,31 +56,76 @@ const GeneratorView = () => {
           const child = nodeLookup[childId];
           queue.enqueue(child);
         }
-        continue;
+      } else {
+        narrativeNodeCount++;
+
+        const narrativeNode = (currNode as NarrativeNode)
+
+        const actions: string[] = [];
+        const childrenSectionIds: SectionIdOrNull[] = [];
+
+        // Note: For loops are much faster than functional programming in Node.js
+        for (const childId of narrativeNode.childrenIds) {
+          const child = nodeLookup[childId];
+          queue.enqueue(child);
+
+          if (isAction(child)) {
+            actions.push(child.data);
+
+            // Find section that action points to
+            if (child.childrenIds.length > 0) {
+              // Each action will correspond to 1 child only
+              const childOfAction = nodeLookup[child.childrenIds[0]];
+
+              // Verify that action points to a paragraph
+              if (!isAction(childOfAction)) {
+                const childParagraph = childOfAction as NarrativeNode;
+                // Temporarily assign nodeId instead of sectionId, since
+                // sectionId has not been assigned to all sections
+                childrenSectionIds.push(childParagraph.nodeId);
+              }
+            } else {
+              // Section has not been generated yet
+              childrenSectionIds.push(null);
+            }
+
+            console.log(childrenSectionIds);
+          }
+        }
+
+        if (narrativeNode.data !== null) {
+          story.push({
+            paragraph: narrativeNode.data,
+            actions,
+            nodeId: narrativeNode.nodeId,
+            sectionId: narrativeNodeCount,
+            childrenIds: narrativeNode.childrenIds,
+            childrenSectionIds: childrenSectionIds,
+            isEnding: narrativeNode.isEnding,
+          });
+        }
       }
+    }
 
-      const narrativeNode = (currNode as NarrativeNode)
+    // Update the node ids to be section ids
+    for (const paragraphNode of story) {
+      const updateIds: SectionIdOrNull[] = [];
 
-      const actions: string[] = [];
+      for (const id of paragraphNode.childrenSectionIds) {
+        if (id == null) {
+          updateIds.push(null);
+        } else {
+          const paragraphChildNode = story.find((node) => {
+            return node.nodeId === id;
+          });
 
-      // Note: For loops are much faster than functional programming in Node.js
-      for (const childId of narrativeNode.childrenIds) {
-        const child = nodeLookup[childId];
-        queue.enqueue(child);
-        if (isAction(child)) {
-          actions.push(child.data);
+          if (paragraphChildNode) {
+            updateIds.push(paragraphChildNode.sectionId);
+          }
         }
       }
 
-      if (narrativeNode.data !== null) {
-        story.push({
-          paragraph: narrativeNode.data,
-          actions,
-          nodeId: narrativeNode.nodeId,
-          childrenIds: narrativeNode.childrenIds,
-          isEnding: narrativeNode.isEnding
-        });
-      }
+      paragraphNode.childrenSectionIds = updateIds;
     }
 
     return story;
@@ -90,7 +137,7 @@ const GeneratorView = () => {
     if (activeNodeId === 0) return 0;
     if (activeNodeId === null) return null;
 
-    const node = storyGraph.nodeLookup[activeNodeId];
+    const node: NodeData = storyGraph.nodeLookup[activeNodeId];
     if (isAction(node)) return Object.values(storyGraph.nodeLookup)
       .find((parent) => parent.childrenIds.includes(activeNodeId))!.nodeId
     return activeNodeId;
@@ -134,7 +181,15 @@ const GeneratorView = () => {
 
   return (
     <Container id="generator-section" className="wrapper">
+      {/* React Flow Graph */}
       {FlowGraph}
+
+      {/* Download */}
+      <div className="mb-5">
+        <Downloader story={story} />
+      </div>
+
+      {/* Accordions */}
       <Accordion activeKey={accordianActiveNode?.toString()} flush className="story-section">
         {
           story.map((section, i) => {
@@ -144,14 +199,10 @@ const GeneratorView = () => {
             return (
               <StoryAccordionItem
                 key={section.nodeId}
-                paragraph={section.paragraph}
-                actions={section.actions}
-                nodeId={section.nodeId}
-                childrenIds={section.childrenIds}
-                isEnding={section.isEnding}
                 activeNodeId={accordianActiveNode}
                 setActiveNodeId={storySetActiveNodeId}
                 buttonsDisabled={loadingSection !== null}
+                {...section}
               />
             );
           })

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { API } from '../api/server';
-import { deleteNodeFromGraph, graphMessageToGraphLookup } from '../graph/graphUtils';
-import { Graph, GraphMessage, LoadingType } from '../graph/types';
+import { graphMessageToGraphLookup, deleteNodeFromGraph } from '../utils/graph/graphUtils';
+import { Graph, LoadingType, GraphMessage } from '../utils/graph/types';
 
 interface StoryState {
   graph: Graph;

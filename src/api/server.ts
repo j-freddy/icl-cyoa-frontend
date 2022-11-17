@@ -1,5 +1,5 @@
-import { graphToGraphMessage } from '../graph/graphUtils';
-import { Graph } from '../graph/types';
+import { graphToGraphMessage } from "../utils/graph/graphUtils";
+import { Graph } from "../utils/graph/types";
 
 const API_URL: string = "https://cyoa-api-prod.herokuapp.com/";
 

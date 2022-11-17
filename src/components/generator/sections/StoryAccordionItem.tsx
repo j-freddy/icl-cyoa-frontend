@@ -1,7 +1,7 @@
 import { Accordion } from "react-bootstrap";
 import StoryParagraph from './StoryParagraph';
 import ActionParagraph from './ActionParagraph';
-import { StoryNode } from "../../../graph/types";
+import { StoryNode } from "../../../utils/graph/types";
 
 export interface StoryItemProps extends StoryNode {
   activeNodeId: number | null,
@@ -11,11 +11,11 @@ export interface StoryItemProps extends StoryNode {
 
 
 const StoryAccordionItem = (props: StoryItemProps) => {
-  return (
-    <Accordion.Item eventKey={props.nodeId.toString()} id={props.nodeId.toString()}>
-      <Accordion.Header onClick={() => { props.setActiveNodeId(props.nodeId === props.activeNodeId ? null : props.nodeId) }}>
-        Section {props.nodeId}
-      </Accordion.Header>
+    return (
+        <Accordion.Item eventKey={`${props.nodeId}`} id={`${props.nodeId}`}>
+            <Accordion.Header onClick={() => { props.setActiveNodeId(props.nodeId === props.activeNodeId ? null : props.nodeId) }}>
+                Section {props.sectionId}
+            </Accordion.Header>
 
       <Accordion.Body>
         <StoryParagraph
