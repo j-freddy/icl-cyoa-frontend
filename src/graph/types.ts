@@ -43,4 +43,5 @@ export enum LoadingType {
     GenerateActions = "actions",
     GenerateEnding = "ending",
     ConnectingNodes = "connecting nodes",
+    InitialStory = "initial story",
 };

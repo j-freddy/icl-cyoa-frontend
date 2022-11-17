@@ -5,8 +5,8 @@ import { useCallback, useMemo, useState } from 'react';
 import { Accordion, Container } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { connectNodes } from '../../features/storySlice';
-import { isAction, makeNarrativeNode } from '../../graph/graphUtils';
-import { Graph, NarrativeNode, NodeData, NodeId, StoryNode } from '../../graph/types';
+import { isAction } from '../../graph/graphUtils';
+import { NarrativeNode, NodeData, NodeId, StoryNode } from '../../graph/types';
 import GraphViz from '../../components/generator/GraphViz';
 import LoadingMessage from '../../components/generator/LoadingMessage';
 import StoryAccordionItem from '../../components/generator/sections/StoryAccordionItem';
@@ -14,8 +14,8 @@ import StoryAccordionItem from '../../components/generator/sections/StoryAccordi
 const GeneratorView = () => {
 
   const storyGraph = useAppSelector((state) => state.story.graph);
-  const loadingSections = useAppSelector(
-    (state) => state.story.loadingSections
+  const loadingSection = useAppSelector(
+    (state) => state.story.loadingSection
   );
   const dispatch = useAppDispatch();
 
@@ -25,8 +25,10 @@ const GeneratorView = () => {
 
   const sendConnectNodesMessage = useCallback(
     (fromNode: number, toNode: number) => {
+      if (loadingSection !== null) return; // block other requests
+
       dispatch(connectNodes({ fromNode: fromNode, toNode: toNode }))
-    }, [dispatch]);
+    }, [dispatch, loadingSection]);
 
 
   const story: StoryNode[] = useMemo((): StoryNode[] => {
@@ -97,7 +99,13 @@ const GeneratorView = () => {
   const FlowGraph = useMemo(() => {
     if (graphEmpty) return <></>
 
-    return <GraphViz graph={storyGraph} setActiveNodeId={setActiveNodeId} onConnectNodes={sendConnectNodesMessage} />;
+    return (
+      <GraphViz
+        graph={storyGraph}
+        setActiveNodeId={setActiveNodeId}
+        onConnectNodes={sendConnectNodesMessage}
+      />
+    );
   },
     [storyGraph, setActiveNodeId, graphEmpty, sendConnectNodesMessage]
   );
@@ -124,37 +132,6 @@ const GeneratorView = () => {
     setActiveNodeId(nodeId);
   }, [storyGraph, setActiveNodeId]);
 
-  if (graphEmpty) {
-    // An empty initial graph means that the initial paragraph is being generated
-    const root: NarrativeNode = makeNarrativeNode({
-      nodeId: 0,
-      data: "",
-      childrenIds: [],
-      isEnding: false,
-    });
-    const emptyGraph: Graph = {
-      nodeLookup: { 0: root },
-    };
-
-    return (
-      <Container id="generator-section" className="wrapper">
-        <GraphViz graph={emptyGraph} setActiveNodeId={setActiveNodeId} onConnectNodes={sendConnectNodesMessage} />
-        <Accordion flush className="story-section">
-          <StoryAccordionItem
-            key={0}
-            paragraph={""}
-            actions={[]}
-            nodeId={0}
-            childrenIds={[]}
-            isEnding={false}
-            activeNodeId={accordianActiveNode}
-            setActiveNodeId={storySetActiveNodeId}
-          />
-        </Accordion>
-      </Container>
-    );
-  }
-
   return (
     <Container id="generator-section" className="wrapper">
       {FlowGraph}
@@ -174,6 +151,7 @@ const GeneratorView = () => {
                 isEnding={section.isEnding}
                 activeNodeId={accordianActiveNode}
                 setActiveNodeId={storySetActiveNodeId}
+                buttonsDisabled={loadingSection !== null}
               />
             );
           })
@@ -181,10 +159,9 @@ const GeneratorView = () => {
       </Accordion>
       <>
         {
-          loadingSections.length > 0 &&
+          loadingSection !== null &&
           <LoadingMessage
-            sectionType={loadingSections[0]}
-            numSections={loadingSections.length}
+            sectionType={loadingSection}
           />
         }
       </>
