@@ -1,10 +1,10 @@
 import './InitialInput.css'
 import '../../style/base.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Container } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useAppDispatch } from '../../app/hooks';
-import { generateStartParagraph, setGraph } from '../../features/storySlice';
+import { generateStartParagraph, reset, setGraph } from '../../features/storySlice';
 import { makeNarrativeNode } from '../../graph/graphUtils';
 import { Graph, NarrativeNode } from '../../graph/types';
 import InputTextForm from '../../components/generator/InputTextForm';
@@ -12,6 +12,13 @@ import { Link } from 'react-router-dom';
 
 const InitialInputView = () => {
     const [genre, setGenre] = useState("Genre Options ... ");
+
+    const dispatch = useAppDispatch();
+
+    // reset redux state on initial render
+    useEffect(() => {
+        dispatch(reset());
+    }, [dispatch]);
 
     const GenreOptions = (GenreOptionsProps: { genre: string }) => {
         const handleSelect = (e: string | null) => {
@@ -44,10 +51,7 @@ const InitialInputView = () => {
                 </Dropdown>
             </div>
         )
-    }
-
-    const dispatch = useAppDispatch();
-
+    };
 
     const handleGenerateText = (text: string) => {
         const root: NarrativeNode = makeNarrativeNode({

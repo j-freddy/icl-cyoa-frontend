@@ -4,7 +4,6 @@ import { LoadingType } from '../../graph/types';
 
 interface LoadingMessageProps {
   sectionType: LoadingType;
-  numSections: number;
 }
 
 export default function LoadingMessage(props: LoadingMessageProps) {
@@ -13,14 +12,15 @@ export default function LoadingMessage(props: LoadingMessageProps) {
     [LoadingType.GenerateActions, "Generating actions"],
     [LoadingType.GenerateEnding, "Generating ending"],
     [LoadingType.ConnectingNodes, "Connecting nodes"],
+    [LoadingType.InitialStory, "Generating initial story"],
   ]);
-  const message = typeMessage.get(props.sectionType)
+  const message = typeMessage.get(props.sectionType);
 
   return (
     <ToastContainer className="loading-message">
       <Toast>
         <Toast.Body>
-          <strong>{message}</strong>, ({props.numSections}) left
+          <strong>{message}</strong>
         </Toast.Body>
       </Toast>
     </ToastContainer>

@@ -6,6 +6,7 @@ import { StoryNode } from "../../../graph/types";
 export interface StoryItemProps extends StoryNode {
   activeNodeId: number | null,
   setActiveNodeId: (nodeId: number | null) => void,
+  buttonsDisabled: boolean,
 };
 
 
@@ -21,6 +22,7 @@ const StoryAccordionItem = (props: StoryItemProps) => {
           text={props.paragraph}
           nodeId={props.nodeId}
           childrenIds={props.childrenIds}
+          buttonsDisabled={props.buttonsDisabled}
         />
 
         <div className="story-options mt-2">
@@ -35,6 +37,7 @@ const StoryAccordionItem = (props: StoryItemProps) => {
                     action={action}
                     activeNodeId={props.activeNodeId}
                     setActiveNodeId={props.setActiveNodeId}
+                    buttonsDisabled={props.buttonsDisabled}
                   />
                 );
               })

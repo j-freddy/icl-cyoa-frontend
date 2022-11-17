@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Dropdown, ListGroup } from "react-bootstrap";
 import { useAppDispatch } from '../../../app/hooks';
-import { generateActions, regenerateActions } from '../../../features/storySlice';
+import { generateActions, regenerateActions, setNodeData } from '../../../features/storySlice';
 import { CustomToggle } from '../CustomDropdown';
 
 export interface StoryParagraphNodeData {
@@ -16,19 +16,21 @@ interface StoryParagraphProps {
   text: string,
   nodeId: number,
   childrenIds: number[],
+  buttonsDisabled: boolean,
 }
 
 const StoryParagraph = (props: StoryParagraphProps) => {
   const [text, setText] = useState(props.text);
+
+  useEffect(() => setText(props.text), [props.text]);
+
   const [editable, changeEditable] = useState(false);
 
   const dispatch = useAppDispatch();
 
-
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
     setText(event.target.value);
   };
-
 
   const onGenerateClick = () => {
     dispatch(generateActions(props.nodeId));
@@ -40,10 +42,9 @@ const StoryParagraph = (props: StoryParagraphProps) => {
     changeEditable(true);
   };
   const onDoneClick = (): void => {
-    dispatch(regenerateActions(props.nodeId));
+    dispatch(setNodeData({ nodeId: props.nodeId, data: text }));
     changeEditable(false);
   };
-
 
   return (
     <div
@@ -63,6 +64,7 @@ const StoryParagraph = (props: StoryParagraphProps) => {
                   <ListGroup.Item
                     className='action-item'
                     action as="button"
+                    disabled={props.buttonsDisabled}
                     onClick={onGenerateClick}
                   >
                     Generate
@@ -71,6 +73,7 @@ const StoryParagraph = (props: StoryParagraphProps) => {
                   <ListGroup.Item
                     className='action-item'
                     action as="button"
+                    disabled={props.buttonsDisabled}
                     onClick={onRegenerateClick}
                   >
                     Regenerate
@@ -80,6 +83,7 @@ const StoryParagraph = (props: StoryParagraphProps) => {
               <ListGroup.Item
                 className='action-item'
                 action as="button"
+                disabled={props.buttonsDisabled}
                 onClick={onEditClick}
               >
                 Edit
@@ -101,6 +105,7 @@ const StoryParagraph = (props: StoryParagraphProps) => {
             <Button
               className="toolbar-button me-2"
               variant="light"
+              disabled={props.buttonsDisabled}
               onClick={onDoneClick}
             >
               Done
