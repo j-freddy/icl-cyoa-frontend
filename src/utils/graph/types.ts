@@ -1,4 +1,5 @@
 export type NodeId = number;
+export type SectionId = number;
 
 export enum NodeType {
     Paragraph = "narrative",
@@ -24,15 +25,19 @@ export type GraphMessage = {
     nodes: NodeData[]
 };
 
+export type SectionIdOrNull = SectionId | null;
+
 export type StoryNode = {
     nodeId: NodeId,
+    sectionId: SectionId,
 
     paragraph: string,
     actions: string[],
 
     childrenIds: NodeId[],
+    childrenSectionIds: SectionIdOrNull[],
     isEnding: boolean,
-}
+};
 
 export type Graph = {
     nodeLookup: Record<NodeId, NodeData>

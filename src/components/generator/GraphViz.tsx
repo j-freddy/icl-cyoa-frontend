@@ -13,7 +13,7 @@ import ReactFlow, {
 } from 'reactflow';
 import { useCallback, useMemo, useState } from "react";
 import { Button } from "react-bootstrap";
-import { Graph } from '../../graph/types';
+import { Graph } from '../../utils/graph/types';
 
 enum Layout {
   LR = "LR",

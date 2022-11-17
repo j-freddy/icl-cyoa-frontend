@@ -111,8 +111,7 @@ const StoryParagraph = (props: StoryParagraphProps) => {
               Done
             </Button>
           </div>
-          :
-          <p className='editable-text'>{text}</p>
+          : <p className='editable-text my-2'>{text}</p>
       }
 
     </div>

@@ -5,10 +5,10 @@ import { Button, Container } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useAppDispatch } from '../../app/hooks';
 import { generateStartParagraph, reset, setGraph } from '../../features/storySlice';
-import { makeNarrativeNode } from '../../graph/graphUtils';
-import { Graph, NarrativeNode } from '../../graph/types';
 import InputTextForm from '../../components/generator/InputTextForm';
 import { Link } from 'react-router-dom';
+import { makeNarrativeNode } from '../../utils/graph/graphUtils';
+import { NarrativeNode, Graph } from '../../utils/graph/types';
 
 const InitialInputView = () => {
     const [genre, setGenre] = useState("Genre Options ... ");

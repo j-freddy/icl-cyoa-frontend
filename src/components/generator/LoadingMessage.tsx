@@ -1,6 +1,6 @@
 import './LoadingMessage.css'
 import { Toast, ToastContainer } from 'react-bootstrap';
-import { LoadingType } from '../../graph/types';
+import { LoadingType } from '../../utils/graph/types';
 
 interface LoadingMessageProps {
   sectionType: LoadingType;
