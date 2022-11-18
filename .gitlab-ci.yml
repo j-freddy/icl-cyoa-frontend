@@ -2,12 +2,13 @@ default:
   image: node:16-buster-slim
 
 cache:
+  file:
+    - yarn.lock
   paths:
-    - .yarn
+    - node_modules
 
 stages:
   - install
-  - test
   - build
   - deploy
 
@@ -22,20 +23,6 @@ install-dependencies:
     paths:
       - node_modules
     policy: pull-push
-
-testing:
-  stage: test
-  script:
-    - yarn install --frozen-lockfile
-    - yarn test
-    - echo "All tests pass!"
-  cache:
-    key: 
-      files:
-        - yarn.lock
-    paths:
-      - node_modules
-    policy: pull
 
 build-frontend:
   stage: build
@@ -52,7 +39,7 @@ build-frontend:
     policy: pull
   artifacts:
     paths:
-      - ./frontend/build
+      - build
 
 deploy-int-stable:
   image: ruby:3.1.2-bullseye
