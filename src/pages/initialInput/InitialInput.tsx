@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import { Button, Container } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { generateStartParagraph, reset, setGraph, initStory, setGoToGenerator } from '../../features/storySlice';
+import { generateStartParagraph, reset, setGraph, initStory, setGoToGenerator, selectGoToGenerator, selectStoryId } from '../../features/storySlice';
 import InputTextForm from '../../components/generator/InputTextForm';
 import { useNavigate } from 'react-router-dom';
-import { loginWithSession } from '../../features/accountSlice';
+import { loginWithSession, selectLoggedIn, selectSessionLoginFail } from '../../features/accountSlice';
 import { makeNarrativeNode } from '../../utils/graph/graphUtils';
 import { NarrativeNode, Graph } from '../../utils/graph/types';
 
@@ -15,11 +15,12 @@ const InitialInputView = () => {
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+
+    const loggedIn = useAppSelector(selectLoggedIn);
+    const sessionLoginFail = useAppSelector(selectSessionLoginFail);
     
-    const loggedIn = useAppSelector((state) => state.account.loggedIn);
-    const sessionLoginFail = useAppSelector((state) => state.account.sessionLoginFail);
-    const goToGenerator = useAppSelector((state) => state.story.goToGenerator);
-    const storyId = useAppSelector((state) => state.story.id);
+    const goToGenerator = useAppSelector(selectGoToGenerator);
+    const storyId = useAppSelector(selectStoryId);
 
     useEffect(() => {
         if (goToGenerator) {
@@ -110,7 +111,7 @@ const InitialInputView = () => {
                 generateGenrePrompt = "Write a dystopian story from a second person's perspective."
                 break;
         }
-        dispatch(initStory()).unwrap().then(() => 
+        dispatch(initStory()).unwrap().then(() =>
             dispatch(generateStartParagraph(generateGenrePrompt)));
     };
 
@@ -123,7 +124,7 @@ const InitialInputView = () => {
                 <Button
                     variant="light"
                     onClick={() => { handleGenerateGenreText(genre) }}>
-                        Generate
+                    Generate
                 </Button>
             </span>
         </div>;

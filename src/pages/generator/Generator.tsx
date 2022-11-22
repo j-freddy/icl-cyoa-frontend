@@ -4,7 +4,22 @@ import { Queue } from 'queue-typescript';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Accordion, Container } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { connectNodes, getGraph, saveName, setId, setName } from '../../features/storySlice';
+import {
+  selectLoadingSection,
+  selectStoryGraph,
+  selectStoryId,
+  selectStoryName,
+  connectNodes,
+  getGraph,
+  saveName,
+  setId,
+  setName
+} from '../../features/storySlice';
+import {
+  selectLoggedIn,
+  selectSessionLoginFail,
+  loginWithSession
+} from '../../features/accountSlice';
 import GraphViz from '../../components/generator/GraphViz';
 import LoadingMessage from '../../components/generator/LoadingMessage';
 import StoryAccordionItem from '../../components/generator/sections/StoryAccordionItem';
@@ -12,28 +27,24 @@ import Downloader from '../../components/generator/Downloader';
 import { isAction } from '../../utils/graph/graphUtils';
 import { StoryNode, NodeData, NodeId, NarrativeNode, SectionIdOrNull } from '../../utils/graph/types';
 import { useNavigate } from 'react-router-dom';
-import { loginWithSession } from '../../features/accountSlice';
 import Saver from '../../components/generator/Saver';
 import { EditableName } from '../../components/generator/EditableName';
 
 const GeneratorView = () => {
 
-  const storyGraph = useAppSelector((state) => state.story.graph);
-  const loadingSection = useAppSelector(
-    (state) => state.story.loadingSection
-  );
-  const name = useAppSelector((state) => state.story.name);
+  const loggedIn = useAppSelector(selectLoggedIn);
+  const sessionLoginFail = useAppSelector(selectSessionLoginFail);
 
-  const loggedIn = useAppSelector((state) => state.account.loggedIn);
-  const sessionLoginFail = useAppSelector((state) => state.account.sessionLoginFail);
-
-  const storyId = useAppSelector((state) => state.story.id);
+  const storyGraph = useAppSelector(selectStoryGraph);
+  const loadingSection = useAppSelector(selectLoadingSection);
+  const name = useAppSelector(selectStoryName);
+  const storyId = useAppSelector(selectStoryId);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
-	  if (!loggedIn) dispatch(loginWithSession())
+    if (!loggedIn) dispatch(loginWithSession())
   }, [loggedIn, dispatch]);
 
   useEffect(() => {
@@ -48,7 +59,7 @@ const GeneratorView = () => {
     const id = splitUrl[splitUrl.length - 1];
 
     if (id !== null && id !== storyId) {
-      dispatch(setId({storyId: id}));
+      dispatch(setId({ storyId: id }));
       dispatch(getGraph());
     }
   }, [dispatch, storyId]);
@@ -62,7 +73,7 @@ const GeneratorView = () => {
       if (loadingSection !== null) return; // block other requests
 
       dispatch(connectNodes({ fromNode: fromNode, toNode: toNode }))
-  }, [dispatch, loadingSection]);
+    }, [dispatch, loadingSection]);
 
   const onSaveName = useCallback((name: string) => {
     dispatch(setName(name));

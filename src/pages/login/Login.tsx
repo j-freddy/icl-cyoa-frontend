@@ -2,17 +2,22 @@ import { FormEvent, useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { login, loginWithSession } from "../../features/accountSlice";
+import {
+  login,
+  loginWithSession,
+  selectCredentialLoginFail,
+  selectLoggedIn
+} from "../../features/accountSlice";
 
 
 const LoginView = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const loggedIn = useAppSelector((state) => state.account.loggedIn);
-  const credentialsLoginFail = useAppSelector((state) => state.account.credentialsLoginFail);
+  const loggedIn = useAppSelector(selectLoggedIn);
+  const credentialsLoginFail = useAppSelector(selectCredentialLoginFail);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (!loggedIn) dispatch(loginWithSession());
   }, [dispatch, loggedIn]);
 
@@ -27,7 +32,7 @@ const LoginView = () => {
 
   const loginSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    dispatch(login({email, password}));
+    dispatch(login({ email, password }));
   }
 
   return (
@@ -49,7 +54,7 @@ const LoginView = () => {
           Submit
         </Button>
         {
-          credentialsLoginFail 
+          credentialsLoginFail
           &&
           <small>Invalid credentials.</small>
         }

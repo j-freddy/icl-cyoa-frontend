@@ -4,25 +4,25 @@ import StoryListItem from '../../components/dashboard/StoryListItem';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { loginWithSession, loadStories } from '../../features/accountSlice';
+import { loginWithSession, loadStories, selectLoggedIn, selectSessionLoginFail, selectStories } from '../../features/accountSlice';
 
 const DashboardView = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const loggedIn = useAppSelector((state) => state.account.loggedIn);
-    const sessionLoginFail = useAppSelector((state) => state.account.sessionLoginFail);
+    const loggedIn = useAppSelector(selectLoggedIn);
+    const sessionLoginFail = useAppSelector(selectSessionLoginFail);
 
-    const stories = useAppSelector(state => state.account.stories);
+    const stories = useAppSelector(selectStories);
 
     useEffect(() => {
         if (!loggedIn) dispatch(loginWithSession())
     }, [loggedIn, dispatch]);
 
     useEffect(() => {
-    if (!loggedIn && sessionLoginFail) {
-        navigate("/login");
-    }
+        if (!loggedIn && sessionLoginFail) {
+            navigate("/login");
+        }
     }, [loggedIn, sessionLoginFail, navigate]);
 
     useEffect(() => {
@@ -42,8 +42,8 @@ const DashboardView = () => {
             </Button>
             <ListGroup>
                 {
-                    stories.map(story => 
-                        (<StoryListItem storyId={story.storyId} name={story.name}/>))
+                    stories.map(story =>
+                        (<StoryListItem storyId={story.storyId} name={story.name} />))
                 }
             </ListGroup>
         </Container>
