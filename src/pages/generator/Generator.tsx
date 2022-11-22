@@ -1,16 +1,20 @@
 import './Generator.css'
 import '../../style/base.css';
 import { Queue } from 'queue-typescript';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Accordion, Container } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { connectNodes } from '../../features/storySlice';
+import { connectNodes, getGraph, saveName, setId, setName } from '../../features/storySlice';
 import GraphViz from '../../components/generator/GraphViz';
 import LoadingMessage from '../../components/generator/LoadingMessage';
 import StoryAccordionItem from '../../components/generator/sections/StoryAccordionItem';
 import Downloader from '../../components/generator/Downloader';
 import { isAction } from '../../utils/graph/graphUtils';
 import { StoryNode, NodeData, NodeId, NarrativeNode, SectionIdOrNull } from '../../utils/graph/types';
+import { useNavigate } from 'react-router-dom';
+import { loginWithSession } from '../../features/accountSlice';
+import Saver from '../../components/generator/Saver';
+import { EditableName } from '../../components/generator/EditableName';
 
 const GeneratorView = () => {
 
@@ -18,7 +22,36 @@ const GeneratorView = () => {
   const loadingSection = useAppSelector(
     (state) => state.story.loadingSection
   );
+  const name = useAppSelector((state) => state.story.name);
+
+  const loggedIn = useAppSelector((state) => state.account.loggedIn);
+  const sessionLoginFail = useAppSelector((state) => state.account.sessionLoginFail);
+
+  const storyId = useAppSelector((state) => state.story.id);
+
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+	  if (!loggedIn) dispatch(loginWithSession())
+  }, [loggedIn, dispatch]);
+
+  useEffect(() => {
+    if (!loggedIn && sessionLoginFail) {
+      navigate("/login");
+    }
+  }, [loggedIn, sessionLoginFail, navigate]);
+
+  useEffect(() => {
+    const url: string = window.location.href;
+    const splitUrl = url.split('/');
+    const id = splitUrl[splitUrl.length - 1];
+
+    if (id !== null && id !== storyId) {
+      dispatch(setId({storyId: id}));
+      dispatch(getGraph());
+    }
+  }, [dispatch, storyId]);
 
   const graphEmpty = useMemo(() => {
     return Object.keys(storyGraph.nodeLookup).length === 0;
@@ -29,8 +62,12 @@ const GeneratorView = () => {
       if (loadingSection !== null) return; // block other requests
 
       dispatch(connectNodes({ fromNode: fromNode, toNode: toNode }))
-    }, [dispatch, loadingSection]);
+  }, [dispatch, loadingSection]);
 
+  const onSaveName = useCallback((name: string) => {
+    dispatch(setName(name));
+    dispatch(saveName());
+  }, [dispatch]);
 
   const story: StoryNode[] = useMemo((): StoryNode[] => {
 
@@ -89,7 +126,6 @@ const GeneratorView = () => {
               childrenSectionIds.push(null);
             }
 
-            console.log(childrenSectionIds);
           }
         }
 
@@ -138,8 +174,10 @@ const GeneratorView = () => {
     if (activeNodeId === null) return null;
 
     const node: NodeData = storyGraph.nodeLookup[activeNodeId];
+
     if (isAction(node)) return Object.values(storyGraph.nodeLookup)
-      .find((parent) => parent.childrenIds.includes(activeNodeId))!.nodeId
+      .find((parent: NodeData) => parent.childrenIds.includes(activeNodeId))!.nodeId
+
     return activeNodeId;
   }, [storyGraph, activeNodeId])
 
@@ -156,6 +194,12 @@ const GeneratorView = () => {
   },
     [storyGraph, setActiveNodeId, graphEmpty, sendConnectNodesMessage]
   );
+
+  const EditableNameComponent = useMemo(() => {
+    return (
+      <EditableName name={name} onSaveName={onSaveName} />
+    )
+  }, [name, onSaveName])
 
   const storySetActiveNodeId = useCallback((nodeId: NodeId | null) => {
     if (!nodeId) {
@@ -181,8 +225,16 @@ const GeneratorView = () => {
 
   return (
     <Container id="generator-section" className="wrapper">
+      {/* Editable Name */}
+      {EditableNameComponent}
+
       {/* React Flow Graph */}
       {FlowGraph}
+
+      {/* Save */}
+      <div className="mb-5">
+        <Saver />
+      </div>
 
       {/* Download */}
       <div className="mb-5">

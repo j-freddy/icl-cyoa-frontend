@@ -3,17 +3,42 @@ import '../../style/base.css';
 import { useEffect, useState } from 'react';
 import { Button, Container } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { useAppDispatch } from '../../app/hooks';
-import { generateStartParagraph, reset, setGraph } from '../../features/storySlice';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { generateStartParagraph, reset, setGraph, initStory, setGoToGenerator } from '../../features/storySlice';
 import InputTextForm from '../../components/generator/InputTextForm';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { loginWithSession } from '../../features/accountSlice';
 import { makeNarrativeNode } from '../../utils/graph/graphUtils';
 import { NarrativeNode, Graph } from '../../utils/graph/types';
 
 const InitialInputView = () => {
-    const [genre, setGenre] = useState("Genre Options ... ");
 
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    
+    const loggedIn = useAppSelector((state) => state.account.loggedIn);
+    const sessionLoginFail = useAppSelector((state) => state.account.sessionLoginFail);
+    const goToGenerator = useAppSelector((state) => state.story.goToGenerator);
+    const storyId = useAppSelector((state) => state.story.id);
+
+    useEffect(() => {
+        if (goToGenerator) {
+            dispatch(setGoToGenerator(false));
+            navigate(`/generator/${storyId}`);
+        }
+    }, [goToGenerator, storyId, navigate, dispatch]);
+
+    useEffect(() => {
+        if (!loggedIn) dispatch(loginWithSession())
+    }, [loggedIn, dispatch]);
+
+    useEffect(() => {
+        if (!loggedIn && sessionLoginFail) {
+            navigate("/login");
+        }
+    }, [loggedIn, sessionLoginFail, navigate]);
+
+    const [genre, setGenre] = useState("Genre Options ... ");
 
     // reset redux state on initial render
     useEffect(() => {
@@ -54,6 +79,8 @@ const InitialInputView = () => {
     };
 
     const handleGenerateText = (text: string) => {
+        dispatch(initStory());
+
         const root: NarrativeNode = makeNarrativeNode({
             nodeId: 0,
             data: text,
@@ -65,7 +92,6 @@ const InitialInputView = () => {
         };
 
         dispatch(setGraph(graph));
-
     };
 
     const handleGenerateGenreText = (genre: string) => {
@@ -84,8 +110,8 @@ const InitialInputView = () => {
                 generateGenrePrompt = "Write a dystopian story from a second person's perspective."
                 break;
         }
-
-        dispatch(generateStartParagraph(generateGenrePrompt));
+        dispatch(initStory()).unwrap().then(() => 
+            dispatch(generateStartParagraph(generateGenrePrompt)));
     };
 
     let submission;
@@ -94,13 +120,11 @@ const InitialInputView = () => {
     } else if (genre !== "Genre Options ... ") {
         submission = <div id="submit-button">
             <span id="button">
-                <Link to='/generator'>
-                    <Button
-                        variant="light"
-                        onClick={() => { handleGenerateGenreText(genre) }}>
+                <Button
+                    variant="light"
+                    onClick={() => { handleGenerateGenreText(genre) }}>
                         Generate
-                    </Button>
-                </Link>
+                </Button>
             </span>
         </div>;
     }

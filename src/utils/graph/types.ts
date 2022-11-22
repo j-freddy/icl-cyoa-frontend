@@ -50,3 +50,9 @@ export enum LoadingType {
     ConnectingNodes = "connecting nodes",
     InitialStory = "initial story",
 };
+
+export type StoryEntry = {
+    title: string,
+    content: string,
+    graph: Graph
+};
