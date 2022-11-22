@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import StatusCode from "status-code-enum";
 import { API } from "../api/server";
+import { RootState } from "../app/store";
 
 type StoryListEntry = {
     name: string,
-    storyId: string, 
+    storyId: string,
 }
 
 type AuthResponse = {
@@ -29,10 +30,10 @@ const initialState: AccountState = {
 
 export const login = createAsyncThunk(
     'account/login',
-    async (data: {email: string, password: string}) => {
+    async (data: { email: string, password: string }) => {
         const response = await API.login(data.email, data.password);
         const status = await response.status;
-        return {email: data.email, status};
+        return { email: data.email, status };
     }
 );
 
@@ -40,9 +41,9 @@ export const loginWithSession = createAsyncThunk(
     'account/loginWithSession',
     async () => {
         const response = await API.loginWithSession();
-        const json = await response.json() as {email: string};
+        const json = await response.json() as { email: string };
         const status = await response.status;
-        return {email: json.email, status};
+        return { email: json.email, status };
     }
 );
 
@@ -50,7 +51,7 @@ export const loadStories = createAsyncThunk(
     'account/loadStories',
     async () => {
         const response = await API.getStories();
-        const json = await response.json() as {stories: StoryListEntry[]};
+        const json = await response.json() as { stories: StoryListEntry[] };
         return json.stories;
     }
 );
@@ -63,7 +64,7 @@ const handleSessionLoginResponse = (
         handleSessionLoginFailure(state);
         return;
     }
-    
+
     state.loggedIn = true;
     state.email = action.payload.email;
     state.sessionLoginFail = false;
@@ -108,5 +109,10 @@ export const accountSlice = createSlice({
         builder.addCase(loadStories.fulfilled, handleLoadStoriesResponse);
     }
 });
+
+export const selectLoggedIn = (state: RootState) => state.account.loggedIn;
+export const selectCredentialLoginFail = (state: RootState) => state.account.credentialsLoginFail;
+export const selectSessionLoginFail = (state: RootState) => state.account.sessionLoginFail;
+export const selectStories = (state: RootState) => state.account.stories;
 
 export default accountSlice.reducer;
