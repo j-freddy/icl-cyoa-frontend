@@ -2,7 +2,7 @@ import { FormEvent, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import StatusCode from "status-code-enum";
-import { API } from "../../api/server";
+import { reqSignup } from "../../api/restRequests";
 
 const SignupView = () => {
 	const [password, setPassword] = useState("");
@@ -14,7 +14,7 @@ const SignupView = () => {
 
 	const loginSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		const response = await API.signup(email, password);
+		const response = await reqSignup(email, password);
 		if (response.status === StatusCode.ClientErrorUnauthorized) {
 			setLoginError(true);
 			return;

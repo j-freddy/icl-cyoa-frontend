@@ -33,14 +33,17 @@ const StoryParagraph = (props: StoryParagraphProps) => {
   };
 
   const onGenerateClick = () => {
-    dispatch(generateActions(props.nodeId));
-  }
+    dispatch(generateActions({nodeToExpand: props.nodeId}));
+  };
+
   const onRegenerateClick = () => {
     dispatch(regenerateActions(props.nodeId));
-  }
+  };
+
   const onEditClick = (): void => {
     changeEditable(true);
   };
+
   const onDoneClick = (): void => {
     dispatch(setNodeData({ nodeId: props.nodeId, data: text }));
     changeEditable(false);

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import StatusCode from "status-code-enum";
-import { API } from "../api/server";
+import { reqGetStories, reqLogin, reqLoginWithSession } from "../api/restRequests";
 import { RootState } from "../app/store";
 
 type StoryListEntry = {
@@ -31,7 +31,7 @@ const initialState: AccountState = {
 export const login = createAsyncThunk(
     'account/login',
     async (data: { email: string, password: string }) => {
-        const response = await API.login(data.email, data.password);
+        const response = await reqLogin(data.email, data.password);
         const status = await response.status;
         return { email: data.email, status };
     }
@@ -40,7 +40,7 @@ export const login = createAsyncThunk(
 export const loginWithSession = createAsyncThunk(
     'account/loginWithSession',
     async () => {
-        const response = await API.loginWithSession();
+        const response = await reqLoginWithSession();
         const json = await response.json() as { email: string };
         const status = await response.status;
         return { email: json.email, status };
@@ -50,7 +50,7 @@ export const loginWithSession = createAsyncThunk(
 export const loadStories = createAsyncThunk(
     'account/loadStories',
     async () => {
-        const response = await API.getStories();
+        const response = await reqGetStories();
         const json = await response.json() as { stories: StoryListEntry[] };
         return json.stories;
     }
