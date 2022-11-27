@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
-import { API } from '../api/server';
+import { reqGetStory, reqInitStory, reqSaveGraph, reqSaveName } from '../api/restRequests';
 import { RootState } from '../app/store';
 import { graphMessageToGraphLookup, deleteNodeFromGraph } from '../utils/graph/graphUtils';
 import { Graph, LoadingType, GraphMessage } from '../utils/graph/types';
@@ -29,54 +29,11 @@ const initialState: StoryState = {
   goToGenerator: false,
 };
 
-export const generateStartParagraph = createAsyncThunk(
-  'story/generateStartParagraph',
-  async (prompt: string) => {
-
-    const response = await API.generateStartParagraph(prompt);
-    const json = await response.json();
-    return json;
-  }
-);
-
-export const generateParagraph = createAsyncThunk(
-  'story/generateParagraph',
-  async (nodeToExpand: number, { getState }) => {
-    const state = getState() as { story: StoryState };
-    const response = await API.generateParagraph(state.story.graph, nodeToExpand);
-    const json = await response.json();
-
-    return json;
-  }
-);
-
-export const generateActions = createAsyncThunk(
-  'story/generateActions',
-  async (nodeToExpand: number, { getState }) => {
-    const state = getState() as { story: StoryState };
-    const response = await API.generateActions(state.story.graph, nodeToExpand);
-    const json = await response.json();
-
-    return json;
-  }
-);
-
-export const generateEnding = createAsyncThunk(
-  'story/generateEnding',
-  async (nodeToEnd: number, { getState }) => {
-    const state = getState() as { story: StoryState }
-    const response = await API.endPath(state.story.graph, nodeToEnd);
-    const json = await response.json();
-
-    return json;
-  }
-);
-
 export const regenerateParagraph = createAsyncThunk(
   'story/regenerateParagraph',
   async (nodeToRegenerate: number, { dispatch }) => {
     dispatch(deleteNode(nodeToRegenerate));
-    await dispatch(generateParagraph(nodeToRegenerate));
+    await dispatch(generateParagraph({nodeToExpand: nodeToRegenerate}));
   }
 );
 
@@ -84,19 +41,7 @@ export const regenerateActions = createAsyncThunk(
   'story/regenerateActions',
   async (nodeToRegenerate: number, { dispatch }) => {
     dispatch(deleteNode(nodeToRegenerate));
-    await dispatch(generateActions(nodeToRegenerate));
-  }
-);
-
-export const connectNodes = createAsyncThunk(
-  'story/connectNodes',
-  async (data: { fromNode: number, toNode: number }, { getState }) => {
-    const { fromNode, toNode } = data;
-    const state = getState() as { story: StoryState };
-    const response = await API.connectNodes(state.story.graph, fromNode, toNode);
-    const json = await response.json();
-
-    return json;
+    await dispatch(generateActions({nodeToExpand: nodeToRegenerate}));
   }
 );
 
@@ -104,7 +49,7 @@ export const saveName = createAsyncThunk(
   'story/saveName',
   async (_, { getState }) => {
     const state = getState() as { story: StoryState };
-    await API.saveName(state.story.id, state.story.name);
+    await reqSaveName(state.story.id, state.story.name);
   }
 );
 
@@ -112,7 +57,7 @@ export const saveGraph = createAsyncThunk(
   'story/saveGraph',
   async (_, { getState }) => {
     const state = getState() as { story: StoryState };
-    await API.saveGraph(state.story.id, state.story.graph);
+    await reqSaveGraph(state.story.id, state.story.graph);
   }
 );
 
@@ -120,7 +65,7 @@ export const getGraph = createAsyncThunk(
   'story/getGraph',
   async (_, { getState }) => {
     const state = getState() as { story: StoryState };
-    const response = await API.getStory(state.story.id);
+    const response = await reqGetStory(state.story.id);
     const json = await response.json() as { story: GraphMessage, name: string };
 
     return { graph: json.story, name: json.name }; // TODO should refactor backend to use graph consistently
@@ -130,7 +75,7 @@ export const getGraph = createAsyncThunk(
 export const initStory = createAsyncThunk(
   'account/initStory',
   async (_, { dispatch }) => {
-    const response = await API.initStory();
+    const response = await reqInitStory();
     const json = await response.json() as { storyId: string };
 
     dispatch(loadStories());
@@ -142,17 +87,6 @@ export const initStory = createAsyncThunk(
     return { storyId: json.storyId };
   }
 );
-
-const handleRequest = (loadingType: LoadingType) => {
-  return (state: StoryState) => {
-    state.loadingSection = loadingType;
-  }
-};
-
-const handleResponse = (state: StoryState, action: PayloadAction<{ graph: GraphMessage }>) => {
-  state.graph = graphMessageToGraphLookup(action.payload.graph);
-  state.loadingSection = null;
-};
 
 const handleGetGraphResponse = (state: StoryState, action: PayloadAction<{ graph: GraphMessage, name: string }>) => {
   state.graph = graphMessageToGraphLookup(action.payload.graph);
@@ -187,23 +121,29 @@ export const storySlice = createSlice({
     setGoToGenerator: (state, action: PayloadAction<boolean>) => {
       state.goToGenerator = action.payload;
     },
+
+    // reducers for the ws middleware
+    graphResponse: (state, action: PayloadAction<Graph>) => {
+      state.loadingSection = null;
+      state.graph = action.payload;
+    },
+    generateStartParagraph: (state, _action: PayloadAction<{ prompt: string }>) => {
+      state.loadingSection = LoadingType.InitialStory;
+    },
+    generateParagraph: (state, _action: PayloadAction<{ nodeToExpand: number }>) => {
+      state.loadingSection = LoadingType.GenerateParagraph;
+    },
+    generateActions: (state, _action: PayloadAction<{ nodeToExpand: number }>) => {
+      state.loadingSection = LoadingType.GenerateActions;
+    },
+    generateEnding: (state, _action: PayloadAction<{ nodeToEnd: number }>) => {
+      state.loadingSection = LoadingType.GenerateEnding;
+    },
+    connectNodes: (state, _action: PayloadAction<{ fromNode: number, toNode: number }>) => {
+      state.loadingSection = LoadingType.ConnectingNodes;
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(generateParagraph.pending, handleRequest(LoadingType.GenerateParagraph));
-    builder.addCase(generateParagraph.fulfilled, handleResponse);
-
-    builder.addCase(generateActions.pending, handleRequest(LoadingType.GenerateActions));
-    builder.addCase(generateActions.fulfilled, handleResponse);
-
-    builder.addCase(generateEnding.pending, handleRequest(LoadingType.GenerateEnding));
-    builder.addCase(generateEnding.fulfilled, handleResponse);
-
-    builder.addCase(connectNodes.pending, handleRequest(LoadingType.ConnectingNodes));
-    builder.addCase(connectNodes.fulfilled, handleResponse);
-
-    builder.addCase(generateStartParagraph.pending, handleRequest(LoadingType.InitialStory));
-    builder.addCase(generateStartParagraph.fulfilled, handleResponse);
-
     builder.addCase(getGraph.fulfilled, handleGetGraphResponse);
 
     builder.addCase(initStory.fulfilled, handleInitStoryResponse);
@@ -218,6 +158,12 @@ export const {
   setNodeData,
   setId,
   setGoToGenerator,
+  graphResponse,
+  generateStartParagraph,
+  generateParagraph,
+  generateActions,
+  generateEnding,
+  connectNodes,
 } = storySlice.actions;
 
 export const selectGoToGenerator = (state: RootState) => state.story.goToGenerator;

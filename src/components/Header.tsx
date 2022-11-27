@@ -3,7 +3,7 @@ import { Button, Container, Navbar } from "react-bootstrap";
 import { AiFillHome } from "react-icons/ai";
 import { BiUser } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
-import { API } from "../api/server";
+import { reqLoginWithSession } from "../api/restRequests";
 import { Link } from 'react-router-dom';
 import "./Header.css";
 import StatusCode from "status-code-enum";
@@ -13,7 +13,7 @@ export default function Header() {
 
 	const getStories = async (event: FormEvent<HTMLButtonElement>) => {
 		event.preventDefault();
-		const response = await API.loginWithSession();
+		const response = await reqLoginWithSession();
 		if (response.status === StatusCode.ClientErrorUnauthorized) {
 			navigate("/login");
 		} else {

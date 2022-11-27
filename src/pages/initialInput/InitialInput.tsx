@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { loginWithSession, selectLoggedIn, selectSessionLoginFail } from '../../features/accountSlice';
 import { makeNarrativeNode } from '../../utils/graph/graphUtils';
 import { NarrativeNode, Graph } from '../../utils/graph/types';
+import { startConnecting } from '../../features/wsSlice';
 
 const InitialInputView = () => {
 
@@ -21,6 +22,10 @@ const InitialInputView = () => {
     
     const goToGenerator = useAppSelector(selectGoToGenerator);
     const storyId = useAppSelector(selectStoryId);
+
+    useEffect(() => {
+        dispatch(startConnecting());
+    }, [dispatch]);
 
     useEffect(() => {
         if (goToGenerator) {
@@ -112,7 +117,7 @@ const InitialInputView = () => {
                 break;
         }
         dispatch(initStory()).unwrap().then(() =>
-            dispatch(generateStartParagraph(generateGenrePrompt)));
+            dispatch(generateStartParagraph({prompt: generateGenrePrompt})));
     };
 
     let submission;

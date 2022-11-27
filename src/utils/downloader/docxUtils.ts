@@ -121,8 +121,6 @@ function pageBreak(): Paragraph {
 function main(story: StoryNode[]): ISectionOptions {
   const paragraphs: Paragraph[] = [];
 
-  console.log(story);
-
   // Section
   for (const node of story) {
     // Section title

@@ -1,14 +1,20 @@
 import { configureStore } from '@reduxjs/toolkit'
 import storyReducer from '../features/storySlice'
 import accountReducer from '../features/accountSlice'
+import wsReducer from '../features/wsSlice'
+import wsMiddleware from '../features/wsMiddleware'
 
 const reducer = {
   story: storyReducer,
-  account: accountReducer
+  account: accountReducer,
+  ws: wsReducer,
 }
 
 export const store = configureStore({
   reducer,
+  middleware: (getDefaultMiddleware) => {
+    return getDefaultMiddleware().concat([wsMiddleware])
+  },
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

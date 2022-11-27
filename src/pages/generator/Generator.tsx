@@ -29,6 +29,7 @@ import { StoryNode, NodeData, NodeId, NarrativeNode, SectionIdOrNull } from '../
 import { useNavigate } from 'react-router-dom';
 import Saver from '../../components/generator/Saver';
 import { EditableName } from '../../components/generator/EditableName';
+import { startConnecting } from '../../features/wsSlice';
 
 const GeneratorView = () => {
 
@@ -42,6 +43,10 @@ const GeneratorView = () => {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(startConnecting())
+  }, [dispatch]);
 
   useEffect(() => {
     if (!loggedIn) dispatch(loginWithSession())

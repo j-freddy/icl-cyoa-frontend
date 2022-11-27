@@ -28,11 +28,11 @@ const ActionParagraph = (props: ActionParagraphProps) => {
   };
 
   const onGenerateClick = (): void => {
-    dispatch(generateParagraph(props.nodeId));
+    dispatch(generateParagraph({nodeToExpand: props.nodeId}));
   };
 
   const onGenerateEndingClick = (): void => {
-    dispatch(generateEnding(props.nodeId))
+    dispatch(generateEnding({nodeToEnd: props.nodeId}))
   };
 
   const onRegenerateClick = async () => {
