@@ -6,6 +6,8 @@ import { RootState } from "../app/store";
 type StoryListEntry = {
     name: string,
     storyId: string,
+    firstParagraph: string,
+    totalSections: number,
 }
 
 type AuthResponse = {

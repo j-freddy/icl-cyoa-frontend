@@ -2,8 +2,9 @@ import { graphToGraphMessage } from "../utils/graph/graphUtils";
 import { Graph } from "../utils/graph/types";
 
 // const API_URL: string = "https://cyoa-api-int-stable.herokuapp.com/";
-// LOCALHOST
 const API_URL: string = "https://cyoa-api-prod.herokuapp.com/"
+// LOCALHOST
+//const API_URL: string = "http://localhost:8000/"
 const LOGIN_URL: string = API_URL + "login";
 const SIGNUP_URL: string = API_URL + "signup";
 const STORIES_URL: string = API_URL + "stories";

@@ -1,5 +1,5 @@
+import { Group, Stack, PasswordInput, Text, Button, Title, TextInput, createStyles } from "@mantine/core";
 import { FormEvent, useEffect, useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
@@ -9,8 +9,26 @@ import {
   selectLoggedIn
 } from "../../features/accountSlice";
 
+const useStyles = createStyles((theme, _params) => ({
+  box: {
+    width: "100vw",
+    height: "92vh",
+    alignItems: "center",
+  },
+  stack: {
+    backgroundColor: theme.white,
+    height: 380,
+    width: 320,
+    borderRadius: 6,
+    boxShadow: theme.shadows.md,
+    padding: 20,
+    margin: "auto",
+    alignItems: "center"
+  }
+}))
 
 const LoginView = () => {
+  const { classes } = useStyles();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -36,35 +54,54 @@ const LoginView = () => {
   }
 
   return (
-    <Container id="generator-section">
-      <Form onSubmit={loginSubmit}>
-        <Form.Group className="mb-3" onChange={(event: any) => setEmail(event.target.value)}>
-          <Form.Label>Email address</Form.Label>
-          <Form.Control type="email" placeholder="Enter email" />
-          <Form.Text className="text-muted">
-            We'll never share your email with anyone else.
-          </Form.Text>
-        </Form.Group>
+    <Group
+      className={classes.box}>
+      <Stack className={classes.stack} >
+        <Title order={2}>Log In</Title>
 
-        <Form.Group className="mb-3" onChange={(event: any) => setPassword(event.target.value)}>
-          <Form.Label>Password</Form.Label>
-          <Form.Control type="password" placeholder="Password" />
-        </Form.Group>
-        <Button variant="primary" type="submit">
-          Submit
-        </Button>
-        {
-          credentialsLoginFail
-          &&
-          <small>Invalid credentials.</small>
-        }
-      </Form>
-      <Link to="/signup">
-        <Button variant="primary">
-          Go to Signup
-        </Button>
-      </Link>
-    </Container>
+
+        <form onSubmit={loginSubmit}>
+          <TextInput
+            label="Email"
+            variant="filled"
+            placeholder="your@email.com"
+            value={email}
+            onChange={(event: any) => setEmail(event.target.value)}
+            mb="lg"
+          />
+
+          <PasswordInput
+            placeholder="Password"
+            label="Password"
+            variant="filled"
+            value={password}
+            onChange={(event: any) => setPassword(event.target.value)}
+          />
+          {
+            credentialsLoginFail
+            &&
+            <Text fz="xs" c="red">Invalid credentials.</Text>
+          }
+
+
+          <Stack mt="md">
+            <Button
+              type="submit"
+              variant="gradient"
+              gradient={{ from: 'violet', to: 'blue' }}>
+              Login
+            </Button>
+            <Group position="center">
+              <Link to="/signup">
+                <Text fz="sm" c="blue" td="underline">
+                  Register here.
+                </Text>
+              </Link>
+            </Group>
+          </Stack>
+        </form>
+      </Stack>
+    </Group>
   )
 
 }
