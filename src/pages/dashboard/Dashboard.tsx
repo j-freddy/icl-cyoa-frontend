@@ -40,7 +40,8 @@ const DashboardView = () => {
                 <Title order={1} span={true} color="black">Welcome back!</Title>
                 <Button
                     sx={{ float: 'right' }}
-                    variant="light"
+                    variant="filled"
+                    color="indigo.6"
                     leftIcon={<IconPlus />}
                     onClick={goToInitialInputView}
                 >
@@ -56,7 +57,7 @@ const DashboardView = () => {
                     ))
                 }
             </Stack>
-        </Container>
+        </Container >
 
     );
 }

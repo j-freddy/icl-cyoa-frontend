@@ -1,14 +1,21 @@
-import './Footer.css'
-import { Container } from 'react-bootstrap';
+import {
+  Center,
+  Footer,
+  Text
+} from '@mantine/core';
 
-export default function Footer() {
-    return (
-        <Container fluid id="footer" className="text-center">
-          <small>
-            Footer
-            <br />
-            CYOA Story Generator
-          </small>
-        </Container>
-    );
-};
+export default function AppFooter() {
+
+  return (
+    <Footer
+      height={"8vh"}
+      p="md"
+    >
+      <Center>
+        <Text fw={400}>
+          CYOA Story Generator
+        </Text>
+      </Center>
+    </Footer >
+  );
+}
