@@ -16,5 +16,6 @@ a:hover {
 
 #page-container {
   min-height: 100vh;
-  background-color: var(--bg-dark); 
+  background: rgb(208, 196, 242);
+  background: linear-gradient(90deg, rgba(208, 196, 242, 1) 0%, rgba(227, 230, 243, 1) 36%, rgba(213, 236, 237, 1) 99%);
 }

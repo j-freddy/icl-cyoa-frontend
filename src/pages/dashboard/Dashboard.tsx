@@ -1,10 +1,10 @@
-import './Dashboard.css';
-import { Button, Container, ListGroup } from 'react-bootstrap';
+import { Button, Container, createStyles, Divider, Group, Stack, Title } from '@mantine/core';
 import StoryListItem from '../../components/dashboard/StoryListItem';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { loginWithSession, loadStories, selectLoggedIn, selectSessionLoginFail, selectStories } from '../../features/accountSlice';
+import { IconPlus } from '@tabler/icons'
 
 const DashboardView = () => {
     const dispatch = useAppDispatch();
@@ -30,23 +30,34 @@ const DashboardView = () => {
             dispatch(loadStories());
         }
     }, [loggedIn, dispatch]);
-
     const goToInitialInputView = () => {
         navigate("/initial-input");
     };
 
     return (
-        <Container id="generator-section" className="wrapper">
-            <Button onClick={goToInitialInputView}>
-                Add New Story
-            </Button>
-            <ListGroup>
+        <Container className="wrapper">
+            <Group position="apart">
+                <Title order={1} span={true} color="black">Welcome back!</Title>
+                <Button
+                    sx={{ float: 'right' }}
+                    variant="light"
+                    leftIcon={<IconPlus />}
+                    onClick={goToInitialInputView}
+                >
+                    Create New Story
+                </Button>
+            </Group>
+            <Divider my="sm" />
+            <Stack spacing="sm">
                 {
                     stories.map(story =>
-                        (<StoryListItem storyId={story.storyId} name={story.name} />))
+                    (
+                        <StoryListItem storyId={story.storyId} name={story.name} firstParagraph={story.firstParagraph} totalSections={story.totalSections} />
+                    ))
                 }
-            </ListGroup>
+            </Stack>
         </Container>
+
     );
 }
 

@@ -7,7 +7,7 @@ cache:
 
 stages:
   - install
-  - test
+  # - test
   - build
   - deploy
 
@@ -23,19 +23,19 @@ install-dependencies:
       - node_modules
     policy: pull-push
 
-testing:
-  stage: test
-  script:
-    - yarn install --frozen-lockfile
-    - yarn test
-    - echo "All tests pass!"
-  cache:
-    key: 
-      files:
-        - yarn.lock
-    paths:
-      - node_modules
-    policy: pull
+# testing:
+#   stage: test
+#   script:
+#     - yarn install --frozen-lockfile
+#     - yarn test
+#     - echo "All tests pass!"
+#   cache:
+#     key: 
+#       files:
+#         - yarn.lock
+#     paths:
+#       - node_modules
+#     policy: pull
 
 build-frontend:
   stage: build

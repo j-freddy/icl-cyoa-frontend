@@ -1,10 +1,29 @@
 import { FormEvent, useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import StatusCode from "status-code-enum";
 import { reqSignup } from "../../api/restRequests";
+import { Group, Stack, PasswordInput, Text, Button, Title, TextInput, createStyles } from "@mantine/core";
+
+const useStyles = createStyles((theme, _params) => ({
+	box: {
+		width: "100vw",
+		height: "92vh",
+		alignItems: "center",
+	},
+	stack: {
+		backgroundColor: theme.white,
+		height: 380,
+		width: 320,
+		borderRadius: 6,
+		boxShadow: theme.shadows.md,
+		padding: 20,
+		margin: "auto",
+		alignItems: "center"
+	}
+}))
 
 const SignupView = () => {
+	const { classes } = useStyles();
 	const [password, setPassword] = useState("");
 	const [email, setEmail] = useState("");
 
@@ -23,37 +42,52 @@ const SignupView = () => {
 	};
 
 	return (
-		<Container id="generator-section">
-			<Form onSubmit={loginSubmit}>
-				<Form.Group
-					className="mb-3"
-					onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)}
-				>
-					<Form.Label>Email address</Form.Label>
-					<Form.Control type="email" placeholder="Enter email" />
-					<Form.Text className="text-muted">
-						We'll never share your email with anyone else.
-					</Form.Text>
-				</Form.Group>
+		<Group
+			className={classes.box}>
+			<Stack className={classes.stack}>
+				<Title order={2} c="black">Sign Up</Title>
+				<form onSubmit={loginSubmit}>
+					<TextInput
+						label="Email"
+						variant="filled"
+						placeholder="your@email.com"
+						value={email}
+						onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)}
+						mb="lg"
+					/>
 
-				<Form.Group
-					className="mb-3"
-					onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)}
-				>
-					<Form.Label>Password</Form.Label>
-					<Form.Control type="password" placeholder="Password" />
-				</Form.Group>
-				<Button variant="primary" type="submit">
-					Submit
-				</Button>
-				{loginError && <small>Invalid credentials.</small>}
-			</Form>
-			<Link to="/login">
-				<Button variant="primary">
-				Go to Login
-				</Button>
-			</Link>
-		</Container>
+					<PasswordInput
+						placeholder="Password"
+						label="Password"
+						variant="filled"
+						value={password}
+						onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)}
+					/>
+					{
+						loginError
+						&&
+						<Text fz="xs" c="red">Invalid credentials.</Text>
+					}
+
+
+					<Stack mt="md">
+						<Button
+							type="submit"
+							variant="gradient"
+							gradient={{ from: 'cyan', to: 'indigo' }}>
+							Sign Up
+						</Button>
+						<Group position="center">
+							<Link to="/login">
+								<Text fz="sm" c="blue" td="underline">
+									Already a user? LOGIN.
+								</Text>
+							</Link>
+						</Group>
+					</Stack>
+				</form>
+			</Stack>
+		</Group>
 	);
 };
 
