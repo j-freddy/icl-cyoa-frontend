@@ -1,0 +1,78 @@
+import { useState } from 'react';
+import {
+  createStyles,
+  UnstyledButton,
+  Menu,
+  Group,
+  Text,
+} from '@mantine/core';
+import {
+  IconLogout,
+  IconSettings,
+  IconChevronDown,
+  IconUserCircle,
+} from '@tabler/icons';
+
+const useStyles = createStyles((theme) => ({
+
+  user: {
+    color: theme.black,
+    padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+    borderRadius: theme.radius.sm,
+    transition: 'background-color 100ms ease',
+
+    '&:hover': {
+      backgroundColor: theme.white,
+    },
+
+    [theme.fn.smallerThan('xs')]: {
+      display: 'none',
+    },
+  },
+
+  userActive: {
+    backgroundColor: theme.white,
+  },
+
+}));
+
+
+export default function AppMenu() {
+  const { classes, cx } = useStyles();
+
+  const [userMenuOpened, setUserMenuOpened] = useState(false);
+
+  return (
+    <Menu
+      width={260}
+      position="bottom-end"
+      transition="pop-top-right"
+      onClose={() => setUserMenuOpened(false)}
+      onOpen={() => setUserMenuOpened(true)}
+    >
+      <Menu.Target>
+        <UnstyledButton
+          className={cx(classes.user, { [classes.userActive]: userMenuOpened })}
+        >
+          <Group spacing={7}>
+            <IconUserCircle size={12} />
+            <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3} color="black">
+              Account
+            </Text>
+            <IconChevronDown size={12} stroke={1.5} />
+          </Group>
+        </UnstyledButton>
+      </Menu.Target>
+
+      <Menu.Dropdown>
+        <Menu.Label>Settings</Menu.Label>
+        <Menu.Item icon={<IconSettings size={14} stroke={1.5} />}>
+          Account settings
+        </Menu.Item>
+        <Menu.Item icon={<IconLogout size={14} stroke={1.5} />}>
+          Logout
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
+  );
+}
