@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { loginWithSession, selectLoggedIn, selectSessionLoginFail } from '../../features/accountSlice';
 import { makeNarrativeNode } from '../../utils/graph/graphUtils';
 import { NarrativeNode, Graph } from '../../utils/graph/types';
-import { Popover, Stack, Title, Text } from '@mantine/core';
+import { Popover, Stack, Title, Text, Flex } from '@mantine/core';
 import GenreDropdown from '../../components/initialInput/GenreDropdown';
 import InputTextForm from '../../components/initialInput/InputTextForm';
 import GenerateButton from '../../components/initialInput/GenerateButton';
@@ -108,53 +108,55 @@ const InitialInputView = () => {
     }, []);
 
     return (
-        <Stack
-            justify="center"
-            align="center"
-            spacing="lg"
-            className="container-base"
-            ref={stackRef}
-        >
-            <Title order={1} weight={600} className="initial-title">
-                Pick a genre to start...
-            </Title>
+<Flex justify="center" id="page-body" className="flex-grow-1">
+            <Stack
+                justify="center"
+                align="center"
+                spacing="lg"
+                className="container-base"
+                ref={stackRef}
+            >
+                <Title order={1} weight={600} className="initial-title">
+                    Pick a genre to start...
+                </Title>
 
-            <div id="genre-dropdown">
-                <GenreDropdown
-                    options={genreOptions}
-                    genre={genre}
-                    setGenre={setGenre}
-                />
-            </div>
-            {
-                genre !== "" ? (
-                    genre === GenreOption.Custom ? (
-                        <InputTextForm
-                            handleGenerateText={handleGenerateText}
-                        />
+                <div id="genre-dropdown">
+                    <GenreDropdown
+                        options={genreOptions}
+                        genre={genre}
+                        setGenre={setGenre}
+                    />
+                </div>
+                {
+                    genre !== "" ? (
+                        genre === GenreOption.Custom ? (
+                            <InputTextForm
+                                handleGenerateText={handleGenerateText}
+                            />
+                        ) : (
+                            <GenerateButton
+                                onClick={() => { handleGenerateGenreText(genre) }}
+                            />
+                        )
                     ) : (
-                        <GenerateButton
-                            onClick={() => { handleGenerateGenreText(genre) }}
-                        />
-                    )
-                ) : (
-                    <Popover width={200} position="bottom" withArrow shadow="md">
-                        <Popover.Target>
-                            <div>
-                                <GenerateButton
-                                    color="gray"
-                                    className="generate-button"
-                                />
-                            </div>
-                        </Popover.Target>
-                        <Popover.Dropdown>
-                            <Text size="sm">Select a genre first before starting story generation.</Text>
-                        </Popover.Dropdown>
+                        <Popover width={200} position="bottom" withArrow shadow="md">
+                            <Popover.Target>
+                                <div>
+                                    <GenerateButton
+                                        color="gray"
+                                        className="generate-button"
+                                    />
+                                </div>
+                            </Popover.Target>
+                            <Popover.Dropdown>
+                                <Text size="sm">Select a genre first before starting story generation.</Text>
+                            </Popover.Dropdown>
 
-                    </Popover>
-                )
-            }
-        </Stack>
+                        </Popover>
+                    )
+                }
+            </Stack>
+        </Flex>
     );
 }
 
