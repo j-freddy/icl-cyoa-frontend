@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { store } from './app/store'
 import { Provider } from 'react-redux'
+import { MantineProvider } from '@mantine/core';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -12,7 +13,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <MantineProvider withGlobalStyles withNormalizeCSS>
+        <App />
+      </MantineProvider>
     </Provider>
   </React.StrictMode>
 );

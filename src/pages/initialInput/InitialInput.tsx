@@ -1,31 +1,36 @@
 import './InitialInput.css'
 import '../../style/base.css';
-import { useEffect, useState } from 'react';
-import { Button, Container } from 'react-bootstrap';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { MutableRefObject, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { generateStartParagraph, reset, setGraph, initStory, setGoToGenerator, selectGoToGenerator, selectStoryId } from '../../features/storySlice';
-import InputTextForm from '../../components/generator/InputTextForm';
+import { generateStartParagraph, reset, setGraph, initStory, setGoToGenerator } from '../../features/storySlice';
 import { useNavigate } from 'react-router-dom';
 import { loginWithSession, selectLoggedIn, selectSessionLoginFail } from '../../features/accountSlice';
 import { makeNarrativeNode } from '../../utils/graph/graphUtils';
 import { NarrativeNode, Graph } from '../../utils/graph/types';
-import { startConnecting } from '../../features/wsSlice';
+import { Popover, Stack, Title, Text } from '@mantine/core';
+import GenreDropdown from '../../components/initialInput/GenreDropdown';
+import InputTextForm from '../../components/initialInput/InputTextForm';
+import GenerateButton from '../../components/initialInput/GenerateButton';
+import gsap from 'gsap';
+
+export enum GenreOption {
+    Fantasy = "Fantasy",
+    Mystery = "Mystery",
+    ScienceFiction = "Science Fiction",
+    Dystopian = "Dystopian",
+    Custom = "Custom",
+}
 
 const InitialInputView = () => {
+    const [genre, setGenre] = useState("");
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const loggedIn = useAppSelector(selectLoggedIn);
-    const sessionLoginFail = useAppSelector(selectSessionLoginFail);
-    
-    const goToGenerator = useAppSelector(selectGoToGenerator);
-    const storyId = useAppSelector(selectStoryId);
-
-    useEffect(() => {
-        dispatch(startConnecting());
-    }, [dispatch]);
+    const loggedIn = useAppSelector((state) => state.account.loggedIn);
+    const sessionLoginFail = useAppSelector((state) => state.account.sessionLoginFail);
+    const goToGenerator = useAppSelector((state) => state.story.goToGenerator);
+    const storyId = useAppSelector((state) => state.story.id);
 
     useEffect(() => {
         if (goToGenerator) {
@@ -44,45 +49,18 @@ const InitialInputView = () => {
         }
     }, [loggedIn, sessionLoginFail, navigate]);
 
-    const [genre, setGenre] = useState("Genre Options ... ");
-
-    // reset redux state on initial render
+    // Reset redux state on initial render
     useEffect(() => {
         dispatch(reset());
     }, [dispatch]);
 
-    const GenreOptions = (GenreOptionsProps: { genre: string }) => {
-        const handleSelect = (e: string | null) => {
-            if (e) {
-                setGenre(e)
-            }
-        }
-        return (
-            <div id="genre-options">
-                <h2 id="instruction">
-                    Choose a genre...
-                </h2>
-                <Dropdown
-                    onSelect={handleSelect}
-                    id="dropdown">
-                    <Dropdown.Toggle id="dropdown-button" variant="secondary">
-                        {GenreOptionsProps.genre}
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu variant="dark">
-                        <Dropdown.Item eventKey="1. Fantasy">1. Fantasy</Dropdown.Item>
-                        <Dropdown.Item eventKey="2. Mystery">2. Mystery</Dropdown.Item>
-                        <Dropdown.Item eventKey="3. Science Fiction">
-                            3. Science Fiction
-                        </Dropdown.Item>
-                        <Dropdown.Item eventKey="4. Dystopian">4. Dystopian</Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item eventKey="5. Custom Paragraph">5. Custom Paragraph</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
-            </div>
-        )
-    };
+    const genreOptions = [
+        GenreOption.Fantasy,
+        GenreOption.Mystery,
+        GenreOption.ScienceFiction,
+        GenreOption.Dystopian,
+        GenreOption.Custom,
+    ];
 
     const handleGenerateText = (text: string) => {
         dispatch(initStory());
@@ -93,6 +71,7 @@ const InitialInputView = () => {
             childrenIds: [],
             isEnding: false,
         });
+
         const graph: Graph = {
             nodeLookup: { 0: root },
         };
@@ -101,54 +80,81 @@ const InitialInputView = () => {
     };
 
     const handleGenerateGenreText = (genre: string) => {
-        let generateGenrePrompt = "";
-        switch (genre) {
-            case "1. Fantasy":
-                generateGenrePrompt = "Write a fantasy story from a second person's perspective."
-                break;
-            case "2. Mystery":
-                generateGenrePrompt = "Write a mystery story from a second person's perspective."
-                break;
-            case "3. Science Fiction":
-                generateGenrePrompt = "Write a science fiction story from a second person's perspective."
-                break;
-            case "4. Dystopian":
-                generateGenrePrompt = "Write a dystopian story from a second person's perspective."
-                break;
-        }
+        const generateGenrePrompt = `Write a ${genre} story from a second person perspective.`;
+
         dispatch(initStory()).unwrap().then(() =>
-            dispatch(generateStartParagraph({prompt: generateGenrePrompt})));
+            dispatch(generateStartParagraph({ prompt: generateGenrePrompt })));
     };
 
-    let submission;
-    if (genre === "5. Custom Paragraph") {
-        submission = <InputTextForm handleGenerateText={handleGenerateText} />
-    } else if (genre !== "Genre Options ... ") {
-        submission = <div id="submit-button">
-            <span id="button">
-                <Button
-                    variant="light"
-                    onClick={() => { handleGenerateGenreText(genre) }}>
-                    Generate
-                </Button>
-            </span>
-        </div>;
-    }
+    // Animations
+    const stackRef = useRef() as MutableRefObject<HTMLInputElement>;
+    // TODO Fix
+    const timeline: any = useRef();
+
+    useLayoutEffect(() => {
+        let ctx = gsap.context(() => {
+            timeline.current = gsap.timeline()
+                .set(".initial-title", { opacity: 0, scale: 2 })
+                .set("#genre-dropdown", { opacity: 0 })
+                .set(".generate-button", { opacity: 0 })
+                .to(".initial-title", { opacity: 1, delay: 0.2 })
+                .to(".initial-title", { scale: 1.5, delay: 0.2 })
+                .to(".initial-title", { y: -50 }, "<")
+                .to("#genre-dropdown", { opacity: 1 })
+                .to(".generate-button", { opacity: 1 });
+        }, stackRef);
+
+        return () => ctx.revert();
+    }, []);
 
     return (
-        <Container
-            id="input-section"
-            className="wrapper d-flex flex-column justify-content-center">
-            <div id="welcome-title">
-                <h1><span className="fancy">Choose Your Own Adventure</span> Story Generator</h1>
-                <p>
-                    Quickly generate a complete, editable gamebook with a single prompt.
-                </p>
+        <Stack
+            justify="center"
+            align="center"
+            spacing="lg"
+            className="container-base"
+            ref={stackRef}
+        >
+            <Title order={1} weight={600} className="initial-title">
+                Pick a genre to start...
+            </Title>
 
+            <div id="genre-dropdown">
+                <GenreDropdown
+                    options={genreOptions}
+                    genre={genre}
+                    setGenre={setGenre}
+                />
             </div>
-            <GenreOptions genre={genre} />
-            {submission}
-        </Container>
+            {
+                genre !== "" ? (
+                    genre === GenreOption.Custom ? (
+                        <InputTextForm
+                            handleGenerateText={handleGenerateText}
+                        />
+                    ) : (
+                        <GenerateButton
+                            onClick={() => { handleGenerateGenreText(genre) }}
+                        />
+                    )
+                ) : (
+                    <Popover width={200} position="bottom" withArrow shadow="md">
+                        <Popover.Target>
+                            <div>
+                                <GenerateButton
+                                    color="gray"
+                                    className="generate-button"
+                                />
+                            </div>
+                        </Popover.Target>
+                        <Popover.Dropdown>
+                            <Text size="sm">Select a genre first before starting story generation.</Text>
+                        </Popover.Dropdown>
+
+                    </Popover>
+                )
+            }
+        </Stack>
     );
 }
 
