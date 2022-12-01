@@ -12,6 +12,8 @@ import {
   IconChevronDown,
   IconUserCircle,
 } from '@tabler/icons';
+import { useNavigate } from 'react-router-dom';
+import { ACCOUNT_PAGE } from '../../utils/links';
 
 const useStyles = createStyles((theme) => ({
 
@@ -40,6 +42,8 @@ const useStyles = createStyles((theme) => ({
 export default function AppMenu() {
   const { classes, cx } = useStyles();
 
+  const navigate = useNavigate();
+
   const [userMenuOpened, setUserMenuOpened] = useState(false);
 
   return (
@@ -66,7 +70,10 @@ export default function AppMenu() {
 
       <Menu.Dropdown>
         <Menu.Label>Settings</Menu.Label>
-        <Menu.Item icon={<IconSettings size={14} stroke={1.5} />}>
+        <Menu.Item
+          icon={<IconSettings size={14} stroke={1.5} />}
+          onClick={() => navigate(ACCOUNT_PAGE)}
+        >
           Account settings
         </Menu.Item>
         <Menu.Item icon={<IconLogout size={14} stroke={1.5} />}>
