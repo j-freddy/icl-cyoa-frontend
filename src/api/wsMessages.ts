@@ -20,6 +20,15 @@ export const generateStartParagraphMsg = (prompt: string) => {
     })
 };
 
+export const generateStoryWithAdvancedInputMsg = (values: {attribute: string, content: string}[]) => {
+    return JSON.stringify({
+        type: "initialStory",
+        data: {
+            prompt: values,
+        },
+    })
+};
+
 export const generateActionsMsg = (graph: Graph, nodeToExpand: number) => {
     return JSON.stringify({
         type: "generateActions",
