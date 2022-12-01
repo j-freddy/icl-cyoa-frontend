@@ -53,20 +53,14 @@ function NarrativeFlowNode(props: NodeProps<NarrativeFlowNodeData>) {
 
   return (
     <Box className={classes.nodeBox}>
-      {
-        narrativeNode.nodeId !== 0 &&
-        <Handle type="target" position={targetPosition || Position.Top} />
-      }
+      <Handle type="target" position={targetPosition || Position.Top} />
       <Group noWrap={true} align="top">
         <Text>
           {preview}
         </Text>
         <NarrativeOptions narrativeNode={narrativeNode} />
       </Group>
-      {
-        narrativeNode.childrenIds.length !== 0 &&
-        <Handle type="source" position={sourcePosition || Position.Bottom} />
-      }
+      <Handle type="source" position={sourcePosition || Position.Bottom} />
     </Box>
   );
 }

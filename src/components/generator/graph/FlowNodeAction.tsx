@@ -61,10 +61,7 @@ function ActionFlowNode(props: NodeProps<ActionFlowNodeData>) {
         </Text>
         <ActionOptions actionNode={actionNode} />
       </Group>
-      {
-        actionNode.childrenIds.length !== 0 &&
-        <Handle type="source" position={sourcePosition || Position.Bottom} />
-      }
+      <Handle type="source" position={sourcePosition || Position.Bottom} />
     </Box>
   );
 }
