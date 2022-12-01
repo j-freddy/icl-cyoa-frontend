@@ -9,14 +9,6 @@
   display: none;
 }
 
-.react-flow-ctrls button {
-  width: calc(var(--grid-size) * 2.5);
-  height: calc(var(--grid-size) * 2.5);
-  padding: 0;
-  margin: 0;
-  font-size: 1.5em;
-}
-
-.layoutflow .selected {
-  background-color: var(--my-theme);
-}
+/* .layoutflow .selected {
+  background-color: var(--my-theme) !important;
+} */

@@ -1,14 +1,24 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
-import { reqGetStory, reqInitStory, reqSaveGraph, reqSaveName } from '../api/restRequests';
+import {
+  createSlice,
+  PayloadAction,
+  createAsyncThunk
+} from '@reduxjs/toolkit'
+import {
+  reqGetStory,
+  reqInitStory,
+  reqSaveGraph,
+  reqSaveName
+} from '../api/restRequests';
 import { RootState } from '../app/store';
-import { graphMessageToGraphLookup, deleteNodeFromGraph } from '../utils/graph/graphUtils';
+import { graphMessageToGraphLookup, deleteNodeFromGraph, isGraphEmpty } from '../utils/graph/graphUtils';
 import { Graph, LoadingType, GraphMessage } from '../utils/graph/types';
 import { loadStories } from './accountSlice';
+import { displayLoadedNotification, displayLoadingNotification } from './story/loadingNotifications';
 
 interface StoryState {
   id: string;
 
-  name: string;
+  title: string;
   graph: Graph;
   // Queues are non-serialisable
   // This is OK as it is impractical for the user to
@@ -22,7 +32,7 @@ export const exampleText = "You are a commoner living in the large kingdom of Ga
 
 const initialState: StoryState = {
   id: "",
-  name: "",
+  title: "",
   graph: { nodeLookup: {} },
   loadingSection: null,
 
@@ -33,7 +43,7 @@ export const regenerateParagraph = createAsyncThunk(
   'story/regenerateParagraph',
   async (nodeToRegenerate: number, { dispatch }) => {
     dispatch(deleteNode(nodeToRegenerate));
-    await dispatch(generateParagraph({nodeToExpand: nodeToRegenerate}));
+    dispatch(generateParagraph({ nodeToExpand: nodeToRegenerate }));
   }
 );
 
@@ -41,7 +51,7 @@ export const regenerateActions = createAsyncThunk(
   'story/regenerateActions',
   async (nodeToRegenerate: number, { dispatch }) => {
     dispatch(deleteNode(nodeToRegenerate));
-    await dispatch(generateActions({nodeToExpand: nodeToRegenerate}));
+    dispatch(generateActions({ nodeToExpand: nodeToRegenerate }));
   }
 );
 
@@ -49,7 +59,7 @@ export const saveName = createAsyncThunk(
   'story/saveName',
   async (_, { getState }) => {
     const state = getState() as { story: StoryState };
-    await reqSaveName(state.story.id, state.story.name);
+    await reqSaveName(state.story.id, state.story.title);
   }
 );
 
@@ -90,7 +100,7 @@ export const initStory = createAsyncThunk(
 
 const handleGetGraphResponse = (state: StoryState, action: PayloadAction<{ graph: GraphMessage, name: string }>) => {
   state.graph = graphMessageToGraphLookup(action.payload.graph);
-  state.name = action.payload.name;
+  state.title = action.payload.name;
   state.loadingSection = null;
 };
 
@@ -104,7 +114,7 @@ export const storySlice = createSlice({
   reducers: {
     reset: () => initialState,
     setName: (state, action: PayloadAction<string>) => {
-      state.name = action.payload;
+      state.title = action.payload;
     },
     setGraph: (state, action: PayloadAction<Graph>) => {
       state.graph = action.payload;
@@ -122,13 +132,19 @@ export const storySlice = createSlice({
       state.goToGenerator = action.payload;
     },
 
-    // reducers for the ws middleware
+    /* 
+      Reducers for the WS middleware.
+    */
     graphResponse: (state, action: PayloadAction<Graph>) => {
+      if (state.loadingSection !== null) {
+        displayLoadedNotification(state.loadingSection);
+      }
       state.loadingSection = null;
       state.graph = action.payload;
     },
     generateStartParagraph: (state, _action: PayloadAction<{ prompt: string }>) => {
       state.loadingSection = LoadingType.InitialStory;
+      displayLoadingNotification(LoadingType.InitialStory);
     },
     generateStoryWithAdvancedInput: (state, _action: PayloadAction<{ 
       values: {attribute: string, content: string}[] }>) => {
@@ -136,15 +152,19 @@ export const storySlice = createSlice({
     },
     generateParagraph: (state, _action: PayloadAction<{ nodeToExpand: number }>) => {
       state.loadingSection = LoadingType.GenerateParagraph;
+      displayLoadingNotification(LoadingType.GenerateParagraph);
     },
     generateActions: (state, _action: PayloadAction<{ nodeToExpand: number }>) => {
       state.loadingSection = LoadingType.GenerateActions;
+      displayLoadingNotification(LoadingType.GenerateActions);
     },
     generateEnding: (state, _action: PayloadAction<{ nodeToEnd: number }>) => {
       state.loadingSection = LoadingType.GenerateEnding;
+      displayLoadingNotification(LoadingType.GenerateEnding);
     },
     connectNodes: (state, _action: PayloadAction<{ fromNode: number, toNode: number }>) => {
       state.loadingSection = LoadingType.ConnectingNodes;
+      displayLoadingNotification(LoadingType.ConnectingNodes);
     },
   },
   extraReducers: (builder) => {
@@ -173,8 +193,9 @@ export const {
 
 export const selectGoToGenerator = (state: RootState) => state.story.goToGenerator;
 export const selectStoryGraph = (state: RootState) => state.story.graph;
+export const selectIsStoryEmpty = (state: RootState) => isGraphEmpty(state.story.graph);
 export const selectStoryId = (state: RootState) => state.story.id;
-export const selectStoryName = (state: RootState) => state.story.name;
+export const selectStoryTitle = (state: RootState) => state.story.title;
 export const selectLoadingSection = (state: RootState) => state.story.loadingSection;
 
 export default storySlice.reducer;

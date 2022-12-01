@@ -1,24 +1,39 @@
 import './GraphViz.css'
-import dagre from 'dagre';
-import { MdAlignHorizontalLeft, MdAlignVerticalTop } from "react-icons/md";
-
+import {
+  memo,
+  useCallback,
+  useMemo,
+  useState
+} from "react";
 import ReactFlow, {
   Node,
   Edge,
   ConnectionLineType,
   Connection,
-  Position,
   useReactFlow,
   ReactFlowProvider,
 } from 'reactflow';
-import { useCallback, useMemo, useState } from "react";
-import { Button } from "react-bootstrap";
+import {
+  MdAlignHorizontalLeft,
+  MdAlignVerticalTop
+} from "react-icons/md";
+import { Button } from '@mantine/core'
 import { Graph } from '../../utils/graph/types';
+import { getGraphNodesAndEdges } from './graph/graphViz';
+import NarrativeFlowNode from './graph/FlowNodeNarrative';
+import ActionFlowNode from './graph/FlowNodeAction';
+
 
 enum Layout {
   LR = "LR",
   TB = "TB"
 }
+
+const nodeTypes = {
+  narrative: NarrativeFlowNode,
+  action: ActionFlowNode,
+};
+
 
 type GraphVizProps = {
   graph: Graph,
@@ -37,117 +52,63 @@ const GraphViz = (props: GraphVizProps) => {
 const GraphVizInner = (props: GraphVizProps) => {
   const { graph } = props;
 
-  const edgeType = 'smoothstep';
-
   const [layout, setLayout] = useState<Layout>(Layout.LR);
-
   const reactFlowInstance = useReactFlow();
 
-  const { nodes, edges } = useMemo(() => {
-    const dagreGraph = new dagre.graphlib.Graph();
-    dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-    const position = { x: 0, y: 0 };
+  const { nodes, edges } = useMemo(
+    () => {
+      // TODO: focus on newly generated nodes (and highlight them)
+      // render component and then call fitView
+      setTimeout(() => reactFlowInstance.fitView(), 0);
 
-    const nodes: Node[] = [];
-    const edges: Edge[] = [];
+      return getGraphNodesAndEdges(layout, graph);
+    },
+    [layout, graph]
+  );
 
-    const dfsBuildNodesAndEdges = (nodeId: number) => {
-
-      const node = graph.nodeLookup[nodeId];
-
-      if (node.data) {
-        nodes.push({
-          id: nodeId.toString(),
-          data: { label: node.data.split(' ').slice(0, 8).join(' ') + "..." },
-          position,
-        });
-
-        for (const childId of node.childrenIds) {
-          edges.push({
-            id: `e${nodeId}${childId}`, source: `${nodeId}`, target: `${childId}`, type: edgeType, animated: true
-          });
-          dfsBuildNodesAndEdges(childId);
-        }
-      }
-    };
-
-    dfsBuildNodesAndEdges(0);
-
-  const nodeWidth = 172;
-  const nodeHeight = 36;
-
-    const isHorizontal = layout === Layout.LR;
-    dagreGraph.setGraph({ rankdir: layout });
-
-    nodes.forEach((node) => {
-      dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-    });
-
-    edges.forEach((edge) => {
-      dagreGraph.setEdge(edge.source, edge.target);
-    });
-
-    dagre.layout(dagreGraph);
-
-    nodes.forEach((node) => {
-      const nodeWithPosition = dagreGraph.node(node.id);
-      node.targetPosition = isHorizontal ? Position.Left : Position.Top;
-      node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom;
-
-      node.position = {
-        x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - nodeHeight / 2,
-      };
-
-      return node;
-    });
-
-    // TODO: focus on newly generated nodes (and highlight them)
-    // render component and then call fitView
-    setTimeout(() => reactFlowInstance.fitView(), 0);
-
-    return { nodes, edges };
-  }, [layout, graph, reactFlowInstance]);
-
-  const onConnect =
-    (params: Edge<any> | Connection) => {
-      if (params.source && params.target) {
-        props.onConnectNodes(parseInt(params.source), parseInt(params.target));
-      }
-    };
-
-    const onNodeClick = (_: React.MouseEvent, node: Node) => {
-      props.setActiveNodeId(parseInt(node.id));
+  const onConnect = (params: Edge<any> | Connection) => {
+    if (params.source && params.target) {
+      props.onConnectNodes(parseInt(params.source), parseInt(params.target));
     }
+  };
 
-    const onLayout = useCallback((direction: Layout) => {
+  const onNodeClick = (_: React.MouseEvent, node: Node) => {
+    props.setActiveNodeId(parseInt(node.id));
+  }
+
+  const onLayout = useCallback(
+    (direction: Layout) => {
       setLayout(direction);
-    }, [setLayout]);
+    },
+    [setLayout]
+  );
 
-    return (
-      <div className="layoutflow" style={{ height: 400 }}>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodeClick={onNodeClick}
-            onNodeDragStart={onNodeClick}
-            onConnect={onConnect}
-            connectionLineType={ConnectionLineType.SmoothStep}
-            fitViewOptions={{
-              minZoom: 120,
-            }}
-          />
-          <div className="controls react-flow-ctrls">
-            <Button variant="light" onClick={() => onLayout(Layout.TB)}>
-              <MdAlignVerticalTop />
-            </Button>
-            <Button variant="light" onClick={() => onLayout(Layout.LR)}>
-              <MdAlignHorizontalLeft />
-            </Button>
-          </div>
+
+  return (
+    <div className="layoutflow" style={{ height: 400 }}>
+      <ReactFlow
+        nodes={nodes}
+        nodeTypes={nodeTypes}
+        edges={edges}
+        onNodeClick={onNodeClick}
+        onNodeDragStart={onNodeClick}
+        onConnect={onConnect}
+        connectionLineType={ConnectionLineType.SmoothStep}
+        fitViewOptions={{
+          minZoom: 120,
+        }}
+      />
+      <div className="controls react-flow-ctrls">
+        <Button onClick={() => onLayout(Layout.TB)}>
+          <MdAlignVerticalTop />
+        </Button>
+        <Button onClick={() => onLayout(Layout.LR)}>
+          <MdAlignHorizontalLeft />
+        </Button>
       </div>
-    );
+    </div>
+  );
 }
 
-export default GraphViz;
+export default memo(GraphViz);

@@ -2,7 +2,7 @@ export type NodeId = number;
 export type SectionId = number;
 
 export enum NodeType {
-    Paragraph = "narrative",
+    Narrative = "narrative",
     Action = "action"
 }
 

@@ -1,15 +1,26 @@
-import React, { DOMAttributes } from "react";
-import { Dropdown, ListGroup, Button } from "react-bootstrap";
 import { StoryNode } from "../../utils/graph/types";
 import { parseStoryToText } from "../../utils/downloader/txtUtils";
-import './Downloader.css'
 import { createDocx } from "../../utils/downloader/docxUtils";
 import { Packer } from "docx";
 import { saveAs } from "file-saver";
+import {
+  Button,
+  Popover,
+  UnstyledButton,
+  Stack,
+  Divider,
+  createStyles
+} from "@mantine/core";
+import { IconFileDownload } from "@tabler/icons";
 
-interface DownloaderProps {
-  story: StoryNode[];
-}
+const useStyles = createStyles((theme) => ({
+
+  popover: {
+    background: theme.white
+  },
+
+}));
+
 
 const generateTxtFile = (story: StoryNode[]): void => {
   const text: string[] = parseStoryToText(story);
@@ -35,46 +46,34 @@ const generateDocxFile = (story: StoryNode[]): void => {
     });
 }
 
-const MyDropdown = React.forwardRef<any, DOMAttributes<any>>(({ children, onClick }, ref) => (
-  <Button
-    ref={ref}
-    variant="light"
-    onClick={(e) => {
-      e.preventDefault();
-      onClick?.(e);
-    }}
-  >
-    Download story
-  </Button>
-));
 
+interface DownloaderProps {
+  story: StoryNode[];
+}
 export default function Downloader(props: DownloaderProps) {
-  return (
-    <div className="downloader-container">
-      <Dropdown align={"end"} className="downloader-button">
-        <Dropdown.Toggle as={MyDropdown} variant="secondary"></Dropdown.Toggle>
+  const { classes } = useStyles();
 
-        <Dropdown.Menu>
-          <ListGroup variant="flush">
-            <ListGroup.Item
-              className='download-type'
-              action
-              as={"button"}
-              onClick={() => generateTxtFile(props.story)}
-            >
-              as .txt
-            </ListGroup.Item>
-            <ListGroup.Item
-              className='download-type'
-              action
-              as={"button"}
-              onClick={() => generateDocxFile(props.story)}
-            >
-              as .docx
-            </ListGroup.Item>
-          </ListGroup>
-        </Dropdown.Menu>
-      </Dropdown>
-    </div>
+  return (
+    <Popover trapFocus position="bottom" withArrow shadow="md">
+      <Popover.Target>
+        <Button rightIcon={<IconFileDownload size={20} />}>
+          Download
+        </Button>
+      </Popover.Target>
+      <Popover.Dropdown className={classes.popover}>
+        <Stack spacing="xs">
+          <Button variant="subtle" color="dark" compact onClick={() => generateTxtFile(props.story)}>
+            as .txt
+
+          </Button>
+
+          <Divider />
+
+          <Button variant="subtle" color="dark" compact onClick={() => generateDocxFile(props.story)}>
+            as .docx
+          </Button>
+        </Stack>
+      </Popover.Dropdown>
+    </Popover>
   );
 }
