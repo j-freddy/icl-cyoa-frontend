@@ -8,6 +8,7 @@ const API_URL: string = "https://cyoa-api-prod.herokuapp.com/"
 const LOGIN_URL: string = API_URL + "login";
 const SIGNUP_URL: string = API_URL + "signup";
 const STORIES_URL: string = API_URL + "stories";
+const API_KEY_URL: string = API_URL + "key";
 
 export const reqLogin = async (email: string, password: string) => {
 	return fetch(LOGIN_URL, {
@@ -83,3 +84,26 @@ export const reqSignup = async (email: string, password: string) => {
 		credentials: "include",
 	});
 };
+
+export const reqGetApiKey = async () => {
+	return fetch(API_KEY_URL, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		credentials: "include",
+	});
+}
+
+export const reqUpdateApiKey = async (apiKey: string) => {
+	return fetch(API_KEY_URL, {
+		method: "POST",
+		body: JSON.stringify({
+			apiKey
+		}),
+		headers: {
+			"Content-Type": "application/json",
+		},
+		credentials: "include",
+	});
+}

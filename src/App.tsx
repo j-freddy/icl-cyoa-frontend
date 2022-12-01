@@ -10,6 +10,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AppFooter from './components/Footer';
 import SignupView from "./pages/signup/Signup";
 import {
+  ACCOUNT_PAGE,
   DASHBOARD_PAGE,
   HOME_PAGE,
   INITIAL_INPUT_PAGE,
@@ -17,6 +18,7 @@ import {
   SIGNUP_PAGE
 } from './utils/links';
 import AppHeader from './components/Header';
+import AccountView from './pages/account/Account';
 
 
 interface PageProps {
@@ -66,6 +68,10 @@ function App() {
         <Route
           path={SIGNUP_PAGE}
           element={wrapView(<SignupView />)}
+        />
+        <Route
+          path={ACCOUNT_PAGE}
+          element={wrapView(<AccountView />)}
         />
         <Route
           path={DASHBOARD_PAGE}
