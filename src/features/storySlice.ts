@@ -130,6 +130,10 @@ export const storySlice = createSlice({
     generateStartParagraph: (state, _action: PayloadAction<{ prompt: string }>) => {
       state.loadingSection = LoadingType.InitialStory;
     },
+    generateStoryWithAdvancedInput: (state, _action: PayloadAction<{ 
+      values: {attribute: string, content: string}[] }>) => {
+      state.loadingSection = LoadingType.InitialStory;
+    },
     generateParagraph: (state, _action: PayloadAction<{ nodeToExpand: number }>) => {
       state.loadingSection = LoadingType.GenerateParagraph;
     },
@@ -160,6 +164,7 @@ export const {
   setGoToGenerator,
   graphResponse,
   generateStartParagraph,
+  generateStoryWithAdvancedInput,
   generateParagraph,
   generateActions,
   generateEnding,

@@ -1,9 +1,9 @@
 
 import { Middleware } from 'redux';
-import { connectNodesMsg, generateActionsMsg, generateEndingMsg, generateParagraphMsg, generateStartParagraphMsg } from '../api/wsMessages';
+import { connectNodesMsg, generateActionsMsg, generateEndingMsg, generateParagraphMsg, generateStartParagraphMsg, generateStoryWithAdvancedInputMsg } from '../api/wsMessages';
 import { graphMessageToGraphLookup } from '../utils/graph/graphUtils';
 import { GraphMessage } from '../utils/graph/types';
-import { connectNodes, generateActions, generateEnding, generateParagraph, generateStartParagraph, graphResponse } from './storySlice';
+import { connectNodes, generateActions, generateEnding, generateParagraph, generateStartParagraph, generateStoryWithAdvancedInput, graphResponse } from './storySlice';
 import { startConnecting, connectionEstablished, disconnected } from './wsSlice';
 
 const WS_URL: string = "wss://cyoa-api-prod.herokuapp.com/ws"
@@ -41,6 +41,10 @@ const wsMiddleware: Middleware = store => {
         if (isConnectionEstablished) {
             if (generateStartParagraph.match(action)) {
                 socket.send(generateStartParagraphMsg(action.payload.prompt));
+            }
+
+            if (generateStoryWithAdvancedInput.match(action)) {
+                socket.send(generateStoryWithAdvancedInputMsg(action.payload.values));
             }
 
             if (generateParagraph.match(action)) {
