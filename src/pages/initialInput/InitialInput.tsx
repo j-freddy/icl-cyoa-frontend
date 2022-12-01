@@ -14,6 +14,7 @@ import { addEntry, generateInitialStory, removeEntry, setAttribute, setContent }
 import AttributeTable from '../../components/initialInput/AttributeTable';
 import GenerateButton from '../../components/initialInput/GenerateButton';
 import { IconAlertOctagon, IconAlien, IconFlare, IconSearch, IconWand, IconWriting } from '@tabler/icons';
+import { startConnecting } from '../../features/wsSlice';
 
 export enum GenreOption {
   Fantasy = "Fantasy",
@@ -36,6 +37,10 @@ const InitialInputView = () => {
   const goToGenerator = useAppSelector((state) => state.story.goToGenerator);
   const storyId = useAppSelector((state) => state.story.id);
   const initialInputValues = useAppSelector((state) => state.initialInput.values);
+
+  useEffect(() => {
+    dispatch(startConnecting())
+  }, [dispatch]);
 
   useEffect(() => {
     if (goToGenerator) {
