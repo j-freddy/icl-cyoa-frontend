@@ -20,9 +20,15 @@ const useStyles = createStyles((theme) => ({
 		height: "7vh",
 	},
 
+
 	links: {
 		width: 260,
 	},
+
+	userActive: {
+		backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.white,
+	},
+
 
 	link: {
 		backgroundColor: "transparent",
@@ -39,12 +45,13 @@ const useStyles = createStyles((theme) => ({
 interface AppHeaderProps {
 	links: { label: string, link: string; }[];
 }
+
 export default function AppHeader({ links }: AppHeaderProps) {
 
 	const { classes } = useStyles();
 
 	const linkButtons = links.map((link) => (
-		<Link to={link.link} style={{ textDecoration: 'none' }}>
+		<Link to={link.link} key={link.label} style={{ textDecoration: 'none' }}>
 			<Button
 				mr={15}
 				className={classes.link}
@@ -55,7 +62,7 @@ export default function AppHeader({ links }: AppHeaderProps) {
 	));
 
 	return (
-		<Header className={classes.header} height={56} mb={120}>
+		<Header className={classes.header} height={56} mb={10}>
 			<Container className={classes.inner}>
 				<Group className={classes.links} spacing={5}>
 					{linkButtons}

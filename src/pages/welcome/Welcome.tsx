@@ -142,9 +142,6 @@ const WelcomeView = () => {
       </Stack>
 
     </>
-
-
-
   );
 };
 

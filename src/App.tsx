@@ -12,6 +12,7 @@ import SignupView from "./pages/signup/Signup";
 import {
   ACCOUNT_PAGE,
   DASHBOARD_PAGE,
+  GENERATOR_PAGE,
   HOME_PAGE,
   INITIAL_INPUT_PAGE,
   LOGIN_PAGE,
@@ -58,7 +59,7 @@ function App() {
           element={wrapView(<InitialInputView />)}
         />
         <Route
-          path="/generator/*"
+          path={GENERATOR_PAGE + "/*"}
           element={wrapView(<GeneratorView />)}
         />
         <Route

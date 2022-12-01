@@ -13,19 +13,28 @@ a:hover {
   color: var(--my-link-hover) !important;
 } */
 
-/* BootStrap - Deprecated */
 .wrapper {
-  max-width: 880px !important;
-  padding-top: 2.5em;
-  padding-bottom: 2.5em;
+  max-width: 960px !important;
+  padding-top: 1.5em;
+  padding-bottom: 1.5em;
 }
 
 .container-base {
-  width: 880px;
+  width: 960px;
 }
 
 #page-container {
   min-height: 100vh;
   background: rgb(208, 196, 242);
   background: linear-gradient(90deg, rgba(208, 196, 242, 1) 0%, rgba(227, 230, 243, 1) 36%, rgba(213, 236, 237, 1) 99%);
+}
+
+/* Refactor into StoryTitle.tsx */
+.mantine-InputWrapper-root {
+  flex-grow: 1;
+}
+
+/* Refactor into React Flow */
+.mantine-1lgihd9 {
+  height: auto;
 }
