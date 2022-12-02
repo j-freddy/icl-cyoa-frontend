@@ -1,17 +1,23 @@
+import { 
+  getApiKey, 
+  loginWithSession, 
+  selectEmail, 
+  selectLoggedIn, 
+  selectSessionLoginFail 
+} from "../../features/accountSlice";
 import { TextInput, } from "@mantine/core";
 import { useEffect } from "react";
 import { Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import ApiKeyForm from "../../components/account/ApiKeyForm";
-import { getApiKey, loginWithSession, selectEmail, selectLoggedIn, selectSessionLoginFail } from "../../features/accountSlice";
 import { LOGIN_PAGE } from "../../utils/links";
 
 const AccountView = () => {
 
-  const dispatch = useAppDispatch();
-
   const navigate = useNavigate();
+
+  const dispatch = useAppDispatch();
 
   const loggedIn = useAppSelector(selectLoggedIn);
   const sessionLoginFail = useAppSelector(selectSessionLoginFail);
@@ -36,11 +42,14 @@ const AccountView = () => {
     [loggedIn, sessionLoginFail, navigate]
   );
 
-  useEffect(() => {
-    if (loggedIn) {
-      dispatch(getApiKey);
-    }
-  })
+  useEffect(
+    () => {
+      if (loggedIn) {
+        dispatch(getApiKey());
+      }
+    },
+    [dispatch, loggedIn]
+  )
 
 
   return (

@@ -7,7 +7,7 @@ import {
 } from "@mantine/core";
 import { IconMenu2 } from "@tabler/icons";
 import { useAppDispatch } from "../../../app/hooks";
-import { generateEnding, generateParagraph, regenerateParagraph } from "../../../features/storySlice";
+import { deleteNode, generateEnding, generateParagraph, regenerateEnding, regenerateParagraph } from "../../../features/storySlice";
 import { ActionNode } from "../../../utils/graph/types";
 
 const useStyles = createStyles((theme) => ({
@@ -32,14 +32,11 @@ function ActionOptions(props: ActionOptionsProps) {
 
   const dispatch = useAppDispatch();
 
-
-  const onGenerateClick = (): void => {
-    dispatch(generateParagraph({ nodeToExpand: actionNode.nodeId }));
-  };
   const onGenerateEndingClick = (): void => {
-    dispatch(generateEnding({ nodeToEnd: actionNode.nodeId }))
+    dispatch(regenerateEnding(actionNode.nodeId))
   };
-  const onRegenerateClick = async () => {
+
+  const onGenerateClick = async () => {
     dispatch(regenerateParagraph(actionNode.nodeId))
   };
 
@@ -54,18 +51,15 @@ function ActionOptions(props: ActionOptionsProps) {
       <Popover.Dropdown>
         <Stack>
           {
-            actionNode.childrenIds.length === 0
-              ?
-              <UnstyledButton className={classes.buttonStack} onClick={onGenerateClick}>
-                Generate
-              </UnstyledButton>
-              :
-              <UnstyledButton className={classes.buttonStack} onClick={onRegenerateClick}>
-                Regenerate
-              </UnstyledButton>
+
+            <UnstyledButton className={classes.buttonStack} onClick={onGenerateClick}>
+              {actionNode.childrenIds.length === 0
+                ? "Generate" : "Regenerate"}
+            </UnstyledButton>
           }
           <UnstyledButton className={classes.buttonStack} onClick={onGenerateEndingClick}>
-            Generate Ending
+          {actionNode.childrenIds.length === 0
+                ? "Generate ending" : "Regenerate ending"}
           </UnstyledButton>
         </Stack>
       </Popover.Dropdown>

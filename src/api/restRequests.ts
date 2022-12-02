@@ -97,7 +97,7 @@ export const reqGetApiKey = async () => {
 	});
 }
 
-export const reqUpdateApiKey = async (apiKey: string) => {
+export const reqUpdateApiKey = async (apiKey: string | undefined) => {
 	return fetch(API_KEY_URL, {
 		method: "POST",
 		body: JSON.stringify({

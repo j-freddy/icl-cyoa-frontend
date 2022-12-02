@@ -93,7 +93,7 @@ export const getApiKey = createAsyncThunk(
 
 export const updateApiKey = createAsyncThunk(
   'account/updateKey',
-  async (apiKey: string) => {
+  async (apiKey: string | undefined) => {
     const response = await reqUpdateApiKey(apiKey);
     const json = await response.json() as {
       apiKey: string

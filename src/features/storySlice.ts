@@ -55,6 +55,14 @@ export const regenerateActions = createAsyncThunk(
   }
 );
 
+export const regenerateEnding = createAsyncThunk(
+  'story/regenerateParagraph',
+  async (nodeToEnd: number, { dispatch }) => {
+    dispatch(deleteNode(nodeToEnd));
+    dispatch(generateEnding({ nodeToEnd: nodeToEnd }));
+  }
+);
+
 export const saveName = createAsyncThunk(
   'story/saveName',
   async (_, { getState }) => {
