@@ -9,7 +9,7 @@ import {
   Container 
 } from '@mantine/core';
 import { IconEdit } from '@tabler/icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { saveName, selectStoryTitle, setName } from '../../features/storySlice';
 
@@ -42,17 +42,25 @@ function StoryTitle () {
   const [editable, setEditable] = useState(false);
   const [title, setTitle] = useState(storyTitle);
 
+  useEffect(() => {
+    setTitle(storyTitle);
+  }, [storyTitle]);
+
+
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
     setTitle(event.target.value);
   };
+
   const onIconClick = (): void => {
     setEditable(true);
   }
+  
   const onSaveClick = (): void => {
     setEditable(false);
     dispatch(setName(title));
     dispatch(saveName());
   }
+
 
   return (
     <>

@@ -44,10 +44,13 @@ const DashboardView = () => {
       dispatch(loadStories());
     }
   }, [loggedIn, dispatch]);
+
+
   const goToInitialInputView = () => {
     navigate(INITIAL_INPUT_PAGE);
   };
 
+  
   return (
     <Container className="wrapper">
       <Group position="apart">
