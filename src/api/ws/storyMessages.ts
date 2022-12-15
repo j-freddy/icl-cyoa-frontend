@@ -1,7 +1,11 @@
-import { graphToGraphMessage } from "../utils/graph/graphUtils";
-import { Graph } from "../utils/graph/types";
+import { graphToGraphMessage } from "../../utils/graph/graphUtils";
+import { Graph } from "../../utils/graph/types";
 
-export const generateParagraphMsg = (graph: Graph, nodeToExpand: number) => {
+
+export const generateParagraphMsg = (
+  graph: Graph,
+  nodeToExpand: number
+) => {
   return JSON.stringify({
     type: "generateNarrative",
     data: {
@@ -10,6 +14,7 @@ export const generateParagraphMsg = (graph: Graph, nodeToExpand: number) => {
     },
   })
 };
+
 
 export const generateStartParagraphMsg = (prompt: string) => {
   return JSON.stringify({
@@ -20,16 +25,23 @@ export const generateStartParagraphMsg = (prompt: string) => {
   })
 };
 
-export const generateStoryWithAdvancedInputMsg = (values: {attribute: string, content: string}[]) => {
-    return JSON.stringify({
-        type: "initialStory",
-        data: {
-            prompt: values,
-        },
-    })
+
+export const generateStoryWithAdvancedInputMsg = (
+  values: { attribute: string, content: string }[]
+) => {
+  return JSON.stringify({
+    type: "initialStory",
+    data: {
+      prompt: values,
+    },
+  })
 };
 
-export const generateActionsMsg = (graph: Graph, nodeToExpand: number) => {
+
+export const generateActionsMsg = (
+  graph: Graph,
+  nodeToExpand: number
+) => {
   return JSON.stringify({
     type: "generateActions",
     data: {
@@ -39,7 +51,11 @@ export const generateActionsMsg = (graph: Graph, nodeToExpand: number) => {
   })
 };
 
-export const generateEndingMsg = (graph: Graph, nodeToEnd: number) => {
+
+export const generateEndingMsg = (
+  graph: Graph,
+  nodeToEnd: number
+) => {
   return JSON.stringify({
     type: "endNode",
     data: {
@@ -48,6 +64,7 @@ export const generateEndingMsg = (graph: Graph, nodeToEnd: number) => {
     },
   })
 };
+
 
 export const connectNodesMsg = (
   graph: Graph,

@@ -3,6 +3,7 @@ import './Welcome.css';
 import { Link } from 'react-router-dom';
 import { Title, Text, Stack, Button, Image, Container, Group, createStyles } from '@mantine/core'
 import { IconCaretRight } from '@tabler/icons'
+import { INITIAL_INPUT_PAGE } from '../../utils/pages';
 
 
 const useStyles = createStyles((theme, _params) => ({
@@ -82,7 +83,7 @@ const WelcomeView = () => {
           Quickly generate a complete, editable gamebook with a single prompt.
         </Text>
 
-        <Link to='/initial-input'>
+        <Link to={INITIAL_INPUT_PAGE}>
           <Button
             variant="filled"
             color="indigo.8"

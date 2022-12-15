@@ -6,8 +6,8 @@ import {
 } from "@mantine/core";
 import { IconEdit } from "@tabler/icons";
 import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectApiKey, updateApiKey } from "../../features/accountSlice";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { selectApiKey, updateApiKey } from "../../store/features/accountSlice";
 
 
 function ApiKeyForm() {
@@ -45,28 +45,22 @@ function ApiKeyForm() {
   return (
     <Group align="center" position="apart">
       <Textarea
-        label={"API Key"}
+        label={"GPT3 Key"}
         value={key}
         mb="lg"
         disabled={!editable}
         onChange={handleTextChange}
         autosize
       />
-      {
-        editable
-          ?
-          <Button onClick={onApiKeyChange}>
-            Change API Key
-          </Button>
-          :
-          <ActionIcon
-            variant="filled"
-            size="md"
-            color="blue"
-            onClick={onIconClick}
-          >
-            <IconEdit size={20} />
-          </ActionIcon>
+      {editable
+        ?
+        <Button onClick={onApiKeyChange}>
+          Change API Key
+        </Button>
+        :
+        <ActionIcon variant="filled" size="md" color="blue" onClick={onIconClick}>
+          <IconEdit size={20} />
+        </ActionIcon>
       }
     </Group>
   );

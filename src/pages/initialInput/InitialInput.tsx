@@ -1,20 +1,21 @@
 import '../../style/base.css';
 import { MutableRefObject, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { generateStartParagraph, reset, setGraph, initStory, setGoToGenerator } from '../../features/storySlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { generateStartParagraph, reset, setGraph, initStory, setGoToGenerator } from '../../store/features/storySlice';
 import { useNavigate } from 'react-router-dom';
-import { loginWithSession, selectLoggedIn, selectSessionLoginFail } from '../../features/accountSlice';
+import { loginWithSession, selectLoggedIn, selectSessionLoginFail } from '../../store/features/accountSlice';
 import { makeNarrativeNode } from '../../utils/graph/graphUtils';
 import { NarrativeNode, Graph } from '../../utils/graph/types';
 import { Popover, Stack, Title, Text, Flex, List } from '@mantine/core';
 import GenreDropdown from '../../components/initialInput/GenreDropdown';
 import InputTextForm from '../../components/initialInput/InputTextForm';
 import gsap from 'gsap';
-import { addEntry, generateInitialStory, removeEntry, setAttribute, setContent } from '../../features/initialInputSlice';
+import { addEntry, generateInitialStory, removeEntry, setAttribute, setContent } from '../../store/features/initialInputSlice';
 import AttributeTable from '../../components/initialInput/AttributeTable';
 import GenerateButton from '../../components/initialInput/GenerateButton';
 import { IconAlertOctagon, IconAlien, IconFlare, IconSearch, IconWand, IconWriting } from '@tabler/icons';
-import { startConnecting } from '../../features/wsSlice';
+import { startConnecting } from '../../store/features/wsSlice';
+import { GENERATOR_PAGE, LOGIN_PAGE } from '../../utils/pages';
 
 export enum GenreOption {
   Fantasy = "Fantasy",
@@ -45,7 +46,7 @@ const InitialInputView = () => {
   useEffect(() => {
     if (goToGenerator) {
       dispatch(setGoToGenerator(false));
-      navigate(`/generator/${storyId}`);
+      navigate(GENERATOR_PAGE + storyId);
     }
   }, [goToGenerator, storyId, navigate, dispatch]);
 
@@ -55,7 +56,7 @@ const InitialInputView = () => {
 
   useEffect(() => {
     if (!loggedIn && sessionLoginFail) {
-      navigate("/login");
+      navigate(LOGIN_PAGE);
     }
   }, [loggedIn, sessionLoginFail, navigate]);
 

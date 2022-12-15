@@ -1,23 +1,24 @@
 import '../../style/base.css';;
 import { useEffect } from 'react';
 import { Container, createStyles, Stack } from "@mantine/core";
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
   selectStoryId,
   getGraph,
   setId,
   selectIsStoryEmpty,
-} from '../../features/storySlice';
+} from '../../store/features/storySlice';
 import {
   selectLoggedIn,
   selectSessionLoginFail,
   loginWithSession
-} from '../../features/accountSlice';
+} from '../../store/features/accountSlice';
 import { useNavigate } from 'react-router-dom';
 import StoryTitle from '../../components/generator/StoryTitle';
-import { startConnecting } from '../../features/wsSlice';
+import { startConnecting } from '../../store/features/wsSlice';
 import EmptyStoryViz from './content/EmptyStoryViz';
 import StoryViz from './content/StoryViz';
+import { LOGIN_PAGE } from '../../utils/pages';
 
 const useStyles = createStyles((theme) => ({
   stack: {
@@ -49,7 +50,7 @@ const GeneratorView = () => {
 
   useEffect(() => {
     if (!loggedIn && sessionLoginFail) {
-      navigate("/login");
+      navigate(LOGIN_PAGE);
     }
   }, [loggedIn, sessionLoginFail, navigate]);
 
@@ -69,10 +70,9 @@ const GeneratorView = () => {
     <Container className="wrapper">
       <Stack align="center" className={classes.stack}>
         <StoryTitle />
-        {
-          isStoryEmpty
-            ? <EmptyStoryViz />
-            : <StoryViz />
+        {isStoryEmpty
+          ? <EmptyStoryViz />
+          : <StoryViz />
         }
       </Stack>
     </Container>

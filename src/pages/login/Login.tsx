@@ -1,13 +1,14 @@
 import { Group, Stack, PasswordInput, Text, Button, Title, TextInput, createStyles } from "@mantine/core";
 import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   login,
   loginWithSession,
   selectCredentialLoginFail,
   selectLoggedIn
-} from "../../features/accountSlice";
+} from "../../store/features/accountSlice";
+import { DASHBOARD_PAGE, SIGNUP_PAGE } from "../../utils/pages";
 
 const useStyles = createStyles((theme, _params) => ({
   box: {
@@ -41,7 +42,7 @@ const LoginView = () => {
 
   useEffect(() => {
     if (loggedIn) {
-      navigate("/dashboard");
+      navigate(DASHBOARD_PAGE);
     }
   }, [loggedIn, navigate]);
 
@@ -92,7 +93,7 @@ const LoginView = () => {
               Login
             </Button>
             <Group position="center">
-              <Link to="/signup">
+              <Link to={SIGNUP_PAGE}>
                 <Text fz="sm" c="blue" td="underline">
                   Register here.
                 </Text>

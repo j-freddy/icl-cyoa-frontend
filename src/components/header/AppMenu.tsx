@@ -13,7 +13,7 @@ import {
   IconUserCircle,
 } from '@tabler/icons';
 import { useNavigate } from 'react-router-dom';
-import { ACCOUNT_PAGE } from '../../utils/links';
+import { ACCOUNT_PAGE } from '../../utils/pages';
 
 const useStyles = createStyles((theme) => ({
 

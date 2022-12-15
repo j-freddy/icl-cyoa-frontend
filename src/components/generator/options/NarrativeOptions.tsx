@@ -6,17 +6,17 @@ import {
   UnstyledButton
 } from "@mantine/core";
 import { IconMenu2 } from "@tabler/icons";
-import { useAppDispatch } from "../../../app/hooks";
-import { generateActions, regenerateActions } from "../../../features/storySlice";
+import { useAppDispatch } from "../../../store/hooks";
+import { generateActions, regenerateActions } from "../../../store/features/storySlice";
 import { NarrativeNode } from "../../../utils/graph/types";
 
 const useStyles = createStyles((theme) => ({
-	buttonStack: {
-		fontSize: "10px",
+  buttonStack: {
+    fontSize: "10px",
     '&:hover': {
-			fontWeight: "bold",
-		},
-	},
+      fontWeight: "bold",
+    },
+  },
 
 }));
 
@@ -51,16 +51,15 @@ function NarrativeOptions(props: NarrativeOptionsProps) {
       </Popover.Target>
       <Popover.Dropdown>
         <Stack>
-          {
-            narrativeNode.childrenIds.length === 0
-              ?
-              <UnstyledButton className={classes.buttonStack} onClick={onGenerateClick}>
-                Generate
-              </UnstyledButton>
-              :
-              <UnstyledButton className={classes.buttonStack} onClick={onRegenerateClick}>
-                Regenerate
-              </UnstyledButton>
+          {narrativeNode.childrenIds.length === 0
+            ?
+            <UnstyledButton className={classes.buttonStack} onClick={onGenerateClick}>
+              Generate
+            </UnstyledButton>
+            :
+            <UnstyledButton className={classes.buttonStack} onClick={onRegenerateClick}>
+              Regenerate
+            </UnstyledButton>
           }
         </Stack>
       </Popover.Dropdown>

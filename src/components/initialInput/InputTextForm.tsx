@@ -1,6 +1,6 @@
 import './InputTextForm.css'
 import { useState } from "react";
-import { exampleText } from '../../features/storySlice';
+import { exampleText } from '../../store/features/storySlice';
 import { Textarea } from '@mantine/core';
 import GenerateButton from './GenerateButton';
 

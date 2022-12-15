@@ -4,14 +4,14 @@ import {
   selectEmail, 
   selectLoggedIn, 
   selectSessionLoginFail 
-} from "../../features/accountSlice";
+} from "../../store/features/accountSlice";
 import { TextInput, } from "@mantine/core";
 import { useEffect } from "react";
 import { Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import ApiKeyForm from "../../components/account/ApiKeyForm";
-import { LOGIN_PAGE } from "../../utils/links";
+import { LOGIN_PAGE } from "../../utils/pages";
 
 const AccountView = () => {
 

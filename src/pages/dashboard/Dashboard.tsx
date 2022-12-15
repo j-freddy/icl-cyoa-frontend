@@ -12,13 +12,13 @@ import {
   selectLoggedIn,
   selectSessionLoginFail,
   selectStories
-} from '../../features/accountSlice';
+} from '../../store/features/accountSlice';
 import StoryListItem from '../../components/dashboard/StoryListItem';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { IconPlus } from '@tabler/icons'
-import { INITIAL_INPUT_PAGE, LOGIN_PAGE } from '../../utils/links';
+import { INITIAL_INPUT_PAGE, LOGIN_PAGE } from '../../utils/pages';
 
 const DashboardView = () => {
   const dispatch = useAppDispatch();

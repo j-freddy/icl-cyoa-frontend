@@ -1,0 +1,96 @@
+import {
+  createAsyncThunk
+} from '@reduxjs/toolkit'
+import {
+  reqGetStory,
+  reqInitStory,
+  reqSaveGraph,
+  reqSaveName
+} from '../../../api/rest/storyRequests';
+import {
+  deleteNode,
+  generateActions,
+  generateEnding,
+  generateParagraph,
+  setGoToGenerator,
+  setId,
+  StoryState
+} from '../storySlice';
+import { GraphMessage } from '../../../utils/graph/types';
+import { loadStories } from '../account/thunks';
+
+
+
+export const regenerateParagraph = createAsyncThunk(
+  'story/regenerateParagraph',
+  async (nodeToRegenerate: number, { dispatch }) => {
+    dispatch(deleteNode(nodeToRegenerate));
+    dispatch(generateParagraph({ nodeToExpand: nodeToRegenerate }));
+  }
+);
+
+
+export const regenerateActions = createAsyncThunk(
+  'story/regenerateActions',
+  async (nodeToRegenerate: number, { dispatch }) => {
+    dispatch(deleteNode(nodeToRegenerate));
+    dispatch(generateActions({ nodeToExpand: nodeToRegenerate }));
+  }
+);
+
+
+export const regenerateEnding = createAsyncThunk(
+  'story/regenerateParagraph',
+  async (nodeToEnd: number, { dispatch }) => {
+    dispatch(deleteNode(nodeToEnd));
+    dispatch(generateEnding({ nodeToEnd: nodeToEnd }));
+  }
+);
+
+
+export const saveName = createAsyncThunk(
+  'story/saveName',
+  async (_, { getState }) => {
+    const state = getState() as { story: StoryState };
+    await reqSaveName(state.story.id, state.story.title);
+  }
+);
+
+
+export const saveGraph = createAsyncThunk(
+  'story/saveGraph',
+  async (_, { getState }) => {
+    const state = getState() as { story: StoryState };
+    await reqSaveGraph(state.story.id, state.story.graph);
+  }
+);
+
+
+export const getGraph = createAsyncThunk(
+  'story/getGraph',
+  async (_, { getState }) => {
+    const state = getState() as { story: StoryState };
+    const response = await reqGetStory(state.story.id);
+    const json = await response.json() as { story: GraphMessage, name: string };
+
+    // TODO should refactor backend to use graph consistently
+    return { graph: json.story, name: json.name };
+  }
+);
+
+
+export const initStory = createAsyncThunk(
+  'account/initStory',
+  async (_, { dispatch }) => {
+    const response = await reqInitStory();
+    const json = await response.json() as { storyId: string };
+
+    dispatch(loadStories());
+
+    dispatch(setId({ storyId: json.storyId }));
+
+    dispatch(setGoToGenerator(true));
+
+    return { storyId: json.storyId };
+  }
+);

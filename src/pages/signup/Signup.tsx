@@ -1,8 +1,9 @@
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import StatusCode from "status-code-enum";
-import { reqSignup } from "../../api/restRequests";
+import { reqSignup } from "../../api/rest/accountRequests";
 import { Group, Stack, PasswordInput, Text, Button, Title, TextInput, createStyles } from "@mantine/core";
+import { GENERATOR_PAGE, LOGIN_PAGE } from "../../utils/pages";
 
 const useStyles = createStyles((theme, _params) => ({
 	box: {
@@ -38,7 +39,7 @@ const SignupView = () => {
 			setLoginError(true);
 			return;
 		}
-		navigate("/generator");
+		navigate(GENERATOR_PAGE);
 	};
 
 	return (
@@ -78,7 +79,7 @@ const SignupView = () => {
 							Sign Up
 						</Button>
 						<Group position="center">
-							<Link to="/login">
+							<Link to={LOGIN_PAGE}>
 								<Text fz="sm" c="blue" td="underline">
 									Already a user? LOGIN.
 								</Text>

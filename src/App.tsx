@@ -17,7 +17,7 @@ import {
   INITIAL_INPUT_PAGE,
   LOGIN_PAGE,
   SIGNUP_PAGE
-} from './utils/links';
+} from './utils/pages';
 import AppHeader from './components/Header';
 import AccountView from './pages/account/Account';
 
