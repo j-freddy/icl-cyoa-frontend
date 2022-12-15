@@ -1,21 +1,21 @@
 import {
-  createSlice,
-  PayloadAction,
-  createAsyncThunk
-} from '@reduxjs/toolkit'
-import {
-  reqGetStory,
-  reqInitStory,
-  reqSaveGraph,
-  reqSaveName
-} from '../api/restRequests';
-import { RootState } from '../app/store';
-import { graphMessageToGraphLookup, deleteNodeFromGraph, isGraphEmpty } from '../utils/graph/graphUtils';
-import { Graph, LoadingType, GraphMessage } from '../utils/graph/types';
-import { loadStories } from './accountSlice';
+  getGraph,
+  initStory,
+  regenerateActions,
+  regenerateEnding,
+  regenerateParagraph,
+  saveGraph,
+  saveName
+} from './story/thunks';
+import { createSlice, PayloadAction, } from '@reduxjs/toolkit'
+import { RootState } from '../store';
+import { deleteNodeFromGraph, isGraphEmpty } from '../../utils/graph/graphUtils';
+import { Graph, LoadingType } from '../../utils/graph/types';
 import { displayLoadedNotification, displayLoadingNotification } from './story/loadingNotifications';
+import { handleGetGraphFulfilled, handleInitStoryFulfilled } from './story/handlers';
 
-interface StoryState {
+
+export interface StoryState {
   id: string;
 
   title: string;
@@ -39,82 +39,6 @@ const initialState: StoryState = {
   goToGenerator: false,
 };
 
-export const regenerateParagraph = createAsyncThunk(
-  'story/regenerateParagraph',
-  async (nodeToRegenerate: number, { dispatch }) => {
-    dispatch(deleteNode(nodeToRegenerate));
-    dispatch(generateParagraph({ nodeToExpand: nodeToRegenerate }));
-  }
-);
-
-export const regenerateActions = createAsyncThunk(
-  'story/regenerateActions',
-  async (nodeToRegenerate: number, { dispatch }) => {
-    dispatch(deleteNode(nodeToRegenerate));
-    dispatch(generateActions({ nodeToExpand: nodeToRegenerate }));
-  }
-);
-
-export const regenerateEnding = createAsyncThunk(
-  'story/regenerateParagraph',
-  async (nodeToEnd: number, { dispatch }) => {
-    dispatch(deleteNode(nodeToEnd));
-    dispatch(generateEnding({ nodeToEnd: nodeToEnd }));
-  }
-);
-
-export const saveName = createAsyncThunk(
-  'story/saveName',
-  async (_, { getState }) => {
-    const state = getState() as { story: StoryState };
-    await reqSaveName(state.story.id, state.story.title);
-  }
-);
-
-export const saveGraph = createAsyncThunk(
-  'story/saveGraph',
-  async (_, { getState }) => {
-    const state = getState() as { story: StoryState };
-    await reqSaveGraph(state.story.id, state.story.graph);
-  }
-);
-
-export const getGraph = createAsyncThunk(
-  'story/getGraph',
-  async (_, { getState }) => {
-    const state = getState() as { story: StoryState };
-    const response = await reqGetStory(state.story.id);
-    const json = await response.json() as { story: GraphMessage, name: string };
-
-    return { graph: json.story, name: json.name }; // TODO should refactor backend to use graph consistently
-  }
-);
-
-export const initStory = createAsyncThunk(
-  'account/initStory',
-  async (_, { dispatch }) => {
-    const response = await reqInitStory();
-    const json = await response.json() as { storyId: string };
-
-    dispatch(loadStories());
-
-    dispatch(setId({ storyId: json.storyId }));
-
-    dispatch(setGoToGenerator(true));
-
-    return { storyId: json.storyId };
-  }
-);
-
-const handleGetGraphResponse = (state: StoryState, action: PayloadAction<{ graph: GraphMessage, name: string }>) => {
-  state.graph = graphMessageToGraphLookup(action.payload.graph);
-  state.title = action.payload.name;
-  state.loadingSection = null;
-};
-
-const handleInitStoryResponse = (state: StoryState, action: PayloadAction<{ storyId: string }>) => {
-  state.id = action.payload.storyId;
-};
 
 export const storySlice = createSlice({
   name: 'story',
@@ -154,8 +78,9 @@ export const storySlice = createSlice({
       state.loadingSection = LoadingType.InitialStory;
       displayLoadingNotification(LoadingType.InitialStory);
     },
-    generateStoryWithAdvancedInput: (state, _action: PayloadAction<{ 
-      values: {attribute: string, content: string}[] }>) => {
+    generateStoryWithAdvancedInput: (state, _action: PayloadAction<{
+      values: { attribute: string, content: string }[]
+    }>) => {
       state.loadingSection = LoadingType.InitialStory;
     },
     generateParagraph: (state, _action: PayloadAction<{ nodeToExpand: number }>) => {
@@ -176,9 +101,9 @@ export const storySlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(getGraph.fulfilled, handleGetGraphResponse);
+    builder.addCase(getGraph.fulfilled, handleGetGraphFulfilled);
 
-    builder.addCase(initStory.fulfilled, handleInitStoryResponse);
+    builder.addCase(initStory.fulfilled, handleInitStoryFulfilled);
   },
 });
 
@@ -198,6 +123,16 @@ export const {
   generateEnding,
   connectNodes,
 } = storySlice.actions;
+
+export {
+  regenerateParagraph,
+  regenerateActions,
+  regenerateEnding,
+  saveName,
+  saveGraph,
+  getGraph,
+  initStory,
+}
 
 export const selectGoToGenerator = (state: RootState) => state.story.goToGenerator;
 export const selectStoryGraph = (state: RootState) => state.story.graph;

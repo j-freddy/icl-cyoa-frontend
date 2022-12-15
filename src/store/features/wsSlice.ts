@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
- 
+
 export interface WsState {
   isEstablishingConnection: boolean;
   isConnected: boolean;
@@ -29,9 +29,9 @@ const wsSlice = createSlice({
 });
 
 export const {
-    startConnecting,
-    connectionEstablished,
-    disconnected,
+  startConnecting,
+  connectionEstablished,
+  disconnected,
 } = wsSlice.actions;
 
 export default wsSlice.reducer;

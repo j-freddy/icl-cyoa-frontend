@@ -6,12 +6,12 @@ import {
   createStyles,
 } from "@mantine/core";
 import { useCallback, useMemo, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import Downloader from "../../../components/generator/Downloader";
 import GraphViz from "../../../components/generator/GraphViz";
 import Saver from "../../../components/generator/Saver";
 import StorySection from "../../../components/generator/StorySection";
-import { connectNodes, selectLoadingSection, selectStoryGraph } from "../../../features/storySlice";
+import { connectNodes, selectLoadingSection, selectStoryGraph } from "../../../store/features/storySlice";
 import { isAction } from "../../../utils/graph/graphUtils";
 import { getStoryNodes } from "../../../utils/graph/storyUtils";
 import { NodeData, StoryNode } from "../../../utils/graph/types";

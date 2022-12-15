@@ -1,5 +1,5 @@
-import { useAppDispatch } from "../../app/hooks";
-import { saveGraph } from "../../features/storySlice";
+import { useAppDispatch } from "../../store/hooks";
+import { saveGraph } from "../../store/features/storySlice";
 import { Button } from "@mantine/core";
 import { IconDeviceFloppy } from "@tabler/icons";
 

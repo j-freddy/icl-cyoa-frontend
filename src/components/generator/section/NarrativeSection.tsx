@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { useAppDispatch } from '../../../app/hooks';
-import { setNodeData } from '../../../features/storySlice';
-import { StoryNode } from '../../../utils/graph/types';
 import {
-  Text,
-  Group,
-  ActionIcon,
-  Textarea,
-  createStyles,
+  ActionIcon, createStyles, Group, Text, Textarea
 } from '@mantine/core';
-import { IconEdit, IconCheckbox } from '@tabler/icons';
+import { IconCheckbox, IconEdit } from '@tabler/icons';
+import React, { useEffect, useState } from 'react';
+import { setNodeData } from '../../../store/features/storySlice';
+import { useAppDispatch } from '../../../store/hooks';
+import { StoryNode } from '../../../utils/graph/types';
 
 
 const useStyles = createStyles((theme) => ({
@@ -49,36 +45,35 @@ const NarrativeSection = (props: NarrativeSectionProps) => {
     changeEditable(false);
   };
 
+
+  if (editable) {
+    return (
+      <Group noWrap={true} align="top">
+        <Textarea
+          size="md"
+          autosize
+          minRows={2}
+          maxRows={6}
+          value={text}
+          onChange={handleTextChange}
+          className={classes.text_input}
+        />
+        <ActionIcon onClick={onDoneClick}>
+          <IconCheckbox color="blue" />
+        </ActionIcon>
+      </Group>
+    );
+  }
+
   return (
-    <>
-      {
-        editable
-          ?
-          <Group noWrap={true} align="top">
-            <Textarea
-              size="md"
-              autosize
-              minRows={2}
-              maxRows={6}
-              value={text}
-              onChange={handleTextChange}
-              className={classes.text_input}
-            />
-            <ActionIcon onClick={onDoneClick}>
-              <IconCheckbox color="blue" />
-            </ActionIcon>
-          </Group>
-          :
-          <Group noWrap={true} align="top">
-            <Text className={classes.paragraph}>
-              {props.paragraph}
-            </Text>
-            <ActionIcon onClick={onEditClick}>
-              <IconEdit />
-            </ActionIcon>
-          </Group>
-      }
-    </>
+    <Group noWrap={true} align="top">
+      <Text className={classes.paragraph}>
+        {props.paragraph}
+      </Text>
+      <ActionIcon onClick={onEditClick}>
+        <IconEdit />
+      </ActionIcon>
+    </Group>
   );
 };
 

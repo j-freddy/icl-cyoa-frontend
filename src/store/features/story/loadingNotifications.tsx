@@ -1,8 +1,5 @@
-import {
-  showNotification,
-  updateNotification,
-} from "@mantine/notifications";
-import { LoadingType } from "../../utils/graph/types";
+import { showNotification, updateNotification, } from "@mantine/notifications";
+import { LoadingType } from "../../../utils/graph/types";
 import { IconCheck } from '@tabler/icons';
 
 
@@ -42,7 +39,7 @@ export const displayLoadedNotification = (loadingType: LoadingType) => {
     title: message,
     message: 'You can close this notification now.',
     icon: <IconCheck size={16} />,
-    autoClose: 4000,
+    autoClose: 2000,
   });
 }
 

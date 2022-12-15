@@ -1,16 +1,14 @@
 import {
-  Graph,
-  GraphMessage,
-  NodeData,
-  ActionNode,
-  NarrativeNode,
-  NodeId,
+  ActionNode, Graph,
+  GraphMessage, NarrativeNode, NodeData, NodeId,
   NodeType
 } from "./types";
+
 
 export const isGraphEmpty = (graph: Graph) => {
   return Object.keys(graph.nodeLookup).length === 0;
 }
+
 
 export const makeNarrativeNode = (params: Omit<NarrativeNode, "type">) => {
   return {
@@ -18,6 +16,7 @@ export const makeNarrativeNode = (params: Omit<NarrativeNode, "type">) => {
     ...params
   }
 };
+
 
 export const makeActionNode = (params: Omit<ActionNode, "type">) => {
   return {
@@ -33,6 +32,7 @@ export const isAction = (node: NodeData) => {
   return node.type === NodeType.Action;
 }
 
+
 export const graphMessageToGraphLookup = (graphMessage: GraphMessage): Graph => {
   const nodeLookup: Record<number, NodeData> = {};
   for (const nodeData of graphMessage.nodes) {
@@ -42,6 +42,7 @@ export const graphMessageToGraphLookup = (graphMessage: GraphMessage): Graph => 
   return { nodeLookup };
 };
 
+
 export const graphToGraphMessage = (graph: Graph): GraphMessage => {
   const nodes: NodeData[] = [];
   for (const node of Object.values(graph.nodeLookup)) {
@@ -49,6 +50,7 @@ export const graphToGraphMessage = (graph: Graph): GraphMessage => {
   }
   return { nodes };
 };
+
 
 export const deleteNodeFromGraph = (graph: Graph, nodeId: number): Graph => {
   const toKeep = new Set<NodeId>();
@@ -81,6 +83,7 @@ export const deleteNodeFromGraph = (graph: Graph, nodeId: number): Graph => {
     )
   };
 };
+
 
 export const getPreview = (text: string, numWords: number) => {
   return text.split(' ').slice(0, numWords).join(' ') + " ...";

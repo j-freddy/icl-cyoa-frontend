@@ -1,17 +1,12 @@
-import { 
-  ActionIcon, 
-  Text, 
-  Button, 
-  createStyles, 
-  Group, 
-  Textarea, 
-  Title, 
-  Container 
+import {
+  ActionIcon, Button, Container, createStyles,
+  Group, Text, Textarea,
+  Title
 } from '@mantine/core';
 import { IconEdit } from '@tabler/icons';
 import { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { saveName, selectStoryTitle, setName } from '../../features/storySlice';
+import { saveName, selectStoryTitle, setName } from '../../store/features/storySlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 
 const useStyles = createStyles((theme) => ({
@@ -33,9 +28,23 @@ const useStyles = createStyles((theme) => ({
 }));
 
 
-function StoryTitle () {
+export default function StoryTitle() {
   const { classes } = useStyles();
 
+  return (
+    <>
+      <Container size="xl" className={classes.titleBox}>
+        <Group className={classes.title}>
+          <Text fz="md" td="underline" fs="italic" fw={500}>Story Title:</Text>
+        </Group>
+        <TitleGroup />
+      </Container>
+    </>
+  );
+}
+
+
+const TitleGroup = () => {
   const dispatch = useAppDispatch();
   const storyTitle = useAppSelector(selectStoryTitle);
 
@@ -54,61 +63,39 @@ function StoryTitle () {
   const onIconClick = (): void => {
     setEditable(true);
   }
-  
+
   const onSaveClick = (): void => {
     setEditable(false);
     dispatch(setName(title));
     dispatch(saveName());
   }
 
+  if (editable) {
+    return (
+      <Group mt={10} spacing={20} align="center" position="apart">
+        <Textarea value={title} onChange={handleTextChange} disabled={!editable} autosize />
+        <Button onClick={onSaveClick}>
+          Save Title
+        </Button>
+      </Group>
+    );
+  }
 
   return (
-    <>
-      <Container size="xl" className={classes.titleBox}>
-        <Group className={classes.title}>
-          <Text fz="md" td="underline" fs="italic" fw={500}>Story Title:</Text>
-        </Group>
+    <Group mt={10} spacing={50} align="center" position="apart">
+      {title
+        ?
+        <Title order={2}> {title} </Title>
+        :
+        <Text fz="xl" fw={700} fs="italic" c="dimmed">
+          Enter your story title
+        </Text>
+      }
 
-        {editable
-          ?
-          <Group mt={10} spacing={20} align="center" position="apart">
-            <Textarea
-              value={title}
-              onChange={handleTextChange}
-              disabled={!editable}
-              autosize
+      <ActionIcon variant="filled" size="md" color="blue" onClick={onIconClick}>
+        <IconEdit size={20} />
+      </ActionIcon>
+    </Group>
 
-            />
-            <Button onClick={onSaveClick}>
-              Save Title
-            </Button>
-          </Group>
-          :
-          <Group mt={10} spacing={50} align="center" position="apart">
-            {
-              title
-                ?
-                <Title order={2}>
-                  {title}
-                </Title>
-                :
-                <Text fz="xl" fw={700} fs="italic" c="dimmed">
-                  Enter your story title
-                </Text>
-            }
-
-            <ActionIcon
-              variant="filled"
-              size="md"
-              color="blue"
-              onClick={onIconClick}>
-              <IconEdit size={20} />
-            </ActionIcon>
-          </Group>
-        }
-      </Container>
-    </>
   );
 }
-
-export default StoryTitle;

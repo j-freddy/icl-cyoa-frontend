@@ -1,13 +1,27 @@
 
 import { Middleware } from 'redux';
-import { connectNodesMsg, generateActionsMsg, generateEndingMsg, generateParagraphMsg, generateStartParagraphMsg, generateStoryWithAdvancedInputMsg } from '../api/wsMessages';
-import { graphMessageToGraphLookup } from '../utils/graph/graphUtils';
-import { GraphMessage } from '../utils/graph/types';
-import { connectNodes, generateActions, generateEnding, generateParagraph, generateStartParagraph, generateStoryWithAdvancedInput, graphResponse } from './storySlice';
-import { startConnecting, connectionEstablished, disconnected } from './wsSlice';
+import { WS_URL } from '../../api/links';
+import {
+  connectNodesMsg,
+  generateActionsMsg,
+  generateEndingMsg,
+  generateParagraphMsg,
+  generateStartParagraphMsg,
+  generateStoryWithAdvancedInputMsg
+} from '../../api/ws/storyMessages';
+import { graphMessageToGraphLookup } from '../../utils/graph/graphUtils';
+import { GraphMessage } from '../../utils/graph/types';
+import {
+  connectNodes,
+  generateActions,
+  generateEnding,
+  generateParagraph,
+  generateStartParagraph,
+  generateStoryWithAdvancedInput,
+  graphResponse
+} from './storySlice';
+import { connectionEstablished, disconnected, startConnecting } from './wsSlice';
 
-const WS_URL: string = "wss://cyoa-api-prod.herokuapp.com/ws"
-// const WS_URL: string = "ws://localhost:8000/ws"
 
 const wsMiddleware: Middleware = store => {
   let socket: WebSocket;

@@ -6,17 +6,17 @@ import {
   UnstyledButton
 } from "@mantine/core";
 import { IconMenu2 } from "@tabler/icons";
-import { useAppDispatch } from "../../../app/hooks";
-import { deleteNode, generateEnding, generateParagraph, regenerateEnding, regenerateParagraph } from "../../../features/storySlice";
+import { useAppDispatch } from "../../../store/hooks";
+import { regenerateEnding, regenerateParagraph } from "../../../store/features/storySlice";
 import { ActionNode } from "../../../utils/graph/types";
 
 const useStyles = createStyles((theme) => ({
-	buttonStack: {
-		fontSize: "10px",
+  buttonStack: {
+    fontSize: "10px",
     '&:hover': {
-			fontWeight: "bold",
-		},
-	},
+      fontWeight: "bold",
+    },
+  },
 
 }));
 
@@ -50,16 +50,17 @@ function ActionOptions(props: ActionOptionsProps) {
       </Popover.Target>
       <Popover.Dropdown>
         <Stack>
-          {
-
-            <UnstyledButton className={classes.buttonStack} onClick={onGenerateClick}>
-              {actionNode.childrenIds.length === 0
-                ? "Generate" : "Regenerate"}
-            </UnstyledButton>
-          }
+          <UnstyledButton className={classes.buttonStack} onClick={onGenerateClick}>
+            {actionNode.childrenIds.length === 0
+              ? "Generate"
+              : "Regenerate"
+            }
+          </UnstyledButton>
           <UnstyledButton className={classes.buttonStack} onClick={onGenerateEndingClick}>
-          {actionNode.childrenIds.length === 0
-                ? "Generate ending" : "Regenerate ending"}
+            {actionNode.childrenIds.length === 0
+              ? "Generate ending"
+              : "Regenerate ending"
+            }
           </UnstyledButton>
         </Stack>
       </Popover.Dropdown>

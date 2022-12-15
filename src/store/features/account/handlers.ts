@@ -1,0 +1,70 @@
+import { PayloadAction } from "@reduxjs/toolkit";
+import StatusCode from "status-code-enum";
+import { AccountState, AuthResponse, StoryListEntry } from "../accountSlice";
+
+
+export const handleLoginFulfilled = (
+  state: AccountState,
+  action: PayloadAction<AuthResponse>,
+) => {
+  const status = action.payload.status;
+  if (status !== StatusCode.SuccessOK) {
+    handleLoginRejected(state);
+    return;
+  }
+
+  state.loggedIn = true;
+  state.credentialsLoginFail = false;
+
+  state.email = action.payload.email;
+};
+
+export const handleLoginRejected = (state: AccountState) => {
+  state.credentialsLoginFail = true;
+};
+
+
+export const handleLoginWithSessionFulfilled = (
+  state: AccountState,
+  action: PayloadAction<AuthResponse>,
+) => {
+  const status = action.payload.status;
+  if (status !== StatusCode.SuccessOK) {
+    handleLoginWithSessionRejected(state);
+    return;
+  }
+
+  state.loggedIn = true;
+  state.sessionLoginFail = false;
+
+  state.email = action.payload.email;
+};
+
+export const handleLoginWithSessionRejected = (state: AccountState) => {
+  state.sessionLoginFail = true;
+};
+
+
+
+export const handleLoadStoriesFulfilled = (
+  state: AccountState,
+  action: PayloadAction<StoryListEntry[]>
+) => {
+  state.stories = action.payload;
+};
+
+
+export const handleGetApiKeyFulfilled = (
+  state: AccountState,
+  action: PayloadAction<string>
+) => {
+  state.apiKey = action.payload;
+}
+
+
+export const handleUpdateApiKeyFulfilled = (
+  state: AccountState,
+  action: PayloadAction<string>
+) => {
+  state.apiKey = action.payload;
+}

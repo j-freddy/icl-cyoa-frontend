@@ -6,8 +6,8 @@ import {
   createStyles,
 } from '@mantine/core';
 import React, { useState } from 'react';
-import { useAppDispatch } from '../../../app/hooks';
-import { setNodeData } from '../../../features/storySlice';
+import { useAppDispatch } from '../../../store/hooks';
+import { setNodeData } from '../../../store/features/storySlice';
 import { IconEdit, IconCheckbox } from '@tabler/icons';
 
 
@@ -48,37 +48,35 @@ const ActionSection = (props: ActionSectionProps) => {
     changeEditable(false);
   };
 
-  return (
-    <>
-      {
-        editable
-          ?
-          <Group noWrap={true} align="top">
-            <Textarea
-              size="md"
-              autosize
-              minRows={2}
-              maxRows={6}
-              value={action}
-              onChange={handleTextChange}
-              className={classes.text_input}
-            />
-            <ActionIcon onClick={onDoneClick}>
-              <IconCheckbox color="blue" />
-            </ActionIcon>
-          </Group>
-          :
-          <Group noWrap={true} align="top">
-            <Text className={classes.action}>
-              {action}
-            </Text>
-            <ActionIcon onClick={onEditClick}>
-              <IconEdit />
-            </ActionIcon>
-          </Group>
 
-      }
-    </>
+  if (editable) {
+    return (
+      <Group noWrap={true} align="top">
+        <Textarea
+          size="md"
+          autosize
+          minRows={2}
+          maxRows={6}
+          value={action}
+          onChange={handleTextChange}
+          className={classes.text_input}
+        />
+        <ActionIcon onClick={onDoneClick}>
+          <IconCheckbox color="blue" />
+        </ActionIcon>
+      </Group>
+    );
+  }
+
+  return (
+    <Group noWrap={true} align="top">
+      <Text className={classes.action}>
+        {action}
+      </Text>
+      <ActionIcon onClick={onEditClick}>
+        <IconEdit />
+      </ActionIcon>
+    </Group>
   );
 };
 

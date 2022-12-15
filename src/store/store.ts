@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
-import storyReducer from '../features/storySlice'
-import accountReducer from '../features/accountSlice'
-import initialInputReducer from '../features/initialInputSlice'
-import wsReducer from '../features/wsSlice'
-import wsMiddleware from '../features/wsMiddleware'
+import storyReducer from './features/storySlice'
+import accountReducer from './features/accountSlice'
+import initialInputReducer from './features/initialInputSlice'
+import wsReducer from './features/wsSlice'
+import wsMiddleware from './features/wsMiddleware'
 
 const reducer = {
   story: storyReducer,

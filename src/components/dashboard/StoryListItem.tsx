@@ -4,7 +4,7 @@ import {
   Badge
 } from '@mantine/core'
 import { useNavigate } from 'react-router-dom';
-import { GENERATOR_PAGE } from '../../utils/links';
+import { GENERATOR_PAGE } from '../../utils/pages';
 
 interface StoryListItemProps {
   storyId: string,
