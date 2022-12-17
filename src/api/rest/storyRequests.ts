@@ -41,3 +41,12 @@ export const reqSaveGraph = async (storyId: string, graph: Graph) => {
 		credentials: "include",
 	});
 };
+
+export const reqDeleteStory = async (storyId: string) => {
+	console.log("DELETE STORY REQUEST" + storyId)
+	return fetch(STORIES_URL, {
+		method: "POST",
+		body: JSON.stringify({ type: "deleteStoryFromId", storyId }),
+		credentials: "include",
+	});
+};

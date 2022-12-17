@@ -211,19 +211,20 @@ const InitialInputView = () => {
     }
   }
 
-  return (
-    <Flex mt={100} justify="center" id="page-body" className="flex-grow-1">
-      <Stack
-        justify="center"
-        align="center"
-        spacing="lg"
-        className="container-base"
-        mb={40}
-        ref={stackRef}
-      >
-        <Title order={1} weight={600} className="initial-title">
-          Pick a genre to start...
-        </Title>
+    return (
+        <Flex justify="center" id="page-body" className="flex-grow-1">
+            <Stack
+                justify="center"
+                align="center"
+                spacing="lg"
+                className="container-base"
+                mt={120}
+                mb={40}
+                ref={stackRef}
+            >
+                <Title order={1} weight={600} className="initial-title">
+                    Pick a genre to start...
+                </Title>
 
         <div id="genre-dropdown">
           <GenreDropdown
