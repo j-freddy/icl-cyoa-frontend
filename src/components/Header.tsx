@@ -62,7 +62,7 @@ export default function AppHeader({ links }: AppHeaderProps) {
 	));
 
 	return (
-		<Header className={classes.header} height={56} mb={10}>
+		<Header className={classes.header} height={56}>
 			<Container className={classes.inner}>
 				<Group className={classes.links} spacing={5}>
 					{linkButtons}
