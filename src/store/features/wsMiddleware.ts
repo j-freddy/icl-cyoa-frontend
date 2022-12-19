@@ -5,6 +5,7 @@ import {
   connectNodesMsg,
   generateActionsMsg,
   generateEndingMsg,
+  generateManyMsg,
   generateParagraphMsg,
   generateStartParagraphMsg,
   generateStoryWithAdvancedInputMsg
@@ -15,6 +16,7 @@ import {
   connectNodes,
   generateActions,
   generateEnding,
+  generateMany,
   generateParagraph,
   generateStartParagraph,
   generateStoryWithAdvancedInput,
@@ -77,6 +79,10 @@ const wsMiddleware: Middleware = store => {
       if (connectNodes.match(action)) {
         socket.send(connectNodesMsg(state.story.graph, action.payload.fromNode, action.payload.toNode));
       }
+    }
+
+    if (generateMany.match(action)) {
+      socket.send(generateManyMsg(state.story.graph, action.payload.fromNode, action.payload.maxDepth, state.story.storyId));
     }
 
     next(action);

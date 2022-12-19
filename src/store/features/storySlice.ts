@@ -100,6 +100,9 @@ export const storySlice = createSlice({
       state.loadingSection = LoadingType.ConnectingNodes;
       displayLoadingNotification(LoadingType.ConnectingNodes);
     },
+    generateMany: (state, _action: PayloadAction<{ fromNode: number, maxDepth: number }>) => {
+      state.loadingSection = LoadingType.ConnectingNodes;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getGraph.fulfilled, handleGetGraphFulfilled);
@@ -124,6 +127,7 @@ export const {
   generateActions,
   generateEnding,
   connectNodes,
+  generateMany,
 } = storySlice.actions;
 
 
