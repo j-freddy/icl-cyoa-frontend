@@ -1,12 +1,13 @@
-import './index.css';
+import { MantineProvider } from '@mantine/core';
+import { NotificationsProvider } from '@mantine/notifications';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
+import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { store } from './store/store'
-import { Provider } from 'react-redux'
-import { NotificationsProvider } from '@mantine/notifications';
-import { MantineProvider } from '@mantine/core';
+import { store } from './store/store';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -16,7 +17,9 @@ root.render(
     <Provider store={store}>
       <MantineProvider withGlobalStyles withNormalizeCSS>
         <NotificationsProvider>
-          <App />
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
         </NotificationsProvider>
       </MantineProvider>
     </Provider>

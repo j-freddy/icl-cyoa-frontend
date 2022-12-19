@@ -1,70 +1,18 @@
-import { 
-  getApiKey, 
-  loginWithSession, 
-  selectEmail, 
-  selectLoggedIn, 
-  selectSessionLoginFail 
-} from "../../store/features/accountSlice";
-import { TextInput, } from "@mantine/core";
-import { useEffect } from "react";
-import { Container } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import ApiKeyForm from "../../components/account/ApiKeyForm";
-import { LOGIN_PAGE } from "../../utils/pages";
+import { Container, TextInput } from "@mantine/core";
+import GPT3KeyForm from "../../components/account/GPT3KeyForm";
+import { selectEmail } from "../../store/features/accountSlice";
+import { useAppSelector } from "../../store/hooks";
 
 const AccountView = () => {
 
-  const navigate = useNavigate();
-
-  const dispatch = useAppDispatch();
-
-  const loggedIn = useAppSelector(selectLoggedIn);
-  const sessionLoginFail = useAppSelector(selectSessionLoginFail);
   const email = useAppSelector(selectEmail);
-
-
-  useEffect(
-    () => {
-      if (!loggedIn) {
-        dispatch(loginWithSession());
-      }
-    },
-    [dispatch, loggedIn]
-  );
-
-  useEffect(
-    () => {
-      if (!loggedIn && sessionLoginFail) {
-        navigate(LOGIN_PAGE);
-      }
-    },
-    [loggedIn, sessionLoginFail, navigate]
-  );
-
-  useEffect(
-    () => {
-      if (loggedIn) {
-        dispatch(getApiKey());
-      }
-    },
-    [dispatch, loggedIn]
-  )
-
 
   return (
     <Container>
-
-      <TextInput
-        label="Email"
-        variant="filled"
+      <TextInput label="Email" variant="filled" disabled={true} mb="lg"
         value={email}
-        disabled={true}
-        mb="lg"
       />
-
-      <ApiKeyForm />
-
+      <GPT3KeyForm />
     </Container>
   );
 

@@ -1,22 +1,17 @@
-import {
-  getApiKey,
-  loadStories,
-  login,
-  loginWithSession,
-  updateApiKey
-} from "./account/thunks";
-import {
-  handleLoginFulfilled,
-  handleLoginRejected,
-  handleLoginWithSessionRejected,
-  handleLoginWithSessionFulfilled,
-  handleLoadStoriesFulfilled,
-  handleGetApiKeyFulfilled,
-  handleUpdateApiKeyFulfilled
-} from "./account/handlers";
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice } from "@reduxjs/toolkit";
 import StatusCode from "status-code-enum";
 import { RootState } from "../store";
+import {
+  handleGetApiKeyFulfilled, handleLoadStoriesFulfilled, handleLoginFulfilled,
+  handleLoginRejected, handleLoginWithSessionFulfilled, handleLoginWithSessionRejected, handleUpdateApiKeyFulfilled
+} from "./account/handlers";
+import {
+  getApiKeyThunk,
+  loadStoriesThunk,
+  loginThunk,
+  loginWithSessionThunk,
+  updateApiKeyThunk
+} from "./account/thunks";
 
 
 export type StoryListEntry = {
@@ -50,6 +45,13 @@ const initialState: AccountState = {
 };
 
 
+export const login = loginThunk;
+export const loginWithSession = loginWithSessionThunk;
+export const loadStories = loadStoriesThunk;
+export const getApiKey = getApiKeyThunk;
+export const updateApiKey = updateApiKeyThunk;
+
+
 export const accountSlice = createSlice({
   name: "account",
   initialState,
@@ -69,13 +71,7 @@ export const accountSlice = createSlice({
   }
 });
 
-export {
-  getApiKey,
-  loadStories,
-  login,
-  loginWithSession,
-  updateApiKey
-}
+
 
 export const selectLoggedIn = (state: RootState) => state.account.loggedIn;
 export const selectEmail = (state: RootState) => state.account.email;

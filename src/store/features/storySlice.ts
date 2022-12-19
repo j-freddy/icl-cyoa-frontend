@@ -1,18 +1,10 @@
-import {
-  getGraph,
-  initStory,
-  regenerateActions,
-  regenerateEnding,
-  regenerateParagraph,
-  saveGraph,
-  saveName
-} from './story/thunks';
-import { createSlice, PayloadAction, } from '@reduxjs/toolkit'
-import { RootState } from '../store';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { deleteNodeFromGraph, isGraphEmpty } from '../../utils/graph/graphUtils';
 import { Graph, LoadingType } from '../../utils/graph/types';
-import { displayLoadedNotification, displayLoadingNotification } from './story/loadingNotifications';
+import { RootState } from '../store';
 import { handleGetGraphFulfilled, handleInitStoryFulfilled } from './story/handlers';
+import { displayLoadedNotification, displayLoadingNotification } from './story/loadingNotifications';
+import { getGraphThunk, initStoryThunk, regenerateActionsThunk, regenerateEndingThunk, regenerateParagraphThunk, saveGraphThunk, saveNameThunk } from './story/thunks';
 
 
 export interface StoryState {
@@ -38,6 +30,15 @@ const initialState: StoryState = {
 
   goToGenerator: false,
 };
+
+
+export const regenerateParagraph = regenerateParagraphThunk;
+export const regenerateActions = regenerateActionsThunk;
+export const regenerateEnding = regenerateEndingThunk;
+export const saveName = saveNameThunk;
+export const saveGraph = saveGraphThunk;
+export const getGraph = getGraphThunk;
+export const initStory = initStoryThunk;
 
 
 export const storySlice = createSlice({
@@ -107,6 +108,7 @@ export const storySlice = createSlice({
   },
 });
 
+
 export const {
   reset,
   setGraph,
@@ -124,15 +126,6 @@ export const {
   connectNodes,
 } = storySlice.actions;
 
-export {
-  regenerateParagraph,
-  regenerateActions,
-  regenerateEnding,
-  saveName,
-  saveGraph,
-  getGraph,
-  initStory,
-}
 
 export const selectGoToGenerator = (state: RootState) => state.story.goToGenerator;
 export const selectStoryGraph = (state: RootState) => state.story.graph;
@@ -140,5 +133,6 @@ export const selectIsStoryEmpty = (state: RootState) => isGraphEmpty(state.story
 export const selectStoryId = (state: RootState) => state.story.id;
 export const selectStoryTitle = (state: RootState) => state.story.title;
 export const selectLoadingSection = (state: RootState) => state.story.loadingSection;
+
 
 export default storySlice.reducer;

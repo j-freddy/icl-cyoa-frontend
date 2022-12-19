@@ -9,7 +9,7 @@ import {
 import { StoryListEntry } from "../accountSlice";
 
 
-export const login = createAsyncThunk(
+export const loginThunk = createAsyncThunk(
   'account/login',
   async (data: { email: string, password: string }) => {
     const response = await reqLogin(data.email, data.password);
@@ -26,7 +26,7 @@ export const login = createAsyncThunk(
   }
 );
 
-export const loginWithSession = createAsyncThunk(
+export const loginWithSessionThunk = createAsyncThunk(
   'account/loginWithSession',
   async () => {
     const response = await reqLoginWithSession();
@@ -43,7 +43,7 @@ export const loginWithSession = createAsyncThunk(
   }
 );
 
-export const loadStories = createAsyncThunk(
+export const loadStoriesThunk = createAsyncThunk(
   'account/loadStories',
   async () => {
     const response = await reqGetStories();
@@ -55,7 +55,7 @@ export const loadStories = createAsyncThunk(
   }
 );
 
-export const getApiKey = createAsyncThunk(
+export const getApiKeyThunk = createAsyncThunk(
   'account/getKey',
   async () => {
     const response = await reqGetApiKey();
@@ -67,7 +67,7 @@ export const getApiKey = createAsyncThunk(
   }
 );
 
-export const updateApiKey = createAsyncThunk(
+export const updateApiKeyThunk = createAsyncThunk(
   'account/updateKey',
   async (apiKey: string | undefined) => {
     const response = await reqUpdateApiKey(apiKey);

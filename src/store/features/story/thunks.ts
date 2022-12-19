@@ -1,12 +1,14 @@
 import {
   createAsyncThunk
-} from '@reduxjs/toolkit'
+} from '@reduxjs/toolkit';
 import {
   reqGetStory,
   reqInitStory,
   reqSaveGraph,
   reqSaveName
 } from '../../../api/rest/storyRequests';
+import { GraphMessage } from '../../../utils/graph/types';
+import { loadStories } from '../accountSlice';
 import {
   deleteNode,
   generateActions,
@@ -16,12 +18,10 @@ import {
   setId,
   StoryState
 } from '../storySlice';
-import { GraphMessage } from '../../../utils/graph/types';
-import { loadStories } from '../account/thunks';
 
 
 
-export const regenerateParagraph = createAsyncThunk(
+export const regenerateParagraphThunk = createAsyncThunk(
   'story/regenerateParagraph',
   async (nodeToRegenerate: number, { dispatch }) => {
     dispatch(deleteNode(nodeToRegenerate));
@@ -30,7 +30,7 @@ export const regenerateParagraph = createAsyncThunk(
 );
 
 
-export const regenerateActions = createAsyncThunk(
+export const regenerateActionsThunk = createAsyncThunk(
   'story/regenerateActions',
   async (nodeToRegenerate: number, { dispatch }) => {
     dispatch(deleteNode(nodeToRegenerate));
@@ -39,7 +39,7 @@ export const regenerateActions = createAsyncThunk(
 );
 
 
-export const regenerateEnding = createAsyncThunk(
+export const regenerateEndingThunk = createAsyncThunk(
   'story/regenerateParagraph',
   async (nodeToEnd: number, { dispatch }) => {
     dispatch(deleteNode(nodeToEnd));
@@ -48,7 +48,7 @@ export const regenerateEnding = createAsyncThunk(
 );
 
 
-export const saveName = createAsyncThunk(
+export const saveNameThunk = createAsyncThunk(
   'story/saveName',
   async (_, { getState }) => {
     const state = getState() as { story: StoryState };
@@ -57,7 +57,7 @@ export const saveName = createAsyncThunk(
 );
 
 
-export const saveGraph = createAsyncThunk(
+export const saveGraphThunk = createAsyncThunk(
   'story/saveGraph',
   async (_, { getState }) => {
     const state = getState() as { story: StoryState };
@@ -66,7 +66,7 @@ export const saveGraph = createAsyncThunk(
 );
 
 
-export const getGraph = createAsyncThunk(
+export const getGraphThunk = createAsyncThunk(
   'story/getGraph',
   async (_, { getState }) => {
     const state = getState() as { story: StoryState };
@@ -79,7 +79,7 @@ export const getGraph = createAsyncThunk(
 );
 
 
-export const initStory = createAsyncThunk(
+export const initStoryThunk = createAsyncThunk(
   'account/initStory',
   async (_, { dispatch }) => {
     const response = await reqInitStory();

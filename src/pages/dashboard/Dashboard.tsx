@@ -6,51 +6,33 @@ import {
   Stack,
   Title
 } from '@mantine/core';
-import {
-  loginWithSession,
-  loadStories,
-  selectLoggedIn,
-  selectSessionLoginFail,
-  selectStories
-} from '../../store/features/accountSlice';
-import StoryListItem from '../../components/dashboard/StoryListItem';
+import { IconPlus } from '@tabler/icons';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import StoryListItem from '../../components/dashboard/StoryListItem';
+import {
+  loadStories, selectStories
+} from '../../store/features/accountSlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { IconPlus } from '@tabler/icons'
-import { INITIAL_INPUT_PAGE, LOGIN_PAGE } from '../../utils/pages';
+import { INITIAL_INPUT_PAGE } from '../../utils/pages';
 
 const DashboardView = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const loggedIn = useAppSelector(selectLoggedIn);
-  const sessionLoginFail = useAppSelector(selectSessionLoginFail);
-
+  const dispatch = useAppDispatch();
   const stories = useAppSelector(selectStories);
 
-  useEffect(() => {
-    if (!loggedIn) dispatch(loginWithSession())
-  }, [loggedIn, dispatch]);
 
   useEffect(() => {
-    if (!loggedIn && sessionLoginFail) {
-      navigate(LOGIN_PAGE);
-    }
-  }, [loggedIn, sessionLoginFail, navigate]);
-
-  useEffect(() => {
-    if (loggedIn) {
-      dispatch(loadStories());
-    }
-  }, [loggedIn, dispatch]);
+    dispatch(loadStories());
+  }, [dispatch]);
 
 
   const goToInitialInputView = () => {
     navigate(INITIAL_INPUT_PAGE);
   };
 
-  
+
   return (
     <Container className="wrapper">
       <Group position="apart">

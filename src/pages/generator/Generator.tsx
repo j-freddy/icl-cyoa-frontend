@@ -1,24 +1,14 @@
-import '../../style/base.css';;
-import { useEffect } from 'react';
 import { Container, createStyles, Stack } from "@mantine/core";
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import {
-  selectStoryId,
-  getGraph,
-  setId,
-  selectIsStoryEmpty,
-} from '../../store/features/storySlice';
-import {
-  selectLoggedIn,
-  selectSessionLoginFail,
-  loginWithSession
-} from '../../store/features/accountSlice';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import StoryTitle from '../../components/generator/StoryTitle';
-import { startConnecting } from '../../store/features/wsSlice';
+import {
+  getGraph, selectIsStoryEmpty, selectStoryId, setId
+} from '../../store/features/storySlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import '../../style/base.css';
 import EmptyStoryViz from './content/EmptyStoryViz';
 import StoryViz from './content/StoryViz';
-import { LOGIN_PAGE } from '../../utils/pages';
+
 
 const useStyles = createStyles((theme) => ({
   stack: {
@@ -26,33 +16,14 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const GeneratorView = () => {
 
-  const navigate = useNavigate();
+const GeneratorView = () => {
+  const { classes } = useStyles();
 
   const dispatch = useAppDispatch();
-
   const isStoryEmpty = useAppSelector(selectIsStoryEmpty);
   const storyId = useAppSelector(selectStoryId);
 
-  const loggedIn = useAppSelector(selectLoggedIn);
-  const sessionLoginFail = useAppSelector(selectSessionLoginFail);
-
-  const { classes } = useStyles();
-
-  useEffect(() => {
-    dispatch(startConnecting())
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (!loggedIn) dispatch(loginWithSession())
-  }, [loggedIn, dispatch]);
-
-  useEffect(() => {
-    if (!loggedIn && sessionLoginFail) {
-      navigate(LOGIN_PAGE);
-    }
-  }, [loggedIn, sessionLoginFail, navigate]);
 
   useEffect(() => {
     const url: string = window.location.href;
