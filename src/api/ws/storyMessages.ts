@@ -80,3 +80,20 @@ export const connectNodesMsg = (
     },
   })
 };
+
+export const generateManyMsg = (
+  graph: Graph,
+  fromNode: number,
+  maxDepth: number,
+  saveToId: string,
+) => {
+  return JSON.stringify({
+      type: "generateMany",
+      data: {
+          graph: graphToGraphMessage(graph),
+          fromNode,
+          maxDepth,
+          saveToId,
+      },
+  })
+};
