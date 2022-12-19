@@ -1,8 +1,8 @@
+import { Button, createStyles, Group, PasswordInput, Stack, Text, TextInput, Title } from "@mantine/core";
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import StatusCode from "status-code-enum";
 import { reqSignup } from "../../api/rest/accountRequests";
-import { Group, Stack, PasswordInput, Text, Button, Title, TextInput, createStyles } from "@mantine/core";
 import { GENERATOR_PAGE, LOGIN_PAGE } from "../../utils/pages";
 
 const useStyles = createStyles((theme, _params) => ({
@@ -25,12 +25,13 @@ const useStyles = createStyles((theme, _params) => ({
 
 const SignupView = () => {
 	const { classes } = useStyles();
-	const [password, setPassword] = useState("");
+	const navigate = useNavigate();
+
 	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 
 	const [loginError, setLoginError] = useState(false);
 
-	const navigate = useNavigate();
 
 	const loginSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -41,6 +42,7 @@ const SignupView = () => {
 		}
 		navigate(GENERATOR_PAGE);
 	};
+
 
 	return (
 		<Group
@@ -64,9 +66,7 @@ const SignupView = () => {
 						value={password}
 						onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)}
 					/>
-					{
-						loginError
-						&&
+					{loginError &&
 						<Text fz="xs" c="red">Invalid credentials.</Text>
 					}
 

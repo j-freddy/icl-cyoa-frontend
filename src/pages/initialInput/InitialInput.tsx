@@ -1,21 +1,19 @@
-import '../../style/base.css';
-import { MutableRefObject, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { generateStartParagraph, reset, setGraph, initStory, setGoToGenerator } from '../../store/features/storySlice';
-import { useNavigate } from 'react-router-dom';
-import { loginWithSession, selectLoggedIn, selectSessionLoginFail } from '../../store/features/accountSlice';
-import { makeNarrativeNode } from '../../utils/graph/graphUtils';
-import { NarrativeNode, Graph } from '../../utils/graph/types';
-import { Popover, Stack, Title, Text, Flex, List } from '@mantine/core';
-import GenreDropdown from '../../components/initialInput/GenreDropdown';
-import InputTextForm from '../../components/initialInput/InputTextForm';
+import { Flex, List, Popover, Stack, Text, Title } from '@mantine/core';
+import { IconAlertOctagon, IconAlien, IconFlare, IconSearch, IconWand, IconWriting } from '@tabler/icons';
 import gsap from 'gsap';
-import { addEntry, generateInitialStory, removeEntry, setAttribute, setContent } from '../../store/features/initialInputSlice';
+import { MutableRefObject, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AttributeTable from '../../components/initialInput/AttributeTable';
 import GenerateButton from '../../components/initialInput/GenerateButton';
-import { IconAlertOctagon, IconAlien, IconFlare, IconSearch, IconWand, IconWriting } from '@tabler/icons';
-import { startConnecting } from '../../store/features/wsSlice';
-import { GENERATOR_PAGE, LOGIN_PAGE } from '../../utils/pages';
+import GenreDropdown from '../../components/initialInput/GenreDropdown';
+import InputTextForm from '../../components/initialInput/InputTextForm';
+import { addEntry, generateInitialStory, removeEntry, setAttribute, setContent } from '../../store/features/initialInputSlice';
+import { generateStartParagraph, initStory, reset, setGoToGenerator, setGraph } from '../../store/features/storySlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import '../../style/base.css';
+import { makeNarrativeNode } from '../../utils/graph/graphUtils';
+import { Graph, NarrativeNode } from '../../utils/graph/types';
+import { GENERATOR_PAGE } from '../../utils/pages';
 
 export enum GenreOption {
   Fantasy = "Fantasy",
@@ -27,21 +25,15 @@ export enum GenreOption {
 }
 
 const InitialInputView = () => {
-
-  const [genre, setGenre] = useState("");
-
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const loggedIn = useAppSelector((state) => state.account.loggedIn);
-  const sessionLoginFail = useAppSelector((state) => state.account.sessionLoginFail);
+  const dispatch = useAppDispatch();
   const goToGenerator = useAppSelector((state) => state.story.goToGenerator);
   const storyId = useAppSelector((state) => state.story.id);
   const initialInputValues = useAppSelector((state) => state.initialInput.values);
 
-  useEffect(() => {
-    dispatch(startConnecting())
-  }, [dispatch]);
+  const [genre, setGenre] = useState("");
+
 
   useEffect(() => {
     if (goToGenerator) {
@@ -50,20 +42,11 @@ const InitialInputView = () => {
     }
   }, [goToGenerator, storyId, navigate, dispatch]);
 
-  useEffect(() => {
-    if (!loggedIn) dispatch(loginWithSession())
-  }, [loggedIn, dispatch]);
-
-  useEffect(() => {
-    if (!loggedIn && sessionLoginFail) {
-      navigate(LOGIN_PAGE);
-    }
-  }, [loggedIn, sessionLoginFail, navigate]);
-
   // Reset redux state on initial render
   useEffect(() => {
     dispatch(reset());
   }, [dispatch]);
+
 
   const genreOptionsData = [
     {

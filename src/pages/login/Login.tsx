@@ -1,13 +1,13 @@
-import { Group, Stack, PasswordInput, Text, Button, Title, TextInput, createStyles } from "@mantine/core";
+import { Button, createStyles, Group, PasswordInput, Stack, Text, TextInput, Title } from "@mantine/core";
 import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   login,
   loginWithSession,
   selectCredentialLoginFail,
   selectLoggedIn
 } from "../../store/features/accountSlice";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { DASHBOARD_PAGE, SIGNUP_PAGE } from "../../utils/pages";
 
 const useStyles = createStyles((theme, _params) => ({
@@ -30,14 +30,19 @@ const useStyles = createStyles((theme, _params) => ({
 
 const LoginView = () => {
   const { classes } = useStyles();
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const dispatch = useAppDispatch();
   const loggedIn = useAppSelector(selectLoggedIn);
   const credentialsLoginFail = useAppSelector(selectCredentialLoginFail);
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   useEffect(() => {
-    if (!loggedIn) dispatch(loginWithSession());
+    if (!loggedIn) {
+      dispatch(loginWithSession());
+    }
   }, [dispatch, loggedIn]);
 
   useEffect(() => {
@@ -46,13 +51,12 @@ const LoginView = () => {
     }
   }, [loggedIn, navigate]);
 
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
 
   const loginSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     dispatch(login({ email, password }));
   }
+
 
   return (
     <Group
@@ -78,9 +82,7 @@ const LoginView = () => {
             value={password}
             onChange={(event: any) => setPassword(event.target.value)}
           />
-          {
-            credentialsLoginFail
-            &&
+          {credentialsLoginFail &&
             <Text fz="xs" c="red">Invalid credentials.</Text>
           }
 

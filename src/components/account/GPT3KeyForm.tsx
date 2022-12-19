@@ -2,15 +2,15 @@ import {
   ActionIcon,
   Button,
   Group,
-  Textarea,
+  Textarea
 } from "@mantine/core";
 import { IconEdit } from "@tabler/icons";
 import { useEffect, useState } from "react";
+import { getApiKey, selectApiKey, updateApiKey } from "../../store/features/accountSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { selectApiKey, updateApiKey } from "../../store/features/accountSlice";
 
 
-function ApiKeyForm() {
+function GPT3KeyForm() {
 
   const dispatch = useAppDispatch();
 
@@ -20,12 +20,13 @@ function ApiKeyForm() {
   const [editable, setEditable] = useState(false);
 
 
-  useEffect(
-    () => {
-      setKey(apiKey);
-    },
-    [apiKey]
-  );
+  useEffect(() => {
+    dispatch(getApiKey());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setKey(apiKey);
+  }, [apiKey]);
 
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
@@ -66,4 +67,4 @@ function ApiKeyForm() {
   );
 }
 
-export default ApiKeyForm;
+export default GPT3KeyForm;

@@ -1,8 +1,7 @@
-import '../../style/base.css';
-import './Welcome.css';
+import { Button, Container, createStyles, Group, Image, Stack, Text, Title } from '@mantine/core';
+import { IconCaretRight } from '@tabler/icons';
 import { Link } from 'react-router-dom';
-import { Title, Text, Stack, Button, Image, Container, Group, createStyles } from '@mantine/core'
-import { IconCaretRight } from '@tabler/icons'
+import '../../style/base.css';
 import { INITIAL_INPUT_PAGE } from '../../utils/pages';
 
 
@@ -71,6 +70,7 @@ const useStyles = createStyles((theme, _params) => ({
 
 const WelcomeView = () => {
   const { classes } = useStyles();
+  
   return (
     <>
       <Stack
