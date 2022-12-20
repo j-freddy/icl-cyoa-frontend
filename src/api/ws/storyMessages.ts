@@ -11,6 +11,8 @@ export const generateParagraphMsg = (
     data: {
       nodeToExpand,
       graph: graphToGraphMessage(graph),
+      isEnding: false,
+      descriptor: null,
     },
   })
 };
@@ -57,10 +59,12 @@ export const generateEndingMsg = (
   nodeToEnd: number
 ) => {
   return JSON.stringify({
-    type: "endNode",
+    type: "generateNarrative",
     data: {
-      nodeToEnd,
+      nodeToExpand: nodeToEnd,
       graph: graphToGraphMessage(graph),
+      isEnding: true,
+      descriptor: null,
     },
   })
 };
