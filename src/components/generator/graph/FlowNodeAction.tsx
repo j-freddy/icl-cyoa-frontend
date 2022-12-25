@@ -7,7 +7,6 @@ import {
 import { Handle, NodeProps, Position } from 'reactflow';
 import { getPreview } from '../../../utils/graph/graphUtils';
 import { ActionNode } from '../../../utils/graph/types';
-import ActionOptions from '../options/ActionOptions';
 
 const boxSize = {
   width: 172,
@@ -21,7 +20,8 @@ const useStyles = createStyles((theme) => ({
     backgroundColor: "rgba(248, 249, 250, 0.2)",
     border: `2px solid ${theme.colors.gray[0]}`,
     textAlign: 'center',
-    padding: theme.spacing.xs,
+    padding: theme.spacing.md,
+    borderRadius: "100%",
     maxWidth: boxSize.width,
     maxHeight: boxSize.height,
     fontSize: "10px",
@@ -49,17 +49,19 @@ function ActionFlowNode(props: NodeProps<ActionFlowNodeData>) {
     sourcePosition,
   } = props;
 
-  const NUM_WORDS = 6;
+  const NUM_WORDS = 8;
   const preview: string = getPreview(actionNode.data, NUM_WORDS);
 
+  // node-box required for change on hover
+  const boxClasses = `${classes.nodeBox} node-box`;
+
   return (
-    <Box className={classes.nodeBox}>
+    <Box className={boxClasses}>
       <Handle type="target" position={targetPosition || Position.Top} />
       <Group noWrap={true} align="top">
         <Text>
           {preview}
         </Text>
-        <ActionOptions actionNode={actionNode} />
       </Group>
       <Handle type="source" position={sourcePosition || Position.Bottom} />
     </Box>

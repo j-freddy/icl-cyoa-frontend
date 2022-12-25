@@ -9,7 +9,7 @@ export default function Saver() {
   const dispatch = useAppDispatch();
 
   return (
-    <Button rightIcon={<IconDeviceFloppy size={20} />}
+    <Button variant="gradient" gradient={{ from: 'teal', to: 'blue', deg: 60 }} rightIcon={<IconDeviceFloppy size={20} />}
       onClick={() => { dispatch(saveGraph()); }}>
       Save
     </Button>

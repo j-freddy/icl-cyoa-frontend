@@ -49,6 +49,7 @@ export enum LoadingType {
     GenerateEnding = "ending",
     ConnectingNodes = "connecting nodes",
     InitialStory = "initial story",
+    GenerateMany = "many paragraphs and actions",
 };
 
 export type StoryEntry = {

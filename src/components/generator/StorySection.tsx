@@ -1,11 +1,12 @@
 import { StoryNode } from "../../utils/graph/types";
 import {
   Text,
-  List,
-  ScrollArea,
   createStyles,
   Title,
   Stack,
+  Box,
+  Divider,
+  Space,
 } from '@mantine/core';
 import NarrativeSection from "./section/NarrativeSection";
 import ActionSection from "./section/ActionSection";
@@ -13,9 +14,8 @@ import ActionSection from "./section/ActionSection";
 
 const useStyles = createStyles((theme) => ({
 
-  scroll_area: {
+  sectionArea: {
     backgroundColor: theme.white,
-    height: 320,
     borderRadius: 5,
     marginTop: 8,
     marginBottom: 8,
@@ -29,8 +29,12 @@ const useStyles = createStyles((theme) => ({
     color: theme.colors.black,
   },
 
-  actions_list: {
-    marginLeft: 50,
+  actionsList: {
+    marginLeft: 32,
+  },
+
+  actionsListItem: {
+    display: "list-item",
   },
 
 }));
@@ -43,22 +47,28 @@ function StorySection (props: StorySectionProps) {
 
   const ListOfActions = () => {
     return (
-      <List spacing="xs" className={classes.actions_list}>
-        {
-          props.actions?.map((action, index) => {
-            return (
-              <List.Item key={index}>
-                <ActionSection action={action} nodeId={props.childrenIds[index]} />
-              </List.Item>
-            )
-          })
-        }
-      </List>
+      <>
+        <Title order={4} weight={600}>
+          Options:
+        </Title>
+        <div className={classes.actionsList}>
+          {
+            props.actions!.map((action, index) => {
+              return (
+                <div key={index} className={classes.actionsListItem}>
+                  <ActionSection action={action} nodeId={props.childrenIds[index]} />
+                  <Space h="sm" />
+                </div>
+              )
+            })
+          }
+        </div>
+      </>
     );
   }
 
   return (
-    <ScrollArea type="always" className={classes.scroll_area}>
+    <Box className={classes.sectionArea}>
 
       <Stack spacing="sm" className={classes.stack}>
         <Text>
@@ -68,11 +78,13 @@ function StorySection (props: StorySectionProps) {
           <Text fz="sm" c="dimmed" fs="italic">Section paragraph and list of actions. </Text>
         </Text>
         <NarrativeSection {...props} />
+
+        <Divider my="sm" variant="dashed" />
         <ListOfActions />
 
       </Stack>
 
-    </ScrollArea>
+    </Box>
   );
 };
 

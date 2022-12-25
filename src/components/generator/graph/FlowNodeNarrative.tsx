@@ -18,6 +18,7 @@ const useStyles = createStyles((theme) => ({
 
   nodeBox: {
     backgroundColor: theme.colors.gray[0],
+    border: `2px solid ${theme.colors.gray[0]}`,
     textAlign: 'center',
     padding: theme.spacing.xs,
     borderRadius: theme.radius.sm,
@@ -48,17 +49,19 @@ function NarrativeFlowNode(props: NodeProps<NarrativeFlowNodeData>) {
     sourcePosition,
   } = props;
 
-  const NUM_WORDS = 8;
+  const NUM_WORDS = 10;
   const preview: string = getPreview(narrativeNode.data, NUM_WORDS);
 
+  // node-box required for change on hover
+  const boxClasses = `${classes.nodeBox} node-box`;
+
   return (
-    <Box className={classes.nodeBox}>
+    <Box className={boxClasses}>
       <Handle type="target" position={targetPosition || Position.Top} />
       <Group noWrap={true} align="top">
         <Text>
           {preview}
         </Text>
-        <NarrativeOptions narrativeNode={narrativeNode} />
       </Group>
       <Handle type="source" position={sourcePosition || Position.Bottom} />
     </Box>

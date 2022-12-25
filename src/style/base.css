@@ -38,3 +38,7 @@ a:hover {
 .mantine-1lgihd9 {
   height: auto;
 }
+
+.react-flow .selected .node-box {
+  background-color: var(--my-theme);
+}

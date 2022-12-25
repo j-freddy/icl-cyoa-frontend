@@ -10,6 +10,7 @@ export const displayLoadingNotification = (loadingType: LoadingType) => {
     [LoadingType.GenerateEnding, "Generating ending."],
     [LoadingType.ConnectingNodes, "Connecting nodes."],
     [LoadingType.InitialStory, "Generating initial story."],
+    [LoadingType.GenerateMany, "Generating many paragraphs and actions."],
   ]);
   const message = typeMessage.get(loadingType);
 

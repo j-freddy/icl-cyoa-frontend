@@ -4,6 +4,7 @@ import {
   Container,
   Group,
   createStyles,
+  Divider,
 } from "@mantine/core";
 import { useCallback, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -15,11 +16,25 @@ import { connectNodes, selectLoadingSection, selectStoryGraph } from "../../../s
 import { isAction } from "../../../utils/graph/graphUtils";
 import { getStoryNodes } from "../../../utils/graph/storyUtils";
 import { NodeData, StoryNode } from "../../../utils/graph/types";
+import NodeOptions from "../../../components/generator/options/NodeOptions";
 
 const useStyles = createStyles(() => ({
   container: {
     width: "100%",
     padding: 0,
+  },
+
+  group: {
+    alignItems: "stretch",
+  },
+
+  optionsContainer: {
+    width: "224px",
+    border: "2px solid var(--my-light)",
+    background: "var(--my-light)",
+    borderRadius: "8px",
+    marginBottom: "var(--grid-size)",
+    padding: "var(--grid-size)",
   },
 }));
 
@@ -33,11 +48,9 @@ const StoryViz = () => {
   const [activeNodeId, setActiveNodeId] = useState<number | null>(0);
 
 
-  const story = useMemo(
-    () => {
+  const story = useMemo(() => {
       return getStoryNodes(storyGraph, false);
-    },
-    [storyGraph]
+    }, [storyGraph]
   );
 
   const sendConnectNodesMessage = useCallback(
@@ -81,7 +94,7 @@ const StoryViz = () => {
 
   return (
     <Container className={classes.container}>
-      <Group spacing="xl">
+      <Group spacing="xl" className={classes.group}>
 
         <GraphViz
           graph={storyGraph}
@@ -89,11 +102,26 @@ const StoryViz = () => {
           onConnectNodes={sendConnectNodesMessage}
         />
 
-        <Stack spacing="xl">
-          <Saver />
-          <Downloader story={story} />
-        </Stack>
+        <Container className={classes.optionsContainer}>
+          {/* Save and download */}
+          {/* <Stack spacing="md">
+            <Saver />
+            <Downloader story={story} />
+          </Stack>
 
+          <Divider my="sm" /> */}
+
+          {/* Options */}
+          {
+            activeNodeId !== null && 
+            <NodeOptions nodeData={storyGraph.nodeLookup[activeNodeId!]} />
+          }
+        </Container>
+
+      </Group>
+      <Group mb="md">
+        <Saver />
+        <Downloader story={story} />
       </Group>
 
       <Pagination
