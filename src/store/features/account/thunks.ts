@@ -4,8 +4,10 @@ import {
   reqGetStories,
   reqLogin,
   reqLoginWithSession,
+  reqSignup,
   reqUpdateApiKey
 } from "../../../api/rest/accountRequests";
+import { reqDeleteStory } from "../../../api/rest/storyRequests";
 import { StoryListEntry } from "../accountSlice";
 
 
@@ -38,6 +40,19 @@ export const loginWithSessionThunk = createAsyncThunk(
 
     return {
       email: json.email,
+      status
+    };
+  }
+);
+
+export const signupThunk = createAsyncThunk(
+  'account/signup',
+  async (data: { email: string, password: string }) => {
+    const response = await reqSignup(data.email, data.password);
+    const status = response.status;
+
+    return {
+      email: data.email,
       status
     };
   }
@@ -76,5 +91,13 @@ export const updateApiKeyThunk = createAsyncThunk(
     };
 
     return json.apiKey;
+  }
+);
+
+export const deleteStoryThunk = createAsyncThunk(
+  'account/deleteStory',
+  async (storyId: string) => {
+    await reqDeleteStory(storyId);
+    return storyId;
   }
 );

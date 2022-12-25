@@ -2,7 +2,8 @@ import { Card, Text, Badge, Group, Container, Button } from '@mantine/core'
 import { useNavigate } from 'react-router-dom';
 import { IconTrash } from '@tabler/icons';
 import { GENERATOR_PAGE } from '../../utils/pages';
-import { reqDeleteStory } from '../../api/rest/storyRequests';
+import { useAppDispatch } from '../../store/hooks';
+import { deleteStory } from '../../store/features/accountSlice';
 
 interface StoryListItemProps {
   storyId: string,
@@ -13,6 +14,7 @@ interface StoryListItemProps {
 
 export default function StoryListItem(props: StoryListItemProps) {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   return (
     <Card
@@ -42,9 +44,9 @@ export default function StoryListItem(props: StoryListItemProps) {
                     color="red"
                     rightIcon={<IconTrash />}
                     size="xs"
-                    onClick={() => {
-                        reqDeleteStory(props.storyId);
-                        window.location.reload()
+                    onClick={(e: React.MouseEvent) => {
+                        dispatch(deleteStory(props.storyId));
+                        e.stopPropagation();
                     }}
                 >
                     Delete Story
