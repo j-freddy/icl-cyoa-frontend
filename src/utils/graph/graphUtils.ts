@@ -27,11 +27,11 @@ export const makeActionNode = (params: Omit<ActionNode, "type">) => {
 
 export const isNarrative = (node: NodeData) => {
   return node.type === NodeType.Narrative;
-}
+};
+
 export const isAction = (node: NodeData) => {
   return node.type === NodeType.Action;
-}
-
+};
 
 export const graphMessageToGraphLookup = (graphMessage: GraphMessage): Graph => {
   const nodeLookup: Record<number, NodeData> = {};
@@ -85,6 +85,12 @@ export const deleteNodeFromGraph = (graph: Graph, nodeId: number): Graph => {
 };
 
 
-export const getPreview = (text: string, numWords: number) => {
-  return text.split(' ').slice(0, numWords).join(' ') + " ...";
+export const getPreview = (text: string, numWords: number): string => {
+  const words = text.split(' ');
+
+  if (words.length <= numWords) {
+    return text;
+  }
+
+  return words.slice(0, numWords).join(' ') + " ...";
 }

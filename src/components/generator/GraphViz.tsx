@@ -47,7 +47,7 @@ const GraphViz = (props: GraphVizProps) => {
       <GraphVizInner {...props}></GraphVizInner>
     </ReactFlowProvider>
   )
-}
+};
 
 const GraphVizInner = (props: GraphVizProps) => {
   const { graph } = props;

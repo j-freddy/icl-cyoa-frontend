@@ -1,21 +1,16 @@
 import {
-  ActionIcon,
+  Button,
   createStyles,
   Popover,
   Stack,
-  UnstyledButton
 } from "@mantine/core";
-import { IconMenu2 } from "@tabler/icons";
 import { useAppDispatch } from "../../../store/hooks";
-import { regenerateEnding, regenerateParagraph } from "../../../store/features/storySlice";
+import { generateMany, regenerateEnding, regenerateMany, regenerateParagraph } from "../../../store/features/storySlice";
 import { ActionNode } from "../../../utils/graph/types";
 
 const useStyles = createStyles((theme) => ({
   buttonStack: {
-    fontSize: "10px",
-    '&:hover': {
-      fontWeight: "bold",
-    },
+
   },
 
 }));
@@ -40,31 +35,68 @@ function ActionOptions(props: ActionOptionsProps) {
     dispatch(regenerateParagraph(actionNode.nodeId))
   };
 
+  const onGenerateManyClick = async () => {
+    dispatch(regenerateMany({
+      fromNode: actionNode.nodeId,
+      // TODO Customisable max depth
+      maxDepth: 2,
+    }))
+  }
+
 
   return (
-    <Popover trapFocus withArrow shadow="md" zIndex={100}>
-      <Popover.Target>
-        <ActionIcon >
-          <IconMenu2 />
-        </ActionIcon>
-      </Popover.Target>
-      <Popover.Dropdown>
-        <Stack>
-          <UnstyledButton className={classes.buttonStack} onClick={onGenerateClick}>
-            {actionNode.childrenIds.length === 0
-              ? "Generate"
-              : "Regenerate"
-            }
-          </UnstyledButton>
-          <UnstyledButton className={classes.buttonStack} onClick={onGenerateEndingClick}>
-            {actionNode.childrenIds.length === 0
-              ? "Generate ending"
-              : "Regenerate ending"
-            }
-          </UnstyledButton>
-        </Stack>
-      </Popover.Dropdown>
-    </Popover>
+    <>
+      {
+        actionNode.childrenIds.length === 0 ? (
+          <Stack spacing="xs">
+            <Button variant="outline" className={classes.buttonStack} onClick={onGenerateClick}>
+              Generate
+            </Button>
+            <Button variant="outline" className={classes.buttonStack} onClick={onGenerateManyClick}>
+              Generate Many
+            </Button>
+            <Button variant="outline" className={classes.buttonStack} onClick={onGenerateEndingClick}>
+              Generate Ending
+            </Button>
+          </Stack>
+        ) : (
+          <Stack spacing="xs">
+            <Popover position="bottom" withArrow shadow="md">
+              <Popover.Target>
+                <Button variant="outline">Regenerate</Button>
+              </Popover.Target>
+              <Popover.Dropdown>
+                <Button variant="subtle" className={classes.buttonStack} onClick={onGenerateClick}>
+                  Confirm: Regenerate
+                </Button>
+              </Popover.Dropdown>
+            </Popover>
+
+            <Popover position="bottom" withArrow shadow="md">
+              <Popover.Target>
+                <Button variant="outline">Regenerate Many</Button>
+              </Popover.Target>
+              <Popover.Dropdown>
+                <Button variant="subtle" className={classes.buttonStack} onClick={onGenerateManyClick}>
+                  Confirm: Regenerate Many
+                </Button>
+              </Popover.Dropdown>
+            </Popover>
+
+            <Popover position="bottom" withArrow shadow="md">
+              <Popover.Target>
+                <Button variant="outline">Regenerate Ending</Button>
+              </Popover.Target>
+              <Popover.Dropdown>
+                <Button variant="subtle" className={classes.buttonStack} onClick={onGenerateEndingClick}>
+                  Confirm: Regenerate Ending
+                </Button>
+              </Popover.Dropdown>
+            </Popover>
+          </Stack>
+        )
+      }
+    </>
   );
 }
 

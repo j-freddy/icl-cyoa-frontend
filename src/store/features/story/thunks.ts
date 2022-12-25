@@ -13,6 +13,7 @@ import {
   deleteNode,
   generateActions,
   generateEnding,
+  generateMany,
   generateParagraph,
   setGoToGenerator,
   setId,
@@ -47,6 +48,18 @@ export const regenerateEndingThunk = createAsyncThunk(
   }
 );
 
+export type RegenerateManyProps = {
+  fromNode: number,
+  maxDepth: number,
+};
+
+export const regenerateManyThunk = createAsyncThunk(
+  'story/regenerateMany',
+  async (props: RegenerateManyProps, { dispatch }) => {
+    dispatch(deleteNode(props.fromNode));
+    dispatch(generateMany({ ...props }));
+  }
+);
 
 export const saveNameThunk = createAsyncThunk(
   'story/saveName',

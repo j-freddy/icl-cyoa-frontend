@@ -4,7 +4,7 @@ import { Graph, LoadingType } from '../../utils/graph/types';
 import { RootState } from '../store';
 import { handleGetGraphFulfilled, handleInitStoryFulfilled } from './story/handlers';
 import { displayLoadedNotification, displayLoadingNotification } from './story/loadingNotifications';
-import { getGraphThunk, initStoryThunk, regenerateActionsThunk, regenerateEndingThunk, regenerateParagraphThunk, saveGraphThunk, saveNameThunk } from './story/thunks';
+import { getGraphThunk, initStoryThunk, regenerateActionsThunk, regenerateEndingThunk, regenerateManyThunk, regenerateParagraphThunk, saveGraphThunk, saveNameThunk } from './story/thunks';
 
 
 export interface StoryState {
@@ -35,6 +35,7 @@ const initialState: StoryState = {
 export const regenerateParagraph = regenerateParagraphThunk;
 export const regenerateActions = regenerateActionsThunk;
 export const regenerateEnding = regenerateEndingThunk;
+export const regenerateMany = regenerateManyThunk;
 export const saveName = saveNameThunk;
 export const saveGraph = saveGraphThunk;
 export const getGraph = getGraphThunk;
@@ -101,7 +102,8 @@ export const storySlice = createSlice({
       displayLoadingNotification(LoadingType.ConnectingNodes);
     },
     generateMany: (state, _action: PayloadAction<{ fromNode: number, maxDepth: number }>) => {
-      state.loadingSection = LoadingType.ConnectingNodes;
+      state.loadingSection = LoadingType.GenerateMany;
+      displayLoadingNotification(LoadingType.GenerateMany);
     },
   },
   extraReducers: (builder) => {

@@ -1,21 +1,17 @@
 import {
-  ActionIcon,
+  Button,
   createStyles,
   Popover,
   Stack,
-  UnstyledButton
 } from "@mantine/core";
 import { IconMenu2 } from "@tabler/icons";
 import { useAppDispatch } from "../../../store/hooks";
-import { generateActions, regenerateActions } from "../../../store/features/storySlice";
+import { generateActions, generateMany, regenerateActions, regenerateMany } from "../../../store/features/storySlice";
 import { NarrativeNode } from "../../../utils/graph/types";
 
 const useStyles = createStyles((theme) => ({
   buttonStack: {
-    fontSize: "10px",
-    '&:hover': {
-      fontWeight: "bold",
-    },
+
   },
 
 }));
@@ -37,34 +33,67 @@ function NarrativeOptions(props: NarrativeOptionsProps) {
   const onGenerateClick = () => {
     dispatch(generateActions({ nodeToExpand: narrativeNode.nodeId }));
   };
+
   const onRegenerateClick = () => {
     dispatch(regenerateActions(narrativeNode.nodeId));
   };
 
+  const onGenerateManyClick = () => {
+    dispatch(generateMany({
+      fromNode: narrativeNode.nodeId,
+      // TODO Customisable max depth
+      maxDepth: 2,
+    }));
+  };
+
+  const onRegenerateManyClick = () => {
+    dispatch(regenerateMany({
+      fromNode: narrativeNode.nodeId,
+      // TODO Customisable max depth
+      maxDepth: 2,
+    }));
+  }
 
   return (
-    <Popover trapFocus withArrow shadow="md" zIndex={100}>
-      <Popover.Target>
-        <ActionIcon >
-          <IconMenu2 />
-        </ActionIcon>
-      </Popover.Target>
-      <Popover.Dropdown>
-        <Stack>
-          {narrativeNode.childrenIds.length === 0
-            ?
-            <UnstyledButton className={classes.buttonStack} onClick={onGenerateClick}>
-              Generate
-            </UnstyledButton>
-            :
-            <UnstyledButton className={classes.buttonStack} onClick={onRegenerateClick}>
-              Regenerate
-            </UnstyledButton>
-          }
+    <>
+      {narrativeNode.childrenIds.length === 0
+        ?
+        // Generate & Generate Many
+        <Stack spacing="xs">
+          <Button variant="outline" className={classes.buttonStack} onClick={onGenerateClick}>
+            Generate
+          </Button>
+          <Button variant="outline" className={classes.buttonStack} onClick={onGenerateManyClick}>
+            Generate Many
+          </Button>
         </Stack>
-      </Popover.Dropdown>
-    </Popover>
-  );
+        :
+        // Regenerate
+        <Stack spacing="xs">
+          <Popover position="bottom" withArrow shadow="md">
+            <Popover.Target>
+              <Button variant="outline">Regenerate</Button>
+            </Popover.Target>
+            <Popover.Dropdown>
+              <Button variant="subtle" className={classes.buttonStack} onClick={onRegenerateClick}>
+                Confirm: Regenerate
+              </Button>
+            </Popover.Dropdown>
+          </Popover>
+          <Popover position="bottom" withArrow shadow="md">
+            <Popover.Target>
+              <Button variant="outline">Regenerate Many</Button>
+            </Popover.Target>
+            <Popover.Dropdown>
+              <Button variant="subtle" className={classes.buttonStack} onClick={onRegenerateManyClick}>
+                Confirm: Regenerate Many
+              </Button>
+            </Popover.Dropdown>
+          </Popover>
+        </Stack>
+      }
+    </>
+);
 }
 
 export default NarrativeOptions;
