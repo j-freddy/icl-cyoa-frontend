@@ -23,7 +23,6 @@ export const handleLoginRejected = (state: AccountState) => {
   state.credentialsLoginFail = true;
 };
 
-
 export const handleLoginWithSessionFulfilled = (
   state: AccountState,
   action: PayloadAction<AuthResponse>,
@@ -44,7 +43,28 @@ export const handleLoginWithSessionRejected = (state: AccountState) => {
   state.sessionLoginFail = true;
 };
 
+export const handleSignupFulfilled = (
+  state: AccountState,
+  action: PayloadAction<AuthResponse>,
+) => {
+  const status = action.payload.status;
+  if (status === StatusCode.ClientErrorUnauthorized) {
+    state.signupError = true;
+    return;
+  }
 
+  state.loggedIn = true;
+  state.sessionLoginFail = false;
+  state.credentialsLoginFail = false;
+
+  state.email = action.payload.email;
+};
+
+export const handleSignupRejected = (
+  state: AccountState,
+) => {
+    state.signupError = true;
+};
 
 export const handleLoadStoriesFulfilled = (
   state: AccountState,
@@ -53,18 +73,23 @@ export const handleLoadStoriesFulfilled = (
   state.stories = action.payload;
 };
 
-
 export const handleGetApiKeyFulfilled = (
   state: AccountState,
   action: PayloadAction<string>
 ) => {
   state.apiKey = action.payload;
-}
-
+};
 
 export const handleUpdateApiKeyFulfilled = (
   state: AccountState,
   action: PayloadAction<string>
 ) => {
   state.apiKey = action.payload;
-}
+};
+
+export const handleDeleteStoryFulfilled = (
+  state: AccountState,
+  action: PayloadAction<string>
+) => {
+  state.stories = state.stories.filter((story) => story.storyId !== action.payload);
+};
