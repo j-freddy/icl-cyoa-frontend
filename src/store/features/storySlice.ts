@@ -12,6 +12,10 @@ export interface StoryState {
 
   title: string;
   graph: Graph;
+  temperature: number;
+  descriptor: string;
+  details: string;
+  style: string;
   // Queues are non-serialisable
   // This is OK as it is impractical for the user to
   // click 'Generate' thousands of times
@@ -26,6 +30,10 @@ const initialState: StoryState = {
   id: "",
   title: "",
   graph: { nodeLookup: {} },
+  temperature: 0.6,
+  descriptor: "",
+  details: "",
+  style: "",
   loadingSection: null,
 
   goToGenerator: false,
@@ -65,6 +73,18 @@ export const storySlice = createSlice({
     setGoToGenerator: (state, action: PayloadAction<boolean>) => {
       state.goToGenerator = action.payload;
     },
+    setTemperature: (state, action: PayloadAction<number>) => {
+      state.temperature = action.payload;
+    },
+    setDescriptor: (state, action: PayloadAction<string>) => {
+      state.descriptor = action.payload;
+    },
+    setDetails: (state, action: PayloadAction<string>) => {
+      state.details = action.payload;
+    },
+    setStyle: (state, action: PayloadAction<string>) => {
+      state.style = action.payload;
+    },
 
     /* 
       Reducers for the WS middleware.
@@ -76,11 +96,11 @@ export const storySlice = createSlice({
       state.loadingSection = null;
       state.graph = action.payload;
     },
-    generateStartParagraph: (state, _action: PayloadAction<{ prompt: string }>) => {
+    generateInitialStoryBasic: (state, _action: PayloadAction<{ prompt: string }>) => {
       state.loadingSection = LoadingType.InitialStory;
       displayLoadingNotification(LoadingType.InitialStory);
     },
-    generateStoryWithAdvancedInput: (state, _action: PayloadAction<{
+    generateInitialStoryAdvanced: (state, _action: PayloadAction<{
       values: { attribute: string, content: string }[]
     }>) => {
       state.loadingSection = LoadingType.InitialStory;
@@ -122,9 +142,13 @@ export const {
   setNodeData,
   setId,
   setGoToGenerator,
+  setTemperature,
+  setDescriptor,
+  setDetails,
+  setStyle,
   graphResponse,
-  generateStartParagraph,
-  generateStoryWithAdvancedInput,
+  generateInitialStoryBasic,
+  generateInitialStoryAdvanced,
   generateParagraph,
   generateActions,
   generateEnding,

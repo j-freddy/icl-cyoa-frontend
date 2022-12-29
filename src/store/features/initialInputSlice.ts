@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { generateStoryWithAdvancedInput } from "./storySlice";
+import { generateInitialStoryAdvanced } from "./storySlice";
 
 interface InitialInputState {
   values: { attribute: string, content: string }[]
@@ -19,7 +19,7 @@ export const generateInitialStory = createAsyncThunk(
   "initialInput/generateInitialStory",
   async (_, { getState, dispatch }) => {
     const state = getState() as { initialInput: InitialInputState };
-    dispatch(generateStoryWithAdvancedInput({ values: state.initialInput.values }));
+    dispatch(generateInitialStoryAdvanced({ values: state.initialInput.values }));
   }
 );
 

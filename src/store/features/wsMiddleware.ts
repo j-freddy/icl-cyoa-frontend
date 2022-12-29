@@ -4,11 +4,9 @@ import { WS_URL } from '../../api/links';
 import {
   connectNodesMsg,
   generateActionsMsg,
-  generateEndingMsg,
   generateManyMsg,
-  generateParagraphMsg,
-  generateStartParagraphMsg,
-  generateStoryWithAdvancedInputMsg
+  generateInitialStoryMsg,
+  generateNarrativeMsg
 } from '../../api/ws/storyMessages';
 import { graphMessageToGraphLookup } from '../../utils/graph/graphUtils';
 import { GraphMessage } from '../../utils/graph/types';
@@ -18,8 +16,8 @@ import {
   generateEnding,
   generateMany,
   generateParagraph,
-  generateStartParagraph,
-  generateStoryWithAdvancedInput,
+  generateInitialStoryBasic,
+  generateInitialStoryAdvanced,
   graphResponse
 } from './storySlice';
 import { connectionEstablished, disconnected, startConnecting } from './wsSlice';
@@ -56,33 +54,59 @@ const wsMiddleware: Middleware = store => {
     }
 
     if (isConnectionEstablished) {
-      if (generateStartParagraph.match(action)) {
-        socket.send(generateStartParagraphMsg(action.payload.prompt));
+      if (generateInitialStoryBasic.match(action)) {
+        const values = [{attribute: "theme", content: action.payload.prompt}];
+        socket.send(generateInitialStoryMsg(state.story.temperature, values));
       }
 
-      if (generateStoryWithAdvancedInput.match(action)) {
-        socket.send(generateStoryWithAdvancedInputMsg(action.payload.values));
-      }
-
-      if (generateParagraph.match(action)) {
-        socket.send(generateParagraphMsg(state.story.graph, action.payload.nodeToExpand));
+      if (generateInitialStoryAdvanced.match(action)) {
+        socket.send(generateInitialStoryMsg(state.story.temperature, action.payload.values));
       }
 
       if (generateActions.match(action)) {
-        socket.send(generateActionsMsg(state.story.graph, action.payload.nodeToExpand));
+        socket.send(generateActionsMsg(state.story.temperature, state.story.graph, action.payload.nodeToExpand));
+      }
+
+      if (generateParagraph.match(action)) {
+        socket.send(generateNarrativeMsg(
+          state.story.temperature, 
+          state.story.graph, 
+          action.payload.nodeToExpand, 
+          false, 
+          state.story.descriptor, 
+          state.story.details, 
+          state.story.style));
       }
 
       if (generateEnding.match(action)) {
-        socket.send(generateEndingMsg(state.story.graph, action.payload.nodeToEnd));
+        socket.send(generateNarrativeMsg(
+          state.story.temperature, 
+          state.story.graph, 
+          action.payload.nodeToEnd, 
+          true, 
+          state.story.descriptor, 
+          state.story.details, 
+          state.story.style));
       }
 
       if (connectNodes.match(action)) {
-        socket.send(connectNodesMsg(state.story.graph, action.payload.fromNode, action.payload.toNode));
+        socket.send(connectNodesMsg(
+          state.story.temperature, 
+          state.story.graph, 
+          action.payload.fromNode, 
+          action.payload.toNode
+        ));
       }
     }
 
     if (generateMany.match(action)) {
-      socket.send(generateManyMsg(state.story.graph, action.payload.fromNode, action.payload.maxDepth, state.story.storyId));
+      socket.send(generateManyMsg(
+        state.story.temperature, 
+        state.story.graph, 
+        action.payload.fromNode, 
+        action.payload.maxDepth, 
+        state.story.storyId
+      ));
     }
 
     next(action);

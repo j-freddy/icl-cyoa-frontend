@@ -1,10 +1,9 @@
 import {
   Pagination,
-  Stack,
   Container,
   Group,
   createStyles,
-  Divider,
+  ScrollArea,
 } from "@mantine/core";
 import { useCallback, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -29,7 +28,8 @@ const useStyles = createStyles(() => ({
   },
 
   optionsContainer: {
-    width: "224px",
+    width: "240px",
+    height: "400px",
     border: "2px solid var(--my-light)",
     background: "var(--my-light)",
     borderRadius: "8px",
@@ -102,21 +102,12 @@ const StoryViz = () => {
           onConnectNodes={sendConnectNodesMessage}
         />
 
-        <Container className={classes.optionsContainer}>
-          {/* Save and download */}
-          {/* <Stack spacing="md">
-            <Saver />
-            <Downloader story={story} />
-          </Stack>
-
-          <Divider my="sm" /> */}
-
-          {/* Options */}
+        <ScrollArea className={classes.optionsContainer}>
           {
             activeNodeId !== null && 
             <NodeOptions nodeData={storyGraph.nodeLookup[activeNodeId!]} />
           }
-        </Container>
+        </ScrollArea>
 
       </Group>
       <Group mb="md">
