@@ -1,38 +1,45 @@
 import { graphToGraphMessage } from "../../utils/graph/graphUtils";
 import { Graph } from "../../utils/graph/types";
 
-
-export const generateParagraphMsg = (
+export const generateNarrativeMsg = (
+  temperature: number,
   graph: Graph,
-  nodeToExpand: number
+  nodeToExpand: number,
+  isEnding: boolean,
+  descriptor: string | null,
+  details: string | null,
+  style: string | null
 ) => {
+  if (descriptor === "") {
+    descriptor = null
+  }
+  if (details === "") {
+    details = null
+  }
+  if (style === "") {
+    style = null
+  }
   return JSON.stringify({
     type: "generateNarrative",
+    temperature,
     data: {
       nodeToExpand,
       graph: graphToGraphMessage(graph),
-      isEnding: false,
-      descriptor: null,
+      isEnding,
+      descriptor,
+      details,
+      style
     },
   })
-};
+}
 
-
-export const generateStartParagraphMsg = (prompt: string) => {
-  return JSON.stringify({
-    type: "startNode",
-    data: {
-      prompt: prompt,
-    }
-  })
-};
-
-
-export const generateStoryWithAdvancedInputMsg = (
+export const generateInitialStoryMsg = (
+  temperature: number,
   values: { attribute: string, content: string }[]
 ) => {
   return JSON.stringify({
     type: "initialStory",
+    temperature,
     data: {
       prompt: values,
     },
@@ -41,11 +48,13 @@ export const generateStoryWithAdvancedInputMsg = (
 
 
 export const generateActionsMsg = (
+  temperature: number,
   graph: Graph,
   nodeToExpand: number
 ) => {
   return JSON.stringify({
     type: "generateActions",
+    temperature,
     data: {
       nodeToExpand,
       graph: graphToGraphMessage(graph),
@@ -54,29 +63,15 @@ export const generateActionsMsg = (
 };
 
 
-export const generateEndingMsg = (
-  graph: Graph,
-  nodeToEnd: number
-) => {
-  return JSON.stringify({
-    type: "generateNarrative",
-    data: {
-      nodeToExpand: nodeToEnd,
-      graph: graphToGraphMessage(graph),
-      isEnding: true,
-      descriptor: null,
-    },
-  })
-};
-
-
 export const connectNodesMsg = (
+  temperature: number,
   graph: Graph,
   fromNode: number,
   toNode: number
 ) => {
   return JSON.stringify({
     type: "connectNode",
+    temperature,
     data: {
       fromNode,
       toNode,
@@ -86,6 +81,7 @@ export const connectNodesMsg = (
 };
 
 export const generateManyMsg = (
+  temperature: number,
   graph: Graph,
   fromNode: number,
   maxDepth: number,
@@ -93,6 +89,7 @@ export const generateManyMsg = (
 ) => {
   return JSON.stringify({
       type: "generateMany",
+      temperature,
       data: {
           graph: graphToGraphMessage(graph),
           fromNode,

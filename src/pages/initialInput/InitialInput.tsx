@@ -8,7 +8,7 @@ import GenerateButton from '../../components/initialInput/GenerateButton';
 import GenreDropdown from '../../components/initialInput/GenreDropdown';
 import InputTextForm from '../../components/initialInput/InputTextForm';
 import { addEntry, generateInitialStory, removeEntry, setAttribute, setContent } from '../../store/features/initialInputSlice';
-import { generateStartParagraph, initStory, reset, setGoToGenerator, setGraph } from '../../store/features/storySlice';
+import { generateInitialStoryBasic, initStory, reset, setGoToGenerator, setGraph } from '../../store/features/storySlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import '../../style/base.css';
 import { makeNarrativeNode } from '../../utils/graph/graphUtils';
@@ -110,7 +110,7 @@ const InitialInputView = () => {
     const generateGenrePrompt = `Write a ${genre} story from a second person perspective.`;
 
     dispatch(initStory()).unwrap().then(() =>
-      dispatch(generateStartParagraph({ prompt: generateGenrePrompt })));
+      dispatch(generateInitialStoryBasic({ prompt: generateGenrePrompt })));
   };
 
   const handleGenerateInitialStory = () => {
