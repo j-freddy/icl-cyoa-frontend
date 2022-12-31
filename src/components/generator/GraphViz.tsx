@@ -60,7 +60,7 @@ const GraphVizInner = (props: GraphVizProps) => {
     () => {
       // TODO: focus on newly generated nodes (and highlight them)
       // render component and then call fitView
-      setTimeout(() => reactFlowInstance.fitView(), 0);
+      setTimeout(() => reactFlowInstance.fitView(), 10);
 
       return getGraphNodesAndEdges(layout, graph);
     },

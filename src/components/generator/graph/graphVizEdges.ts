@@ -1,4 +1,4 @@
-const edgeType = 'smoothstep';
+const edgeType = 'default';
 
 interface flowEdgeArgs {
   nodeId: number,

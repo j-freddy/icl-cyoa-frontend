@@ -3,13 +3,10 @@ import {
   Container,
   Group,
   createStyles,
-  ScrollArea,
 } from "@mantine/core";
 import { useCallback, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import Downloader from "../../../components/generator/Downloader";
 import GraphViz from "../../../components/generator/GraphViz";
-import Saver from "../../../components/generator/Saver";
 import StorySection from "../../../components/generator/StorySection";
 import { connectNodes, selectLoadingSection, selectStoryGraph } from "../../../store/features/storySlice";
 import { isAction } from "../../../utils/graph/graphUtils";
@@ -102,17 +99,13 @@ const StoryViz = () => {
           onConnectNodes={sendConnectNodesMessage}
         />
 
-        <ScrollArea className={classes.optionsContainer}>
+        <Container className={classes.optionsContainer}>
           {
             activeNodeId !== null && 
             <NodeOptions nodeData={storyGraph.nodeLookup[activeNodeId!]} />
           }
-        </ScrollArea>
+        </Container>
 
-      </Group>
-      <Group mb="md">
-        <Saver />
-        <Downloader story={story} />
       </Group>
 
       <Pagination

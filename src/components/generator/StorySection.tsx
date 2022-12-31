@@ -79,8 +79,13 @@ function StorySection (props: StorySectionProps) {
         </Text>
         <NarrativeSection {...props} />
 
-        <Divider my="sm" variant="dashed" />
-        <ListOfActions />
+        {
+          props.isEnding ? <></> 
+          : <>
+            <Divider my="sm" variant="dashed" />
+            <ListOfActions />
+          </>
+        }
 
       </Stack>
 

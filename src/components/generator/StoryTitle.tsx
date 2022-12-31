@@ -1,50 +1,85 @@
 import {
   ActionIcon, Button, Container, createStyles,
+  Divider,
   Group, Text, Textarea,
+  TextInput,
   Title
 } from '@mantine/core';
 import { IconEdit } from '@tabler/icons';
-import { useEffect, useState } from 'react';
-import { saveName, selectStoryTitle, setName } from '../../store/features/storySlice';
+import { useEffect, useMemo, useState } from 'react';
+import { saveName, selectStoryGraph, selectStoryTitle, setName } from '../../store/features/storySlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { getStoryNodes } from '../../utils/graph/storyUtils';
+import Downloader from './Downloader';
+import Saver from './Saver';
 
 
 const useStyles = createStyles((theme) => ({
 
   titleBox: {
     backgroundColor: theme.colors.gray[0],
-    textAlign: 'center',
     padding: theme.spacing.md,
-    paddingLeft: 25,
-    paddingRight: 25,
+    paddingLeft: 20,
+    paddingRight: 20,
     borderRadius: theme.radius.sm,
     width: "100%",
   },
   title: {
     width: "100%",
-    alignItems: 'center'
-  }
-
+    alignItems: 'left',
+  },
+  leftBox: {
+    width: "72%",
+  },
+  rightBox: {
+    width: "24%",
+  },
+  buttons: {
+    width: "100%", 
+    justifyContent: 'center',
+  },
 }));
 
 
 export default function StoryTitle() {
   const { classes } = useStyles();
 
+  const storyGraph = useAppSelector(selectStoryGraph);
+
+  const story = useMemo(() => {
+    return getStoryNodes(storyGraph, false);
+  }, [storyGraph]);
+
   return (
     <>
       <Container size="xl" className={classes.titleBox}>
-        <Group className={classes.title}>
-          <Text fz="md" td="underline" fs="italic" fw={500}>Story Title:</Text>
+        <Group>
+          <Group className={classes.leftBox}>
+            <Group className={classes.title}>
+              <Text fz="md" td="underline" fs="italic" fw={500}>Story Title:</Text>
+            </Group>
+            <EditableTitle />
+          </Group>
+          
+          <Divider orientation='vertical' variant='dashed'/>
+
+          <Group className={classes.rightBox}>
+            <Group className={classes.buttons}>
+              <Saver />
+            </Group>
+            <Group className={classes.buttons}>
+              <Downloader story={story} />
+            </Group>
+          </Group>
         </Group>
-        <TitleGroup />
+
       </Container>
     </>
   );
 }
 
 
-const TitleGroup = () => {
+const EditableTitle = () => {
   const dispatch = useAppDispatch();
   const storyTitle = useAppSelector(selectStoryTitle);
 
@@ -56,7 +91,7 @@ const TitleGroup = () => {
   }, [storyTitle]);
 
 
-  const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+  const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setTitle(event.target.value);
   };
 
@@ -72,17 +107,17 @@ const TitleGroup = () => {
 
   if (editable) {
     return (
-      <Group mt={10} spacing={20} align="center" position="apart">
-        <Textarea value={title} onChange={handleTextChange} disabled={!editable} autosize />
+      <>
+        <TextInput value={title} onChange={handleTextChange} disabled={!editable} size="lg" />
         <Button onClick={onSaveClick}>
           Save Title
         </Button>
-      </Group>
+      </>
     );
   }
 
   return (
-    <Group mt={10} spacing={50} align="center" position="apart">
+    <>
       {title
         ?
         <Title order={2}> {title} </Title>
@@ -95,7 +130,8 @@ const TitleGroup = () => {
       <ActionIcon variant="filled" size="md" color="blue" onClick={onIconClick}>
         <IconEdit size={20} />
       </ActionIcon>
-    </Group>
+
+    </>
 
   );
 }
