@@ -118,7 +118,7 @@ function pageBreak(): Paragraph {
   })
 }
 
-function main(story: StoryNode[]): ISectionOptions {
+function main(story: StoryNode[], indexCache: number[]): ISectionOptions {
   const paragraphs: Paragraph[] = [];
 
   // Section
@@ -131,13 +131,19 @@ function main(story: StoryNode[]): ISectionOptions {
 
     // Section actions
     const numChoices = node.actions.length;
+
     if (numChoices) {
       for (let i = 0; i < numChoices; i++) {
         paragraphs.push(createActionParagraph(node.actions[i]));
 
-        paragraphs.push(
-          createActionRedirect(`Go to Section ${node.childrenSectionIds[i]}`)
-        );
+        const sectionId = node.childrenSectionIds[i];
+        if (sectionId !== null) {
+          // + 1 to move from 0-indexed to 1-indexed
+          paragraphs.push(
+            createActionRedirect(`Go to Section ${sectionId}`
+              + ` (Page ${indexCache[sectionId - 1] + 1})`)
+          );
+        }
       }
     }
 
@@ -150,10 +156,10 @@ function main(story: StoryNode[]): ISectionOptions {
   };
 }
 
-export function createDocx(story: StoryNode[]): Document {
+export function createDocx(story: StoryNode[], indexCache: number[]): Document {
   return new Document({
     sections: [
-      main(story)
+      main(story, indexCache)
     ],
     styles: {
       paragraphStyles: myParagraphStyles,
