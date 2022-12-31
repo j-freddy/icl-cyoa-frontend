@@ -16,9 +16,6 @@ export interface StoryState {
   descriptor: string;
   details: string;
   style: string;
-  // Queues are non-serialisable
-  // This is OK as it is impractical for the user to
-  // click 'Generate' thousands of times
   loadingSection: LoadingType | null;
 
   goToGenerator: boolean;

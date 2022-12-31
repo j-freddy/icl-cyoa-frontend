@@ -10,7 +10,7 @@ import { ActionNode } from "../../../utils/graph/types";
 
 const useStyles = createStyles((theme) => ({
   buttonStack: {
-
+    textAlign: "center"
   },
 
 }));
@@ -63,11 +63,11 @@ function ActionOptions(props: ActionOptionsProps) {
           <Stack spacing="xs">
             <Popover position="bottom" withArrow shadow="md">
               <Popover.Target>
-                <Button variant="outline">Regenerate</Button>
+                <Button variant="outline">Regenerate </Button>
               </Popover.Target>
               <Popover.Dropdown>
                 <Button variant="subtle" className={classes.buttonStack} onClick={onGenerateClick}>
-                  Confirm: Regenerate
+                  Confirm:<br/>Regenerate
                 </Button>
               </Popover.Dropdown>
             </Popover>
@@ -78,7 +78,7 @@ function ActionOptions(props: ActionOptionsProps) {
               </Popover.Target>
               <Popover.Dropdown>
                 <Button variant="subtle" className={classes.buttonStack} onClick={onGenerateManyClick}>
-                  Confirm: Regenerate Many
+                  Confirm:<br/>Regenerate Many
                 </Button>
               </Popover.Dropdown>
             </Popover>
@@ -89,7 +89,7 @@ function ActionOptions(props: ActionOptionsProps) {
               </Popover.Target>
               <Popover.Dropdown>
                 <Button variant="subtle" className={classes.buttonStack} onClick={onGenerateEndingClick}>
-                  Confirm: Regenerate Ending
+                  Confirm:<br/>Regenerate Ending
                 </Button>
               </Popover.Dropdown>
             </Popover>
