@@ -5,28 +5,22 @@ import {
   Textarea
 } from "@mantine/core";
 import { IconEdit } from "@tabler/icons";
-import { useEffect, useState } from "react";
-import { getApiKey, selectApiKey, updateApiKey } from "../../store/features/accountSlice";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { useState } from "react";
+import { updateApiKey } from "../../store/features/accountSlice";
+import { useAppDispatch } from "../../store/hooks";
 
 
-function GPT3KeyForm() {
+interface GPT3KeyFormProps {
+  apiKey: string,
+}
+
+
+function GPT3KeyForm(props: GPT3KeyFormProps) {
 
   const dispatch = useAppDispatch();
 
-  const apiKey = useAppSelector(selectApiKey);
-
-  const [key, setKey] = useState(apiKey);
+  const [key, setKey] = useState(props.apiKey);
   const [editable, setEditable] = useState(false);
-
-
-  useEffect(() => {
-    dispatch(getApiKey());
-  }, [dispatch]);
-
-  useEffect(() => {
-    setKey(apiKey);
-  }, [apiKey]);
 
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {

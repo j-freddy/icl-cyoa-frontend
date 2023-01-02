@@ -1,8 +1,8 @@
-import { Container, createStyles, Stack } from "@mantine/core";
+import { Container, createStyles, Loader, Stack } from "@mantine/core";
 import { useEffect } from 'react';
 import StoryTitle from '../../components/generator/StoryTitle';
 import {
-  getGraph, selectIsStoryEmpty, selectStoryId, setId
+  getGraph, selectStoryGraphWasLoaded, selectStoryId, selectStoryIsEmpty
 } from '../../store/features/storySlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import '../../style/base.css';
@@ -17,35 +17,52 @@ const useStyles = createStyles((theme) => ({
 }));
 
 
-const GeneratorView = () => {
+function GeneratorView () {
   const { classes } = useStyles();
 
   const dispatch = useAppDispatch();
-  const isStoryEmpty = useAppSelector(selectIsStoryEmpty);
+
+  const storyGraphWasLoaded = useAppSelector(selectStoryGraphWasLoaded);
+  const storyIsEmpty = useAppSelector(selectStoryIsEmpty);
   const storyId = useAppSelector(selectStoryId);
+
+  const url: string = window.location.href;
+  const splitUrl = url.split('/');
+  const id = splitUrl[splitUrl.length - 1];
 
 
   useEffect(() => {
-    const url: string = window.location.href;
-    const splitUrl = url.split('/');
-    const id = splitUrl[splitUrl.length - 1];
-
     if (id !== null && id !== storyId) {
-      dispatch(setId({ storyId: id }));
-      dispatch(getGraph());
+      dispatch(getGraph({ storyId: id }));
     }
   }, [dispatch, storyId]);
 
 
-  return (
-    <Container className="wrapper">
+  const StoryContent = () => {
+
+    if (!storyGraphWasLoaded || id !== storyId) {
+      return (
+        <div className={"loader"}>
+          <Loader />
+        </div>
+      );
+    }
+
+    return (
       <Stack align="center" className={classes.stack}>
         <StoryTitle />
-        {isStoryEmpty
+        {storyIsEmpty
           ? <EmptyStoryViz />
           : <StoryViz />
         }
       </Stack>
+    );
+  }
+
+
+  return (
+    <Container className="wrapper">
+      <StoryContent />
     </Container>
   );
 }

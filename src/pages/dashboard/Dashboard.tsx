@@ -1,8 +1,10 @@
 import {
   Button,
   Container,
+  createStyles,
   Divider,
   Group,
+  Loader,
   Stack,
   Title
 } from '@mantine/core';
@@ -16,7 +18,16 @@ import {
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { INITIAL_INPUT_PAGE } from '../../utils/pages';
 
+const useStyles = createStyles((theme) => ({
+
+  createNewStoryButton: {
+    float: 'right',
+  },
+
+}));
+
 const DashboardView = () => {
+  const { classes } = useStyles();
   const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
@@ -28,29 +39,25 @@ const DashboardView = () => {
   }, [dispatch]);
 
 
-  const goToInitialInputView = () => {
+  const onCreateNewStoryButtonClick = () => {
     navigate(INITIAL_INPUT_PAGE);
   };
 
 
-  return (
-    <Container className="wrapper">
-      <Group position="apart">
-        <Title order={1} span={true} color="black">Welcome back!</Title>
-        <Button
-          sx={{ float: 'right' }}
-          variant="filled"
-          color="indigo.6"
-          leftIcon={<IconPlus />}
-          onClick={goToInitialInputView}
-        >
-          Create New Story
-        </Button>
-      </Group>
-      <Divider my="sm" />
+  const StoryList = () => {
+
+    if (stories === undefined) {
+      return (
+        <div className={"loader"}>
+          <Loader />
+        </div>
+      );
+    }
+
+    return (
       <Stack spacing="sm">
         {
-          stories.map(story =>
+          stories?.map(story =>
           (
             <StoryListItem
               storyId={story.storyId}
@@ -62,6 +69,26 @@ const DashboardView = () => {
           ))
         }
       </Stack>
+    );
+  }
+
+
+
+  return (
+    <Container className="wrapper">
+      <Group position="apart">
+        <Title order={1} span={true} color="black">Welcome back!</Title>
+        <Button
+          className={classes.createNewStoryButton}
+          variant="filled"
+          leftIcon={<IconPlus />}
+          onClick={onCreateNewStoryButtonClick}
+        >
+          Create New Story
+        </Button>
+      </Group>
+      <Divider my="sm" />
+      <StoryList />
     </Container >
 
   );

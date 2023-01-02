@@ -48,18 +48,19 @@ export const regenerateEndingThunk = createAsyncThunk(
   }
 );
 
-export type RegenerateManyProps = {
+
+type regenerateManyThunkProps = {
   fromNode: number,
   maxDepth: number,
 };
-
 export const regenerateManyThunk = createAsyncThunk(
   'story/regenerateMany',
-  async (props: RegenerateManyProps, { dispatch }) => {
+  async (props: regenerateManyThunkProps, { dispatch }) => {
     dispatch(deleteNode(props.fromNode));
     dispatch(generateMany({ ...props }));
   }
 );
+
 
 export const saveNameThunk = createAsyncThunk(
   'story/saveName',
@@ -79,15 +80,21 @@ export const saveGraphThunk = createAsyncThunk(
 );
 
 
+type getGraphThunkProps = {
+  storyId: string,
+};
 export const getGraphThunk = createAsyncThunk(
   'story/getGraph',
-  async (_, { getState }) => {
-    const state = getState() as { story: StoryState };
-    const response = await reqGetStory(state.story.id);
+  async (props: getGraphThunkProps) => {
+    const response = await reqGetStory(props.storyId);
     const json = await response.json() as { story: GraphMessage, name: string };
 
     // TODO should refactor backend to use graph consistently
-    return { graph: json.story, name: json.name };
+    return { 
+      graph: json.story, 
+      name: json.name,
+      storyId: props.storyId,
+    };
   }
 );
 

@@ -1,6 +1,6 @@
-import { Container, Loader, Text } from '@mantine/core';
+import { Loader } from '@mantine/core';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Route, Routes, useNavigate } from "react-router-dom";
 import 'reactflow/dist/style.css';
 import AppFooter from './components/Footer';
@@ -28,38 +28,28 @@ import {
 
 function App() {
 
+  const HomePage = () => wrapView(<WelcomeView />);
+
+  const LoginPage = () => wrapView(<LoginView />);
+  const SignupPage = () => wrapView(<SignupView />);
+  const AccountPage = () => checkLogin(wrapView(<AccountView />));
+
+  const DashboardPage = () => checkLogin(wrapView(<DashboardView />));
+  const InitialInputPage = () => checkLogin(wrapView(<InitialInputView />));
+  const GeneratorPage = () => checkLogin(wrapView(<GeneratorView />));
+
+
   return (
     <Routes>
-      <Route
-        path={HOME_PAGE}
-        element={wrapView(<WelcomeView />)}
-      />
+      <Route path={HOME_PAGE} element={<HomePage />} />
 
-      <Route
-        path={LOGIN_PAGE}
-        element={wrapView(<LoginView />)}
-      />
-      <Route
-        path={SIGNUP_PAGE}
-        element={wrapView(<SignupView />)}
-      />
-      <Route
-        path={ACCOUNT_PAGE}
-        element={wrapView(checkLogin(<AccountView />))}
-      />
+      <Route path={LOGIN_PAGE} element={<LoginPage />} />
+      <Route path={SIGNUP_PAGE} element={<SignupPage />} />
+      <Route path={ACCOUNT_PAGE} element={<AccountPage />} />
 
-      <Route
-        path={DASHBOARD_PAGE}
-        element={wrapView(checkLogin(<DashboardView />))}
-      />
-      <Route
-        path={INITIAL_INPUT_PAGE}
-        element={wrapView(checkLogin(<InitialInputView />))}
-      />
-      <Route
-        path={GENERATOR_PAGE + "*"}
-        element={wrapView(checkLogin(<GeneratorView />))}
-      />
+      <Route path={DASHBOARD_PAGE} element={<DashboardPage />} />
+      <Route path={INITIAL_INPUT_PAGE} element={<InitialInputPage />} />
+      <Route path={GENERATOR_PAGE + "*"} element={<GeneratorPage />} />
     </Routes>
   );
 }
@@ -95,8 +85,6 @@ const checkLogin = (content: JSX.Element) => {
   const loggedIn = useAppSelector(selectLoggedIn);
   const sessionLoginFail = useAppSelector(selectSessionLoginFail);
 
-  const [goToLogin, setGoToLogin] = useState(false);
-
 
   useEffect(() => {
     dispatch(startConnecting());
@@ -106,32 +94,23 @@ const checkLogin = (content: JSX.Element) => {
     if (!loggedIn) {
       dispatch(loginWithSession());
     }
-  }, [dispatch]);
+  }, [dispatch, loggedIn]);
 
   useEffect(() => {
-    if (goToLogin) {
+    if (!loggedIn && sessionLoginFail) {
       navigate(LOGIN_PAGE);
     }
-  }, [goToLogin])
+  }, [navigate, loggedIn, sessionLoginFail]);
 
 
   if (loggedIn) {
     return (<>{content}</>);
   }
 
-  if (sessionLoginFail) {
-    setTimeout(() => setGoToLogin(true), 2000);
-    return (
-      <Container className="wrapper">
-        <Text>You are not logged in. Redirecting right now ...</Text>
-      </Container>
-    );
-  }
-
   return (
-    <Container className="wrapper">
+    <div className={"loader"}>
       <Loader />
-    </Container>
+    </div>
   );
 
 };

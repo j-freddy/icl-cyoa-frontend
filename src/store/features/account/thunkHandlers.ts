@@ -91,5 +91,5 @@ export const handleDeleteStoryFulfilled = (
   state: AccountState,
   action: PayloadAction<string>
 ) => {
-  state.stories = state.stories.filter((story) => story.storyId !== action.payload);
+  state.stories = state.stories?.filter((story) => story.storyId !== action.payload);
 };

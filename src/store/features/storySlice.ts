@@ -2,20 +2,22 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { deleteNodeFromGraph, isGraphEmpty } from '../../utils/graph/graphUtils';
 import { Graph, LoadingType } from '../../utils/graph/types';
 import { RootState } from '../store';
-import { handleGetGraphFulfilled, handleInitStoryFulfilled } from './story/handlers';
-import { displayLoadedNotification, displayLoadingNotification } from './story/loadingNotifications';
+import { handleGetGraphFulfilled, handleInitStoryFulfilled } from './story/thunkHandlers';
+import { displayLoadedNotification, displayLoadingNotification } from './story/LoadingNotifications';
 import { getGraphThunk, initStoryThunk, regenerateActionsThunk, regenerateEndingThunk, regenerateManyThunk, regenerateParagraphThunk, saveGraphThunk, saveNameThunk } from './story/thunks';
 
 
 export interface StoryState {
   id: string;
-
   title: string;
   graph: Graph;
+  graphWasLoaded: boolean;
+
   temperature: number;
   descriptor: string;
   details: string;
   style: string;
+
   loadingSection: LoadingType | null;
 
   goToGenerator: boolean;
@@ -27,10 +29,13 @@ const initialState: StoryState = {
   id: "",
   title: "",
   graph: { nodeLookup: {} },
+  graphWasLoaded: false,
+
   temperature: 0.6,
   descriptor: "",
   details: "",
   style: "",
+
   loadingSection: null,
 
   goToGenerator: false,
@@ -156,7 +161,8 @@ export const {
 
 export const selectGoToGenerator = (state: RootState) => state.story.goToGenerator;
 export const selectStoryGraph = (state: RootState) => state.story.graph;
-export const selectIsStoryEmpty = (state: RootState) => isGraphEmpty(state.story.graph);
+export const selectStoryGraphWasLoaded = (state: RootState) => state.story.graphWasLoaded;
+export const selectStoryIsEmpty = (state: RootState) => isGraphEmpty(state.story.graph);
 export const selectStoryId = (state: RootState) => state.story.id;
 export const selectStoryTitle = (state: RootState) => state.story.title;
 export const selectLoadingSection = (state: RootState) => state.story.loadingSection;

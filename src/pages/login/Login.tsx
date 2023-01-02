@@ -11,11 +11,13 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { DASHBOARD_PAGE, SIGNUP_PAGE } from "../../utils/pages";
 
 const useStyles = createStyles((theme, _params) => ({
+  
   box: {
     width: "100vw",
     height: "92vh",
     alignItems: "center",
   },
+
   stack: {
     backgroundColor: theme.white,
     height: 380,
