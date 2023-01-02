@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
-import storyReducer from './features/storySlice'
 import accountReducer from './features/accountSlice'
 import initialInputReducer from './features/initialInputSlice'
-import wsReducer from './features/wsSlice'
+import storyReducer from './features/storySlice'
 import wsMiddleware from './features/wsMiddleware'
+import wsReducer from './features/wsSlice'
 
 const reducer = {
   story: storyReducer,
@@ -15,7 +15,7 @@ const reducer = {
 export const store = configureStore({
   reducer,
   middleware: (getDefaultMiddleware) => {
-    return getDefaultMiddleware().concat([wsMiddleware])
+    return getDefaultMiddleware().concat([wsMiddleware]);
   },
 });
 

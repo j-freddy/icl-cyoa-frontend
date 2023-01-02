@@ -1,6 +1,7 @@
 import { graphToGraphMessage } from "../../utils/graph/graphUtils";
 import { Graph } from "../../utils/graph/types";
 
+
 export const generateNarrativeMsg = (
   temperature: number,
   graph: Graph,
@@ -11,13 +12,13 @@ export const generateNarrativeMsg = (
   style: string | null
 ) => {
   if (descriptor === "") {
-    descriptor = null
+    descriptor = null;
   }
   if (details === "") {
-    details = null
+    details = null;
   }
   if (style === "") {
-    style = null
+    style = null;
   }
   return JSON.stringify({
     type: "generateNarrative",
@@ -30,8 +31,9 @@ export const generateNarrativeMsg = (
       details,
       style
     },
-  })
+  });
 }
+
 
 export const generateInitialStoryMsg = (
   temperature: number,
@@ -43,7 +45,7 @@ export const generateInitialStoryMsg = (
     data: {
       prompt: values,
     },
-  })
+  });
 };
 
 
@@ -59,7 +61,7 @@ export const generateActionsMsg = (
       nodeToExpand,
       graph: graphToGraphMessage(graph),
     },
-  })
+  });
 };
 
 
@@ -77,7 +79,7 @@ export const connectNodesMsg = (
       toNode,
       graph: graphToGraphMessage(graph),
     },
-  })
+  });
 };
 
 export const generateManyMsg = (
@@ -88,13 +90,13 @@ export const generateManyMsg = (
   saveToId: string,
 ) => {
   return JSON.stringify({
-      type: "generateMany",
-      temperature,
-      data: {
-          graph: graphToGraphMessage(graph),
-          fromNode,
-          maxDepth,
-          saveToId,
-      },
-  })
+    type: "generateMany",
+    temperature,
+    data: {
+      graph: graphToGraphMessage(graph),
+      fromNode,
+      maxDepth,
+      saveToId,
+    },
+  });
 };

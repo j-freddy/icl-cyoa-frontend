@@ -6,7 +6,7 @@ import {
   reqInitStory,
   reqSaveGraph,
   reqSaveName
-} from '../../../api/rest/storyRequests';
+} from '../../../api/story/storyRequests';
 import { GraphMessage } from '../../../utils/graph/types';
 import { loadStories } from '../accountSlice';
 import {
@@ -111,6 +111,8 @@ export const initStoryThunk = createAsyncThunk(
 
     dispatch(setGoToGenerator(true));
 
-    return { storyId: json.storyId };
+    return { 
+      storyId: json.storyId 
+    };
   }
 );

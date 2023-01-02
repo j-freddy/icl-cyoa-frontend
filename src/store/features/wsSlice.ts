@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+
 export interface WsState {
   isEstablishingConnection: boolean;
   isConnected: boolean;
@@ -9,6 +10,7 @@ const initialState: WsState = {
   isEstablishingConnection: false,
   isConnected: false
 };
+
 
 const wsSlice = createSlice({
   name: 'ws',
@@ -33,5 +35,6 @@ export const {
   connectionEstablished,
   disconnected,
 } = wsSlice.actions;
+
 
 export default wsSlice.reducer;

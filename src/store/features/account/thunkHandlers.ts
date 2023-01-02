@@ -1,6 +1,7 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import StatusCode from "status-code-enum";
-import { AccountState, AuthResponse, StoryListEntry } from "../accountSlice";
+import { AccountState } from "../accountSlice";
+import { AuthResponse, StoryListEntry } from "./types";
 
 
 export const handleLoginFulfilled = (
@@ -18,10 +19,10 @@ export const handleLoginFulfilled = (
 
   state.email = action.payload.email;
 };
-
 export const handleLoginRejected = (state: AccountState) => {
   state.credentialsLoginFail = true;
 };
+
 
 export const handleLoginWithSessionFulfilled = (
   state: AccountState,
@@ -38,10 +39,10 @@ export const handleLoginWithSessionFulfilled = (
 
   state.email = action.payload.email;
 };
-
 export const handleLoginWithSessionRejected = (state: AccountState) => {
   state.sessionLoginFail = true;
 };
+
 
 export const handleSignupFulfilled = (
   state: AccountState,
@@ -59,12 +60,12 @@ export const handleSignupFulfilled = (
 
   state.email = action.payload.email;
 };
-
 export const handleSignupRejected = (
   state: AccountState,
 ) => {
     state.signupError = true;
 };
+
 
 export const handleLoadStoriesFulfilled = (
   state: AccountState,
@@ -73,6 +74,7 @@ export const handleLoadStoriesFulfilled = (
   state.stories = action.payload;
 };
 
+
 export const handleGetApiKeyFulfilled = (
   state: AccountState,
   action: PayloadAction<string>
@@ -80,12 +82,14 @@ export const handleGetApiKeyFulfilled = (
   state.apiKey = action.payload;
 };
 
+
 export const handleUpdateApiKeyFulfilled = (
   state: AccountState,
   action: PayloadAction<string>
 ) => {
   state.apiKey = action.payload;
 };
+
 
 export const handleDeleteStoryFulfilled = (
   state: AccountState,
