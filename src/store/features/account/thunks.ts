@@ -6,9 +6,9 @@ import {
   reqLoginWithSession,
   reqSignup,
   reqUpdateApiKey
-} from "../../../api/rest/accountRequests";
-import { reqDeleteStory } from "../../../api/rest/storyRequests";
-import { StoryListEntry } from "../accountSlice";
+} from "../../../api/account/accountRequests";
+import { reqDeleteStory } from "../../../api/story/storyRequests";
+import { StoryListEntry } from "./types";
 
 
 export const loginThunk = createAsyncThunk(
@@ -98,6 +98,7 @@ export const deleteStoryThunk = createAsyncThunk(
   'account/deleteStory',
   async (storyId: string) => {
     await reqDeleteStory(storyId);
+    
     return storyId;
   }
 );

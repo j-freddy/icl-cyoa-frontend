@@ -2,7 +2,7 @@ import { Button, createStyles, Group, PasswordInput, Stack, Text, TextInput, Tit
 import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import StatusCode from "status-code-enum";
-import { reqSignup } from "../../api/rest/accountRequests";
+import { reqSignup } from "../../api/account/accountRequests";
 import { loginWithSession, selectLoggedIn, selectSignupError, signup } from "../../store/features/accountSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { DASHBOARD_PAGE, GENERATOR_PAGE, LOGIN_PAGE } from "../../utils/pages";

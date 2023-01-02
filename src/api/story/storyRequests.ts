@@ -6,7 +6,10 @@ import { STORIES_URL } from "../links";
 export const reqGetStory = async (storyId: string) => {
 	return fetch(STORIES_URL, {
 		method: "POST",
-		body: JSON.stringify({ type: "getStoryFromId", storyId }),
+		body: JSON.stringify({
+			type: "getStoryFromId",
+			storyId
+		}),
 		credentials: "include",
 	});
 };
@@ -15,7 +18,9 @@ export const reqGetStory = async (storyId: string) => {
 export const reqInitStory = async () => {
 	return fetch(STORIES_URL, {
 		method: "POST",
-		body: JSON.stringify({ type: "init" }),
+		body: JSON.stringify({
+			type: "init"
+		}),
 		credentials: "include",
 	});
 };
@@ -24,7 +29,11 @@ export const reqInitStory = async () => {
 export const reqSaveName = async (storyId: string, name: string) => {
 	return fetch(STORIES_URL, {
 		method: "POST",
-		body: JSON.stringify({ type: "saveName", storyId, name }),
+		body: JSON.stringify({
+			type: "saveName",
+			storyId,
+			name
+		}),
 		credentials: "include",
 	});
 };
@@ -42,11 +51,15 @@ export const reqSaveGraph = async (storyId: string, graph: Graph) => {
 	});
 };
 
+
 export const reqDeleteStory = async (storyId: string) => {
 	console.log("DELETE STORY REQUEST" + storyId)
 	return fetch(STORIES_URL, {
 		method: "POST",
-		body: JSON.stringify({ type: "deleteStoryFromId", storyId }),
+		body: JSON.stringify({
+			type: "deleteStoryFromId",
+			storyId
+		}),
 		credentials: "include",
 	});
 };

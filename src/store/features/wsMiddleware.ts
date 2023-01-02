@@ -3,22 +3,15 @@ import { Middleware } from 'redux';
 import { WS_URL } from '../../api/links';
 import {
   connectNodesMsg,
-  generateActionsMsg,
-  generateManyMsg,
-  generateInitialStoryMsg,
-  generateNarrativeMsg
-} from '../../api/ws/storyMessages';
+  generateActionsMsg, generateInitialStoryMsg, generateManyMsg, generateNarrativeMsg
+} from '../../api/story/storyMessages';
 import { graphMessageToGraphLookup } from '../../utils/graph/graphUtils';
 import { GraphMessage } from '../../utils/graph/types';
 import {
   connectNodes,
   generateActions,
-  generateEnding,
-  generateMany,
-  generateParagraph,
-  generateInitialStoryBasic,
-  generateInitialStoryAdvanced,
-  graphResponse
+  generateEnding, generateInitialStoryAdvanced, generateInitialStoryBasic, generateMany,
+  generateParagraph, graphResponse
 } from './storySlice';
 import { connectionEstablished, disconnected, startConnecting } from './wsSlice';
 
@@ -55,7 +48,7 @@ const wsMiddleware: Middleware = store => {
 
     if (isConnectionEstablished) {
       if (generateInitialStoryBasic.match(action)) {
-        const values = [{attribute: "theme", content: action.payload.prompt}];
+        const values = [{ attribute: "theme", content: action.payload.prompt }];
         socket.send(generateInitialStoryMsg(state.story.temperature, values));
       }
 
@@ -69,31 +62,31 @@ const wsMiddleware: Middleware = store => {
 
       if (generateParagraph.match(action)) {
         socket.send(generateNarrativeMsg(
-          state.story.temperature, 
-          state.story.graph, 
-          action.payload.nodeToExpand, 
-          false, 
-          state.story.descriptor, 
-          state.story.details, 
+          state.story.temperature,
+          state.story.graph,
+          action.payload.nodeToExpand,
+          false,
+          state.story.descriptor,
+          state.story.details,
           state.story.style));
       }
 
       if (generateEnding.match(action)) {
         socket.send(generateNarrativeMsg(
-          state.story.temperature, 
-          state.story.graph, 
-          action.payload.nodeToEnd, 
-          true, 
-          state.story.descriptor, 
-          state.story.details, 
+          state.story.temperature,
+          state.story.graph,
+          action.payload.nodeToEnd,
+          true,
+          state.story.descriptor,
+          state.story.details,
           state.story.style));
       }
 
       if (connectNodes.match(action)) {
         socket.send(connectNodesMsg(
-          state.story.temperature, 
-          state.story.graph, 
-          action.payload.fromNode, 
+          state.story.temperature,
+          state.story.graph,
+          action.payload.fromNode,
           action.payload.toNode
         ));
       }
@@ -101,10 +94,10 @@ const wsMiddleware: Middleware = store => {
 
     if (generateMany.match(action)) {
       socket.send(generateManyMsg(
-        state.story.temperature, 
-        state.story.graph, 
-        action.payload.fromNode, 
-        action.payload.maxDepth, 
+        state.story.temperature,
+        state.story.graph,
+        action.payload.fromNode,
+        action.payload.maxDepth,
         state.story.storyId
       ));
     }

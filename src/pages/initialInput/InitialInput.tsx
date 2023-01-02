@@ -8,11 +8,9 @@ import GenerateButton from '../../components/initialInput/GenerateButton';
 import GenreDropdown from '../../components/initialInput/GenreDropdown';
 import InputTextForm from '../../components/initialInput/InputTextForm';
 import { addEntry, generateInitialStory, removeEntry, setAttribute, setContent } from '../../store/features/initialInputSlice';
-import { generateInitialStoryBasic, initStory, reset, setGoToGenerator, setGraph } from '../../store/features/storySlice';
+import { generateInitialStoryBasic, initStory, reset, setGoToGenerator } from '../../store/features/storySlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import '../../style/base.css';
-import { makeNarrativeNode } from '../../utils/graph/graphUtils';
-import { Graph, NarrativeNode } from '../../utils/graph/types';
 import { GENERATOR_PAGE } from '../../utils/pages';
 
 export enum GenreOption {
@@ -89,22 +87,7 @@ const InitialInputView = () => {
     }
   ]
 
-  const handleGenerateText = (text: string) => {
-    dispatch(initStory());
 
-    const root: NarrativeNode = makeNarrativeNode({
-      nodeId: 0,
-      data: text,
-      childrenIds: [],
-      isEnding: false,
-    });
-
-    const graph: Graph = {
-      nodeLookup: { 0: root },
-    };
-
-    dispatch(setGraph(graph));
-  };
 
   const handleGenerateGenreText = (genre: string) => {
     const generateGenrePrompt = `Write a ${genre} story from a second person perspective.`;
@@ -158,9 +141,7 @@ const InitialInputView = () => {
           </Popover>
         );
       case GenreOption.Custom:
-        return (<InputTextForm
-          handleGenerateText={handleGenerateText}
-        />);
+        return (<InputTextForm />);
       case GenreOption.Advanced:
         return (
           <>
@@ -194,20 +175,20 @@ const InitialInputView = () => {
     }
   }
 
-    return (
-        <Flex justify="center" id="page-body" className="flex-grow-1">
-            <Stack
-                justify="center"
-                align="center"
-                spacing="lg"
-                className="container-base"
-                mt={120}
-                mb={40}
-                ref={stackRef}
-            >
-                <Title order={1} weight={600} className="initial-title">
-                    Pick a genre to start...
-                </Title>
+  return (
+    <Flex justify="center" id="page-body" className="flex-grow-1">
+      <Stack
+        justify="center"
+        align="center"
+        spacing="lg"
+        className="container-base"
+        mt={120}
+        mb={40}
+        ref={stackRef}
+      >
+        <Title order={1} weight={600} className="initial-title">
+          Pick a genre to start...
+        </Title>
 
         <div id="genre-dropdown">
           <GenreDropdown

@@ -6,6 +6,7 @@ import { INITIAL_INPUT_PAGE } from '../../utils/pages';
 
 
 const useStyles = createStyles((theme, _params) => ({
+  
   titleStack: {
     justifyContent: "center",
     align: "center",

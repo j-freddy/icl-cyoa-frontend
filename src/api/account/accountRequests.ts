@@ -4,7 +4,10 @@ import { API_KEY_URL, LOGIN_URL, SIGNUP_URL, STORIES_URL } from "../links";
 export const reqSignup = async (email: string, password: string) => {
 	return fetch(SIGNUP_URL, {
 		method: "POST",
-		body: JSON.stringify({ email, password }),
+		body: JSON.stringify({
+			email,
+			password
+		}),
 		headers: {
 			"Content-Type": "application/json",
 		},
@@ -17,7 +20,10 @@ export const reqSignup = async (email: string, password: string) => {
 export const reqLogin = async (email: string, password: string) => {
 	return fetch(LOGIN_URL, {
 		method: "POST",
-		body: JSON.stringify({ email, password }),
+		body: JSON.stringify({
+			email,
+			password
+		}),
 		headers: {
 			"Content-Type": "application/json",
 		},
@@ -37,7 +43,9 @@ export const reqLoginWithSession = async () => {
 export const reqGetStories = async () => {
 	return fetch(STORIES_URL, {
 		method: "POST",
-		body: JSON.stringify({ type: "getStories" }),
+		body: JSON.stringify({
+			type: "getStories"
+		}),
 		credentials: "include",
 	});
 };

@@ -1,33 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
-import StatusCode from "status-code-enum";
 import { RootState } from "../store";
 import {
-  handleGetApiKeyFulfilled, handleLoadStoriesFulfilled, handleLoginFulfilled,
-  handleLoginRejected, handleLoginWithSessionFulfilled, handleLoginWithSessionRejected, 
-  handleSignupFulfilled, handleSignupRejected, handleUpdateApiKeyFulfilled, handleDeleteStoryFulfilled
+  handleDeleteStoryFulfilled, handleGetApiKeyFulfilled, handleLoadStoriesFulfilled, handleLoginFulfilled,
+  handleLoginRejected, handleLoginWithSessionFulfilled, handleLoginWithSessionRejected,
+  handleSignupFulfilled, handleSignupRejected, handleUpdateApiKeyFulfilled
 } from "./account/thunkHandlers";
 import {
-  getApiKeyThunk,
+  deleteStoryThunk, getApiKeyThunk,
   loadStoriesThunk,
-  loginThunk,
-  signupThunk,
-  loginWithSessionThunk,
-  updateApiKeyThunk,
-  deleteStoryThunk,
+  loginThunk, loginWithSessionThunk, signupThunk, updateApiKeyThunk
 } from "./account/thunks";
+import { StoryListEntry } from "./account/types";
 
-
-export type StoryListEntry = {
-  name: string,
-  storyId: string,
-  firstParagraph: string,
-  totalSections: number,
-}
-
-export type AuthResponse = {
-  email?: string,
-  status: StatusCode,
-}
 
 export interface AccountState {
   loggedIn: boolean,
@@ -83,7 +67,6 @@ export const accountSlice = createSlice({
 });
 
 
-
 export const selectLoggedIn = (state: RootState) => state.account.loggedIn;
 export const selectEmail = (state: RootState) => state.account.email;
 export const selectApiKey = (state: RootState) => state.account.apiKey;
@@ -91,5 +74,6 @@ export const selectCredentialLoginFail = (state: RootState) => state.account.cre
 export const selectSessionLoginFail = (state: RootState) => state.account.sessionLoginFail;
 export const selectSignupError = (state: RootState) => state.account.signupError;
 export const selectStories = (state: RootState) => state.account.stories;
+
 
 export default accountSlice.reducer;

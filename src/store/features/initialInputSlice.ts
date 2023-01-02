@@ -1,27 +1,23 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { generateInitialStoryAdvanced } from "./storySlice";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from "../store";
+import { generateInitialStoryThunk } from "./initialInput/thunks";
 
-interface InitialInputState {
+
+export interface InitialInputState {
   values: { attribute: string, content: string }[]
 }
 
-const defaultValues: { attribute: string, content: string }[] = [
-  { attribute: "themes", content: "" },
-  { attribute: "characters", content: "" },
-  { attribute: "items", content: "" }
-];
-
 const initialState: InitialInputState = {
-  values: defaultValues
+  values: [
+    { attribute: "themes", content: "" },
+    { attribute: "characters", content: "" },
+    { attribute: "items", content: "" }
+  ],
 };
 
-export const generateInitialStory = createAsyncThunk(
-  "initialInput/generateInitialStory",
-  async (_, { getState, dispatch }) => {
-    const state = getState() as { initialInput: InitialInputState };
-    dispatch(generateInitialStoryAdvanced({ values: state.initialInput.values }));
-  }
-);
+
+export const generateInitialStory = generateInitialStoryThunk;
+
 
 export const initialInputSlice = createSlice({
   name: "initialInput",
@@ -54,5 +50,9 @@ export const {
   removeEntry,
   addEntry
 } = initialInputSlice.actions;
+
+
+export const selectInitialInputValues = (state: RootState) => state.initialInput.values;
+
 
 export default initialInputSlice.reducer;
