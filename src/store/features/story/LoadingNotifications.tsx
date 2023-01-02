@@ -4,6 +4,7 @@ import { IconCheck } from '@tabler/icons';
 
 
 export const displayLoadingNotification = (loadingType: LoadingType) => {
+  
   const typeMessage = new Map<LoadingType, string>([
     [LoadingType.GenerateParagraph, "Generating paragraph."],
     [LoadingType.GenerateActions, "Generating actions."],
@@ -24,13 +25,16 @@ export const displayLoadingNotification = (loadingType: LoadingType) => {
   });
 }
 
+
 export const displayLoadedNotification = (loadingType: LoadingType) => {
+
   const typeMessage = new Map<LoadingType, string>([
     [LoadingType.GenerateParagraph, "Paragraph was generated successfully."],
     [LoadingType.GenerateActions, "Actions were generated successfully."],
     [LoadingType.GenerateEnding, "Ending was generated successfully."],
     [LoadingType.ConnectingNodes, "Nodes were successfully connected."],
     [LoadingType.InitialStory, "Initial story was generated successfully."],
+    [LoadingType.GenerateMany, "Many paragraphs and actions were generated successfully."],
   ]);
   const message = typeMessage.get(loadingType);
 

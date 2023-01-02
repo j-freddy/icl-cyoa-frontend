@@ -5,7 +5,7 @@ import {
   handleGetApiKeyFulfilled, handleLoadStoriesFulfilled, handleLoginFulfilled,
   handleLoginRejected, handleLoginWithSessionFulfilled, handleLoginWithSessionRejected, 
   handleSignupFulfilled, handleSignupRejected, handleUpdateApiKeyFulfilled, handleDeleteStoryFulfilled
-} from "./account/handlers";
+} from "./account/thunkHandlers";
 import {
   getApiKeyThunk,
   loadStoriesThunk,
@@ -38,11 +38,10 @@ export interface AccountState {
   email?: string,
   apiKey?: string,
 
-  stories: StoryListEntry[],
+  stories?: StoryListEntry[],
 }
 
 const initialState: AccountState = {
-  stories: [],
   loggedIn: false,
   sessionLoginFail: false,
   credentialsLoginFail: false,

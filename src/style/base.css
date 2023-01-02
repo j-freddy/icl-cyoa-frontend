@@ -42,3 +42,10 @@ a:hover {
 .react-flow .selected .node-box {
   background-color: var(--my-theme);
 }
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+}

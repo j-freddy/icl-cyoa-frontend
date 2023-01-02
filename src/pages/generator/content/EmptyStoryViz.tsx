@@ -1,15 +1,17 @@
 import {
   Center,
+  Loader,
   Text
 } from '@mantine/core';
 
 
-const EmptyStoryViz = () => {
+function EmptyStoryViz() {
   return (
     <Center>
       <Text fw={700} fz="lg" fs="italic">
-        Start generating the story...
+        Generating the initial paragraph and actions...
       </Text>
+      <Loader />
     </Center>
   );
 }
