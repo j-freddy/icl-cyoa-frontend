@@ -2,10 +2,10 @@ import {
   Button,
   createStyles,
   Popover,
-  Stack,
+  Stack
 } from "@mantine/core";
+import { regenerateEnding, regenerateMany, regenerateParagraph } from "../../../store/features/storySlice";
 import { useAppDispatch } from "../../../store/hooks";
-import { generateMany, regenerateEnding, regenerateMany, regenerateParagraph } from "../../../store/features/storySlice";
 import { ActionNode } from "../../../utils/graph/types";
 
 const useStyles = createStyles((theme) => ({
@@ -26,6 +26,7 @@ function ActionOptions(props: ActionOptionsProps) {
   const { actionNode } = props;
 
   const dispatch = useAppDispatch();
+
 
   const onGenerateEndingClick = (): void => {
     dispatch(regenerateEnding(actionNode.nodeId))
@@ -67,7 +68,7 @@ function ActionOptions(props: ActionOptionsProps) {
               </Popover.Target>
               <Popover.Dropdown>
                 <Button variant="subtle" className={classes.buttonStack} onClick={onGenerateClick}>
-                  Confirm:<br/>Regenerate
+                  Confirm:<br />Regenerate
                 </Button>
               </Popover.Dropdown>
             </Popover>
@@ -78,7 +79,7 @@ function ActionOptions(props: ActionOptionsProps) {
               </Popover.Target>
               <Popover.Dropdown>
                 <Button variant="subtle" className={classes.buttonStack} onClick={onGenerateManyClick}>
-                  Confirm:<br/>Regenerate Many
+                  Confirm:<br />Regenerate Many
                 </Button>
               </Popover.Dropdown>
             </Popover>
@@ -89,7 +90,7 @@ function ActionOptions(props: ActionOptionsProps) {
               </Popover.Target>
               <Popover.Dropdown>
                 <Button variant="subtle" className={classes.buttonStack} onClick={onGenerateEndingClick}>
-                  Confirm:<br/>Regenerate Ending
+                  Confirm:<br />Regenerate Ending
                 </Button>
               </Popover.Dropdown>
             </Popover>

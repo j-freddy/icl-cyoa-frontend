@@ -1,12 +1,33 @@
 import { ActionIcon, Group, Select, Text } from '@mantine/core';
 import { forwardRef, ReactElement } from 'react';
+import { genreOptionsData } from './GenreOptions';
+
 
 interface GenreDropdownProps {
-  options: { value: string, icon?: ReactElement, description?: string }[];
   genre: string;
   setGenre: React.Dispatch<React.SetStateAction<string>>;
-  id?: string;
 }
+
+function GenreDropdown(props: GenreDropdownProps) {
+  
+  return (
+    <Select
+      placeholder="Select a genre"
+      clearable
+      size="md"
+      shadow='xl'
+      maxDropdownHeight={400}
+      onSearchChange={props.setGenre}
+      searchValue={props.genre}
+      nothingFound="No options"
+      data={genreOptionsData}
+      itemComponent={SelectItem}
+    />
+  )
+};
+
+export default GenreDropdown;
+
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   value: string;
@@ -27,29 +48,7 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
             {description}
           </Text>
         </div>
-
-
       </Group>
     </div>
   )
 );
-
-const GenreDropdown = (props: GenreDropdownProps) => {
-  return (
-    <Select
-      placeholder="Select a genre"
-      clearable
-      size="md"
-      shadow='xl'
-      maxDropdownHeight={400}
-      onSearchChange={props.setGenre}
-      searchValue={props.genre}
-      nothingFound="No options"
-      data={props.options}
-      itemComponent={SelectItem}
-      id={props.id}
-    />
-  )
-};
-
-export default GenreDropdown;

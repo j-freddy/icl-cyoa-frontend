@@ -1,17 +1,14 @@
 import { Button, createStyles, Group, PasswordInput, Stack, Text, TextInput, Title } from "@mantine/core";
-import { FormEvent, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { FormEvent, useState } from "react";
+import { Link } from "react-router-dom";
 import {
-  login,
-  loginWithSession,
-  selectCredentialLoginFail,
-  selectLoggedIn
+  login, selectCredentialLoginFail
 } from "../../store/features/accountSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { DASHBOARD_PAGE, SIGNUP_PAGE } from "../../utils/pages";
+import { SIGNUP_PAGE } from "../../utils/pages";
 
 const useStyles = createStyles((theme, _params) => ({
-  
+
   box: {
     width: "100vw",
     height: "92vh",
@@ -32,29 +29,15 @@ const useStyles = createStyles((theme, _params) => ({
 
 const LoginView = () => {
   const { classes } = useStyles();
-  const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
-  const loggedIn = useAppSelector(selectLoggedIn);
   const credentialsLoginFail = useAppSelector(selectCredentialLoginFail);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    if (!loggedIn) {
-      dispatch(loginWithSession());
-    }
-  }, [dispatch, loggedIn]);
 
-  useEffect(() => {
-    if (loggedIn) {
-      navigate(DASHBOARD_PAGE);
-    }
-  }, [loggedIn, navigate]);
-
-
-  const loginSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const onLoginSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     dispatch(login({ email, password }));
   }
@@ -66,8 +49,7 @@ const LoginView = () => {
       <Stack className={classes.stack} >
         <Title order={2}>Log In</Title>
 
-
-        <form onSubmit={loginSubmit}>
+        <form onSubmit={onLoginSubmit}>
           <TextInput
             label="Email"
             variant="filled"
@@ -87,7 +69,6 @@ const LoginView = () => {
           {credentialsLoginFail &&
             <Text fz="xs" c="red">Invalid credentials.</Text>
           }
-
 
           <Stack mt="md">
             <Button
