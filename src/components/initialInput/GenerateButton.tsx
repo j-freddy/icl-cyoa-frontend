@@ -1,17 +1,18 @@
 import { IconCaretRight } from "@tabler/icons";
 import { Button } from '@mantine/core';
 
+
 interface GenerateButtonProps {
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  color?: string;
   className?: string;
+  color?: string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
-const GenerateButton = (props: GenerateButtonProps) => {
+function GenerateButton(props: GenerateButtonProps) {
+
   return (
     <Button
       variant="filled"
-      // color="indigo.8"
       size="md"
       radius="md"
       rightIcon={<IconCaretRight size={25} />}

@@ -4,33 +4,33 @@ import AdvancedOptionArea from "./AdvancedOptionArea";
 
 const ActionAdvancedOptions = () => {
 
-    const descriptor = useAppSelector((state) => state.story.descriptor);
-    const details = useAppSelector((state) => state.story.details);
-    const style = useAppSelector((state) => state.story.style);
-  
-    const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
+  const descriptor = useAppSelector((state) => state.story.descriptor);
+  const details = useAppSelector((state) => state.story.details);
+  const style = useAppSelector((state) => state.story.style);
 
-    return (
-        <>
-          <AdvancedOptionArea
-            name="General theme" 
-            value={descriptor} 
-            onChange={(t) => dispatch(setDescriptor(t.currentTarget.value))} 
-          />
 
-          <AdvancedOptionArea 
-            name="Important details" 
-            value={details} 
-            onChange={(t) => dispatch(setDetails(t.currentTarget.value))} 
-          />
+  return (
+    <>
+      <AdvancedOptionArea
+        name="General theme"
+        value={descriptor}
+        onChange={(t) => dispatch(setDescriptor(t.currentTarget.value))}
+      />
 
-          <AdvancedOptionArea 
-            name="Writing style" 
-            value={style} 
-            onChange={(t) => dispatch(setStyle(t.currentTarget.value))} 
-          />
-        </>
-    );
+      <AdvancedOptionArea
+        name="Important details"
+        value={details}
+        onChange={(t) => dispatch(setDetails(t.currentTarget.value))}
+      />
+
+      <AdvancedOptionArea
+        name="Writing style"
+        value={style}
+        onChange={(t) => dispatch(setStyle(t.currentTarget.value))}
+      />
+    </>
+  );
 }
 
 export default ActionAdvancedOptions;

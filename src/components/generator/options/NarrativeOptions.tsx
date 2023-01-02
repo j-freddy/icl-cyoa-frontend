@@ -2,11 +2,10 @@ import {
   Button,
   createStyles,
   Popover,
-  Stack,
+  Stack
 } from "@mantine/core";
-import { IconMenu2 } from "@tabler/icons";
-import { useAppDispatch } from "../../../store/hooks";
 import { generateActions, generateMany, regenerateActions, regenerateMany } from "../../../store/features/storySlice";
+import { useAppDispatch } from "../../../store/hooks";
 import { NarrativeNode } from "../../../utils/graph/types";
 
 const useStyles = createStyles((theme) => ({

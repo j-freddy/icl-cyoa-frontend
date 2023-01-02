@@ -30,8 +30,8 @@ function App() {
 
   const HomePage = () => wrapView(<WelcomeView />);
 
-  const LoginPage = () => wrapView(<LoginView />);
-  const SignupPage = () => wrapView(<SignupView />);
+  const LoginPage = () => checkLoginOnAuthPage(wrapView(<LoginView />));
+  const SignupPage = () => checkLoginOnAuthPage(wrapView(<SignupView />));
   const AccountPage = () => checkLogin(wrapView(<AccountView />));
 
   const DashboardPage = () => checkLogin(wrapView(<DashboardView />));
@@ -112,5 +112,32 @@ const checkLogin = (content: JSX.Element) => {
       <Loader />
     </div>
   );
-
 };
+
+
+const checkLoginOnAuthPage = (content: JSX.Element) => {
+  const navigate = useNavigate();
+
+  const dispatch = useAppDispatch();
+  const loggedIn = useAppSelector(selectLoggedIn);
+
+
+  useEffect(() => {
+    dispatch(startConnecting());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!loggedIn) {
+      dispatch(loginWithSession());
+    }
+  }, [dispatch, loggedIn]);
+
+  useEffect(() => {
+    if (loggedIn) {
+      navigate(DASHBOARD_PAGE);
+    }
+  }, [navigate, loggedIn]);
+
+
+  return (<>{content}</>);
+}

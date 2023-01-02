@@ -1,19 +1,15 @@
 import {
-  createStyles,
-  Container,
-  Slider,
-  Space,
-  ScrollArea,
+  Container, createStyles, ScrollArea, Slider,
+  Space, Tabs
 } from '@mantine/core';
-import { Tabs } from '@mantine/core';
 import { IconPlus, IconSettings } from '@tabler/icons';
+import { setTemperature } from '../../../store/features/storySlice';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { getPreview, isNarrative } from '../../../utils/graph/graphUtils';
 import { ActionNode, NarrativeNode, NodeData, NodeType } from '../../../utils/graph/types';
-import NarrativeOptions from './NarrativeOptions';
-import ActionOptions from './ActionOptions';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { setTemperature } from '../../../store/features/storySlice';
 import ActionAdvancedOptions from './ActionAdvancedOptions';
+import ActionOptions from './ActionOptions';
+import NarrativeOptions from './NarrativeOptions';
 
 const useStyles = createStyles((theme) => ({
   slider: {
