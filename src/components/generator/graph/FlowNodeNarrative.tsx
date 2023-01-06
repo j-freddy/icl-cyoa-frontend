@@ -5,9 +5,7 @@ import {
   Box,
 } from '@mantine/core';
 import { Handle, NodeProps, Position } from 'reactflow';
-import { getPreview } from '../../../utils/graph/graphUtils';
 import { NarrativeNode } from '../../../utils/graph/types';
-import NarrativeOptions from '../options/NarrativeOptions';
 
 const boxSize = {
   width: 172,
@@ -49,9 +47,6 @@ function NarrativeFlowNode(props: NodeProps<NarrativeFlowNodeData>) {
     sourcePosition,
   } = props;
 
-  const NUM_WORDS = 10;
-  const preview: string = getPreview(narrativeNode.data, NUM_WORDS);
-
   // node-box required for change on hover
   const boxClasses = `${classes.nodeBox} node-box`;
 
@@ -59,8 +54,8 @@ function NarrativeFlowNode(props: NodeProps<NarrativeFlowNodeData>) {
     <Box className={boxClasses}>
       <Handle type="target" position={targetPosition || Position.Top} />
       <Group noWrap={true} align="top">
-        <Text>
-          {preview}
+        <Text lineClamp={2}>
+          {narrativeNode.data}
         </Text>
       </Group>
       <Handle type="source" position={sourcePosition || Position.Bottom} />

@@ -5,10 +5,11 @@
   margin-bottom: var(--grid-size);
 }
 
-.react-flow__panel {
-  display: none;
+.react-flow .react-flow__node:hover .react-flow__handle {
+    width: 15px;
+    height: 15px;
 }
 
-/* .layoutflow .selected {
-  background-color: var(--my-theme) !important;
-} */
+.react-flow .react-flow__handle {
+  background-color: var(--oc-blue-7);
+}

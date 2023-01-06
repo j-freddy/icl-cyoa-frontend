@@ -4,7 +4,6 @@ import { Node, Edge, Position, } from "reactflow";
 import { flowNode } from "./graphVizNodes";
 import { flowEdge } from "./graphVizEdges";
 
-
 enum Layout {
   LR = "LR",
   TB = "TB"
@@ -21,7 +20,11 @@ export const getGraphNodesAndEdges = (layout: Layout, graph: Graph) => {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 
+  const visited = new Set();
+
   const dfsBuildNodesAndEdges = (nodeId: number) => {
+    if (visited.has(nodeId)) return;
+    visited.add(nodeId);
 
     const node = graph.nodeLookup[nodeId];
 
@@ -51,7 +54,7 @@ export const getGraphNodesAndEdges = (layout: Layout, graph: Graph) => {
   dagreGraph.setGraph({ rankdir: layout });
 
   nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+    dagreGraph.setNode(node.id, { width: node.width || nodeWidth, height: node.height || nodeHeight });
   });
 
   edges.forEach((edge) => {
@@ -64,8 +67,8 @@ export const getGraphNodesAndEdges = (layout: Layout, graph: Graph) => {
     const nodeWithPosition = dagreGraph.node(node.id);
 
     node.position = {
-      x: nodeWithPosition.x - nodeWidth / 2,
-      y: nodeWithPosition.y - nodeHeight / 2,
+      x: nodeWithPosition.x - (node.width || nodeWidth) / 2,
+      y: nodeWithPosition.y - (node.height || nodeHeight) / 2,
     };
 
     return node;

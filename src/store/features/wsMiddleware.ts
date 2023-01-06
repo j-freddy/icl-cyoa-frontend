@@ -2,14 +2,16 @@
 import { Middleware } from 'redux';
 import { WS_URL } from '../../api/links';
 import {
+  addActionMsg,
   connectNodesMsg,
   generateActionsMsg, generateInitialStoryMsg, generateManyMsg, generateNarrativeMsg
 } from '../../api/story/storyMessages';
 import { graphMessageToGraphLookup } from '../../utils/graph/graphUtils';
 import { GraphMessage } from '../../utils/graph/types';
 import {
-  connectNodes,
+  connectNodesWithMiddle,
   generateActions,
+  generateNewAction,
   generateEnding, generateInitialStoryAdvanced, generateInitialStoryBasic, generateMany,
   generateParagraph, graphResponse
 } from './storySlice';
@@ -60,6 +62,10 @@ const wsMiddleware: Middleware = store => {
         socket.send(generateActionsMsg(state.story.temperature, state.story.graph, action.payload.nodeToExpand));
       }
 
+      if (generateNewAction.match(action)) {
+        socket.send(addActionMsg(state.story.temperature, state.story.graph, action.payload.nodeToExpand))
+      }
+
       if (generateParagraph.match(action)) {
         socket.send(generateNarrativeMsg(
           state.story.temperature,
@@ -82,7 +88,7 @@ const wsMiddleware: Middleware = store => {
           state.story.style));
       }
 
-      if (connectNodes.match(action)) {
+      if (connectNodesWithMiddle.match(action)) {
         socket.send(connectNodesMsg(
           state.story.temperature,
           state.story.graph,

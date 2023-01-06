@@ -8,7 +8,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import GraphViz from "../../../components/generator/GraphViz";
 import StorySection from "../../../components/generator/StorySection";
-import { connectNodes, selectLoadingSection, selectStoryGraph } from "../../../store/features/storySlice";
+import { connectNodes, connectNodesWithMiddle, deleteEdge, selectLoadingSection, selectStoryGraph } from "../../../store/features/storySlice";
 import { isAction } from "../../../utils/graph/graphUtils";
 import { getStoryNodes } from "../../../utils/graph/storyUtils";
 import { NodeData, StoryNode } from "../../../utils/graph/types";
@@ -51,15 +51,24 @@ const StoryViz = () => {
   );
 
   const sendConnectNodesMessage = useCallback(
-    (fromNode: number, toNode: number) => {
+    (fromNode: number, toNode: number, generateMiddleNode: boolean) => {
+      if (!generateMiddleNode) {
+        dispatch(connectNodes({ fromNode, toNode }));
+        return;
+      }
+
       // Block if there are other requests.
       if (loadingSection !== null)
         return;
 
-      dispatch(connectNodes({ fromNode: fromNode, toNode: toNode }))
+      dispatch(connectNodesWithMiddle({ fromNode, toNode }))
     },
     [dispatch, loadingSection]
   );
+
+  const onEdgeDelete = useCallback((fromNode: number, toNode: number) => {
+    dispatch(deleteEdge({ fromNode, toNode }));
+  }, [dispatch]);
 
   const activeSectionId = useMemo(
     () => {
@@ -94,9 +103,9 @@ const StoryViz = () => {
       <Group spacing="xl" className={classes.group}>
 
         <GraphViz
-          graph={storyGraph}
           setActiveNodeId={setActiveNodeId}
           onConnectNodes={sendConnectNodesMessage}
+          onEdgeDelete={onEdgeDelete}
         />
 
         <Container className={classes.optionsContainer}>

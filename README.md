@@ -34,11 +34,3 @@ yarn start
 
 [1]: https://nodejs.org/en/download/
 [2]: https://classic.yarnpkg.com/lang/en/docs/install/
-
-<!--
-### TODO
-
-- If this README.md is targeted towards an arbitrary user, they must be aware
-  that this app requires a GPT key.
--->
-

@@ -1,11 +1,11 @@
 import {
   Container, createStyles, ScrollArea, Slider,
-  Space, Tabs
+  Space, Tabs, Text
 } from '@mantine/core';
 import { IconPlus, IconSettings } from '@tabler/icons';
 import { setTemperature } from '../../../store/features/storySlice';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { getPreview, isNarrative } from '../../../utils/graph/graphUtils';
+import { isNarrative } from '../../../utils/graph/graphUtils';
 import { ActionNode, NarrativeNode, NodeData, NodeType } from '../../../utils/graph/types';
 import ActionAdvancedOptions from './ActionAdvancedOptions';
 import ActionOptions from './ActionOptions';
@@ -21,8 +21,6 @@ const useStyles = createStyles((theme) => ({
     paddingBottom: "1em"
   }
 }));
-
-const NUM_WORDS = 12;
 
 function nodeDataToString(data: NodeData) {
   if (data.type === NodeType.Action) return "Option";
@@ -55,14 +53,15 @@ const NodeOptions = (props: NodeOptionsProps) => {
         <Tabs.Panel value="actions" pt="xs">
           <ScrollArea.Autosize maxHeight={310}>
             <b>Selected: {nodeDataToString(props.nodeData)}</b>
-            <p>
-              {getPreview(props.nodeData.data, NUM_WORDS)}
-            </p>
+            <Text lineClamp={3}>
+              {props.nodeData.data}
+            </Text>
+
+            <Space h="md" />
 
             {
               isNarrative(props.nodeData) ? (
-                (props.nodeData as NarrativeNode).isEnding ? <></> 
-                : <NarrativeOptions narrativeNode={props.nodeData as NarrativeNode} />
+                <NarrativeOptions narrativeNode={props.nodeData as NarrativeNode} />
               ) : (
                 <ActionOptions actionNode={props.nodeData as ActionNode} />
               )

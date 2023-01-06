@@ -81,7 +81,6 @@ const checkLogin = (content: JSX.Element) => {
   const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
-
   const loggedIn = useAppSelector(selectLoggedIn);
   const sessionLoginFail = useAppSelector(selectSessionLoginFail);
 
@@ -120,6 +119,7 @@ const checkLoginOnAuthPage = (content: JSX.Element) => {
 
   const dispatch = useAppDispatch();
   const loggedIn = useAppSelector(selectLoggedIn);
+  const sessionLoginFail = useAppSelector(selectSessionLoginFail);
 
 
   useEffect(() => {
@@ -139,5 +139,13 @@ const checkLoginOnAuthPage = (content: JSX.Element) => {
   }, [navigate, loggedIn]);
 
 
-  return (<>{content}</>);
+  if (!loggedIn && sessionLoginFail) {
+    return (<>{content}</>);
+  }
+
+  return (
+    <div className={"loader"}>
+      <Loader />
+    </div>
+  );
 }

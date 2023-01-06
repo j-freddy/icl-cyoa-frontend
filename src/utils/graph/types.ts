@@ -46,6 +46,7 @@ export type Graph = {
 export enum LoadingType {
     GenerateParagraph = "paragraph",
     GenerateActions = "actions",
+    GenerateNewAction = "new action",
     GenerateEnding = "ending",
     ConnectingNodes = "connecting nodes",
     InitialStory = "initial story",

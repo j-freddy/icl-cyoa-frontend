@@ -65,6 +65,22 @@ export const generateActionsMsg = (
 };
 
 
+export const addActionMsg = (
+  temperature: number,
+  graph: Graph,
+  nodeToExpand: number
+) => {
+  return JSON.stringify({
+    type: "addAction",
+    temperature,
+    data: {
+      nodeToExpand,
+      graph: graphToGraphMessage(graph),
+    },
+  });
+};
+
+
 export const connectNodesMsg = (
   temperature: number,
   graph: Graph,

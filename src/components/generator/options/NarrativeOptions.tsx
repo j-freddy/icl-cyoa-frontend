@@ -4,13 +4,13 @@ import {
   Popover,
   Stack
 } from "@mantine/core";
-import { generateActions, generateMany, regenerateActions, regenerateMany } from "../../../store/features/storySlice";
+import { generateActions, generateMany, regenerateActions, regenerateMany, setEnding } from "../../../store/features/storySlice";
 import { useAppDispatch } from "../../../store/hooks";
 import { NarrativeNode } from "../../../utils/graph/types";
 
 const useStyles = createStyles((theme) => ({
   buttonStack: {
-
+    textAlign: "center"
   },
 
 }));
@@ -53,6 +53,24 @@ function NarrativeOptions(props: NarrativeOptionsProps) {
     }));
   }
 
+  const onMakeEnding = () => {
+    dispatch(setEnding({ nodeId: narrativeNode.nodeId, isEnding: true }));
+  }
+
+  const onMakeNonEnding = () => {
+    dispatch(setEnding({ nodeId: narrativeNode.nodeId, isEnding: false }));
+  }
+
+  if (narrativeNode.isEnding) {
+    return (
+      <Stack spacing="xs">
+        <Button variant="outline" className={classes.buttonStack} onClick={onMakeNonEnding}>
+          Make non-ending
+        </Button>
+    </Stack>
+    )
+  }
+
   return (
     <>
       {narrativeNode.childrenIds.length === 0
@@ -65,6 +83,9 @@ function NarrativeOptions(props: NarrativeOptionsProps) {
           <Button variant="outline" className={classes.buttonStack} onClick={onGenerateManyClick}>
             Generate Many
           </Button>
+          <Button variant="outline" className={classes.buttonStack} onClick={onMakeEnding}>
+            Make ending
+          </Button>
         </Stack>
         :
         // Regenerate
@@ -75,7 +96,7 @@ function NarrativeOptions(props: NarrativeOptionsProps) {
             </Popover.Target>
             <Popover.Dropdown>
               <Button variant="subtle" className={classes.buttonStack} onClick={onRegenerateClick}>
-                Confirm: Regenerate
+                Confirm:<br />Regenerate
               </Button>
             </Popover.Dropdown>
           </Popover>
@@ -85,7 +106,7 @@ function NarrativeOptions(props: NarrativeOptionsProps) {
             </Popover.Target>
             <Popover.Dropdown>
               <Button variant="subtle" className={classes.buttonStack} onClick={onRegenerateManyClick}>
-                Confirm: Regenerate Many
+                Confirm:<br />Regenerate Ending
               </Button>
             </Popover.Dropdown>
           </Popover>
