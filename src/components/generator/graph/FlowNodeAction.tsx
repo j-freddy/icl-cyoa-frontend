@@ -5,7 +5,6 @@ import {
   Box,
 } from '@mantine/core';
 import { Handle, NodeProps, Position } from 'reactflow';
-import { getPreview } from '../../../utils/graph/graphUtils';
 import { ActionNode } from '../../../utils/graph/types';
 
 const boxSize = {
@@ -49,9 +48,6 @@ function ActionFlowNode(props: NodeProps<ActionFlowNodeData>) {
     sourcePosition,
   } = props;
 
-  const NUM_WORDS = 8;
-  const preview: string = getPreview(actionNode.data, NUM_WORDS);
-
   // node-box required for change on hover
   const boxClasses = `${classes.nodeBox} node-box`;
 
@@ -59,8 +55,8 @@ function ActionFlowNode(props: NodeProps<ActionFlowNodeData>) {
     <Box className={boxClasses}>
       <Handle type="target" position={targetPosition || Position.Top} />
       <Group noWrap={true} align="top">
-        <Text>
-          {preview}
+        <Text lineClamp={2}>
+          {actionNode.data}
         </Text>
       </Group>
       <Handle type="source" position={sourcePosition || Position.Bottom} />

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { deleteNodeFromGraph, isGraphEmpty } from '../../utils/graph/graphUtils';
-import { Graph, LoadingType } from '../../utils/graph/types';
+import { connectNodesOnGraph, deleteEdgeOnGraph, deleteNodeFromGraph, isGraphEmpty, isNarrative } from '../../utils/graph/graphUtils';
+import { Graph, LoadingType, NarrativeNode } from '../../utils/graph/types';
 import { RootState } from '../store';
 import { handleGetGraphFulfilled, handleInitStoryFulfilled } from './story/thunkHandlers';
 import { displayLoadedNotification, displayLoadingNotification } from './story/LoadingNotifications';
@@ -62,10 +62,13 @@ export const storySlice = createSlice({
       state.graph = action.payload;
     },
     deleteNode: (state, action: PayloadAction<number>) => {
-      state.graph = deleteNodeFromGraph(state.graph, action.payload)
+      state.graph = deleteNodeFromGraph(state.graph, action.payload);
     },
     setNodeData: (state, action: PayloadAction<{ nodeId: number, data: string }>) => {
       state.graph.nodeLookup[action.payload.nodeId].data = action.payload.data;
+    },
+    setEnding: (state, action: PayloadAction<{ nodeId: number, isEnding: boolean }>) => {
+      (state.graph.nodeLookup[action.payload.nodeId] as NarrativeNode).isEnding = action.payload.isEnding;
     },
     setId: (state, action: PayloadAction<{ storyId: string }>) => {
       state.id = action.payload.storyId;
@@ -84,6 +87,14 @@ export const storySlice = createSlice({
     },
     setStyle: (state, action: PayloadAction<string>) => {
       state.style = action.payload;
+    },
+    connectNodes: (state, action: PayloadAction<{fromNode: number, toNode: number}>) => {
+      const fromData = state.graph.nodeLookup[action.payload.fromNode];
+      if (isNarrative(fromData) && (fromData as NarrativeNode).isEnding) return; // can't connect ending
+      state.graph = connectNodesOnGraph(state.graph, action.payload.fromNode, action.payload.toNode);
+    },
+    deleteEdge: (state, action: PayloadAction<{fromNode: number, toNode: number}>) => {
+      state.graph = deleteEdgeOnGraph(state.graph, action.payload.fromNode, action.payload.toNode);
     },
 
     /* 
@@ -113,11 +124,18 @@ export const storySlice = createSlice({
       state.loadingSection = LoadingType.GenerateActions;
       displayLoadingNotification(LoadingType.GenerateActions);
     },
+    generateNewAction: (state, _action: PayloadAction<{ nodeToExpand: number }>) => {
+      state.loadingSection = LoadingType.GenerateNewAction;
+      displayLoadingNotification(LoadingType.GenerateNewAction);
+    },
     generateEnding: (state, _action: PayloadAction<{ nodeToEnd: number }>) => {
       state.loadingSection = LoadingType.GenerateEnding;
       displayLoadingNotification(LoadingType.GenerateEnding);
     },
-    connectNodes: (state, _action: PayloadAction<{ fromNode: number, toNode: number }>) => {
+    connectNodesWithMiddle: (state, _action: PayloadAction<{ fromNode: number, toNode: number }>) => {
+      const fromData = state.graph.nodeLookup[_action.payload.fromNode];
+      if (isNarrative(fromData) && (fromData as NarrativeNode).isEnding) return; // can't connect ending
+
       state.loadingSection = LoadingType.ConnectingNodes;
       displayLoadingNotification(LoadingType.ConnectingNodes);
     },
@@ -139,6 +157,7 @@ export const {
   setName,
   deleteNode,
   setNodeData,
+  setEnding,
   setId,
   setGoToGenerator,
   setTemperature,
@@ -150,8 +169,11 @@ export const {
   generateInitialStoryAdvanced,
   generateParagraph,
   generateActions,
+  generateNewAction,
   generateEnding,
   connectNodes,
+  deleteEdge,
+  connectNodesWithMiddle,
   generateMany,
 } = storySlice.actions;
 

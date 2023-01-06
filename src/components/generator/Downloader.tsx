@@ -10,7 +10,7 @@ import {
   Divider,
   createStyles
 } from "@mantine/core";
-import { IconFileDownload } from "@tabler/icons";
+import { IconDownload, IconFileDownload } from "@tabler/icons";
 import { ShuffledList, shuffleList } from "../../utils/utils";
 import { selectStoryTitle } from "../../store/features/storySlice";
 import { useAppSelector } from "../../store/hooks";
@@ -99,8 +99,8 @@ export default function Downloader(props: DownloaderProps) {
   return (
     <Popover trapFocus position="bottom" withArrow shadow="md">
       <Popover.Target>
-        <Button rightIcon={<IconFileDownload size={20} />}>
-          Download
+        <Button style={{width: "40%"}}>
+        <IconDownload/>
         </Button>
       </Popover.Target>
       <Popover.Dropdown className={classes.popover}>
