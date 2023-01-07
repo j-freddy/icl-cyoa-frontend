@@ -4,11 +4,14 @@ import {
   Group,
   createStyles,
 } from "@mantine/core";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import GraphViz from "../../../components/generator/GraphViz";
 import StorySection from "../../../components/generator/StorySection";
-import { connectNodes, connectNodesWithMiddle, deleteEdge, selectLoadingSection, selectStoryGraph } from "../../../store/features/storySlice";
+import { 
+  connectNodes, connectNodesWithMiddle, deleteEdge, 
+  selectActiveNodeId, selectLoadingSection, selectStoryGraph, setActiveNodeId 
+} from "../../../store/features/storySlice";
 import { isAction } from "../../../utils/graph/graphUtils";
 import { getStoryNodes } from "../../../utils/graph/storyUtils";
 import { NodeData, StoryNode } from "../../../utils/graph/types";
@@ -42,8 +45,12 @@ const StoryViz = () => {
   const storyGraph = useAppSelector(selectStoryGraph);
   const loadingSection = useAppSelector(selectLoadingSection);
 
-  const [activeNodeId, setActiveNodeId] = useState<number | null>(0);
+  const activeNodeId = useAppSelector(selectActiveNodeId);
+  const setActiveNodeIdLocal = useCallback((id: number) => dispatch(setActiveNodeId(id)), [dispatch]);
 
+  useEffect(() => {
+    setActiveNodeIdLocal(0);
+  }, []);
 
   const story = useMemo(() => {
       return getStoryNodes(storyGraph, false);
@@ -76,6 +83,8 @@ const StoryViz = () => {
         return 0;
       }
 
+      console.log(activeNodeId, storyGraph)
+
       const node: NodeData = storyGraph.nodeLookup[activeNodeId];
 
       if (isAction(node)) {
@@ -86,15 +95,15 @@ const StoryViz = () => {
 
       return story.find((storyNode) => storyNode.nodeId === node.nodeId)!.sectionId;
     },
-    [story, activeNodeId]
+    [story, storyGraph, activeNodeId]
   );
 
   const setActiveSectionId = useCallback(
     (page: number) => {
       const storyNode: StoryNode = story.find((storyNode) => storyNode.sectionId === page)!
-      setActiveNodeId(storyNode.nodeId);
+      setActiveNodeIdLocal(storyNode.nodeId);
     },
-    [story, setActiveNodeId]
+    [story, setActiveNodeIdLocal]
   )
 
 
@@ -103,7 +112,7 @@ const StoryViz = () => {
       <Group spacing="xl" className={classes.group}>
 
         <GraphViz
-          setActiveNodeId={setActiveNodeId}
+          setActiveNodeId={setActiveNodeIdLocal}
           onConnectNodes={sendConnectNodesMessage}
           onEdgeDelete={onEdgeDelete}
         />

@@ -63,7 +63,7 @@ const wsMiddleware: Middleware = store => {
       }
 
       if (generateNewAction.match(action)) {
-        socket.send(addActionMsg(state.story.temperature, state.story.graph, action.payload.nodeToExpand))
+        socket.send(addActionMsg(state.story.temperature, state.story.graph, action.payload.nodeToExpand, state.story.numActionsToAdd))
       }
 
       if (generateParagraph.match(action)) {

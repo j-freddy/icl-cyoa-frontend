@@ -10,7 +10,7 @@ import {
 import { GraphMessage } from '../../../utils/graph/types';
 import { loadStories } from '../accountSlice';
 import {
-  deleteNode,
+  deleteChildNodes,
   generateActions,
   generateEnding,
   generateMany,
@@ -25,7 +25,7 @@ import {
 export const regenerateParagraphThunk = createAsyncThunk(
   'story/regenerateParagraph',
   async (nodeToRegenerate: number, { dispatch }) => {
-    dispatch(deleteNode(nodeToRegenerate));
+    dispatch(deleteChildNodes(nodeToRegenerate));
     dispatch(generateParagraph({ nodeToExpand: nodeToRegenerate }));
   }
 );
@@ -34,7 +34,7 @@ export const regenerateParagraphThunk = createAsyncThunk(
 export const regenerateActionsThunk = createAsyncThunk(
   'story/regenerateActions',
   async (nodeToRegenerate: number, { dispatch }) => {
-    dispatch(deleteNode(nodeToRegenerate));
+    dispatch(deleteChildNodes(nodeToRegenerate));
     dispatch(generateActions({ nodeToExpand: nodeToRegenerate }));
   }
 );
@@ -43,7 +43,7 @@ export const regenerateActionsThunk = createAsyncThunk(
 export const regenerateEndingThunk = createAsyncThunk(
   'story/regenerateParagraph',
   async (nodeToEnd: number, { dispatch }) => {
-    dispatch(deleteNode(nodeToEnd));
+    dispatch(deleteChildNodes(nodeToEnd));
     dispatch(generateEnding({ nodeToEnd: nodeToEnd }));
   }
 );
@@ -56,7 +56,7 @@ type regenerateManyThunkProps = {
 export const regenerateManyThunk = createAsyncThunk(
   'story/regenerateMany',
   async (props: regenerateManyThunkProps, { dispatch }) => {
-    dispatch(deleteNode(props.fromNode));
+    dispatch(deleteChildNodes(props.fromNode));
     dispatch(generateMany({ ...props }));
   }
 );
