@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { connectNodesOnGraph, deleteEdgeOnGraph, deleteNodeFromGraph, isGraphEmpty, isNarrative } from '../../utils/graph/graphUtils';
+import { connectNodesOnGraph, deleteEdgeOnGraph, deleteNodeFromGraph, findParent, isGraphEmpty, isNarrative } from '../../utils/graph/graphUtils';
 import { Graph, LoadingType, NarrativeNode } from '../../utils/graph/types';
 import { RootState } from '../store';
 import { handleGetGraphFulfilled, handleInitStoryFulfilled } from './story/thunkHandlers';
@@ -12,7 +12,9 @@ export interface StoryState {
   title: string;
   graph: Graph;
   graphWasLoaded: boolean;
+  activeNodeId: number;
 
+  numActionsToAdd: number,
   temperature: number;
   descriptor: string;
   details: string;
@@ -28,7 +30,9 @@ const initialState: StoryState = {
   title: "",
   graph: { nodeLookup: {} },
   graphWasLoaded: false,
+  activeNodeId: 0,
 
+  numActionsToAdd: 2,
   temperature: 0.6,
   descriptor: "",
   details: "",
@@ -62,7 +66,11 @@ export const storySlice = createSlice({
       state.graph = action.payload;
     },
     deleteNode: (state, action: PayloadAction<number>) => {
-      state.graph = deleteNodeFromGraph(state.graph, action.payload);
+      state.activeNodeId = findParent(state.graph, action.payload) || 0;
+      state.graph =  deleteNodeFromGraph(state.graph, action.payload, true);
+    },
+    deleteChildNodes: (state, action: PayloadAction<number>) => {
+      state.graph = deleteNodeFromGraph(state.graph, action.payload, false);
     },
     setNodeData: (state, action: PayloadAction<{ nodeId: number, data: string }>) => {
       state.graph.nodeLookup[action.payload.nodeId].data = action.payload.data;
@@ -76,6 +84,9 @@ export const storySlice = createSlice({
     setGoToGenerator: (state, action: PayloadAction<boolean>) => {
       state.goToGenerator = action.payload;
     },
+    setNumActionsToAdd: (state, action: PayloadAction<number>) => {
+      state.numActionsToAdd = action.payload;
+    },
     setTemperature: (state, action: PayloadAction<number>) => {
       state.temperature = action.payload;
     },
@@ -87,6 +98,9 @@ export const storySlice = createSlice({
     },
     setStyle: (state, action: PayloadAction<string>) => {
       state.style = action.payload;
+    },
+    setActiveNodeId: (state, action: PayloadAction<number>) => {
+      state.activeNodeId = action.payload;
     },
     connectNodes: (state, action: PayloadAction<{fromNode: number, toNode: number}>) => {
       const fromData = state.graph.nodeLookup[action.payload.fromNode];
@@ -156,14 +170,17 @@ export const {
   setGraph,
   setName,
   deleteNode,
+  deleteChildNodes,
   setNodeData,
   setEnding,
   setId,
   setGoToGenerator,
+  setNumActionsToAdd,
   setTemperature,
   setDescriptor,
   setDetails,
   setStyle,
+  setActiveNodeId,
   graphResponse,
   generateInitialStoryBasic,
   generateInitialStoryAdvanced,
@@ -185,6 +202,8 @@ export const selectStoryIsEmpty = (state: RootState) => isGraphEmpty(state.story
 export const selectStoryId = (state: RootState) => state.story.id;
 export const selectStoryTitle = (state: RootState) => state.story.title;
 export const selectLoadingSection = (state: RootState) => state.story.loadingSection;
+export const selectActiveNodeId = (state: RootState) => state.story.activeNodeId;
+export const selectNumActionsToAdd = (state: RootState) => state.story.numActionsToAdd;
 
 
 export default storySlice.reducer;

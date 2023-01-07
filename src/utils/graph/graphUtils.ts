@@ -52,37 +52,61 @@ export const graphToGraphMessage = (graph: Graph): GraphMessage => {
   return { nodes };
 };
 
+export const findParent = (graph: Graph, nodeId: number) => {
+  const visited = new Set<NodeId>();
+  const dfsFindParent = (currId: number): number | null => {
+    if (visited.has(currId)) return null;
+    visited.add(currId);
 
-export const deleteNodeFromGraph = (graph: Graph, nodeId: number): Graph => {
+    for (const childId of graph.nodeLookup[nodeId].childrenIds) {
+      const potentialParent = dfsFindParent(childId);
+      if (potentialParent !== null) return potentialParent;
+    }
+    return null;
+  };
+  return dfsFindParent(0);
+}
+
+
+export const deleteNodeFromGraph = (graph: Graph, nodeId: number, deleteThisNode: boolean=false): Graph => {
   const toKeep = new Set<NodeId>();
 
   const dfsNodesToKeep = (currId: number) => {
     const node = graph.nodeLookup[currId];
 
-    toKeep.add(currId);
-
     if (currId === nodeId) {
+      if (!deleteThisNode) toKeep.add(currId);
       return;
     }
 
+    if (toKeep.has(currId)) return;
+    toKeep.add(currId);
+
     for (const childId of node.childrenIds) {
-      dfsNodesToKeep(childId);
+        dfsNodesToKeep(childId);
     }
   }
   dfsNodesToKeep(0);
 
-  return {
+  const x = {
     nodeLookup: Object.fromEntries(
       Object.entries(graph.nodeLookup)
         .filter(([id, _]) => {
           return toKeep.has(parseInt(id));
         }).map(
           ([id, v]) => {
+            if (deleteThisNode && v.childrenIds.includes(nodeId)) {
+              return [id, { ...v, childrenIds: v.childrenIds.filter(i => i !== nodeId) }];
+            }
             return parseInt(id) === nodeId ? [id, { ...v, childrenIds: [] }] : [id, v];
           }
         )
     )
   };
+
+  console.log(x)
+
+  return x;
 };
 
 export const isValidConnectNodes = (graph: Graph, fromNode: number, toNode: number): boolean => {

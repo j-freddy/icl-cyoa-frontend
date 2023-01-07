@@ -12,6 +12,7 @@ export const displayLoadingNotification = (loadingType: LoadingType) => {
     [LoadingType.ConnectingNodes, "Connecting nodes."],
     [LoadingType.InitialStory, "Generating initial story."],
     [LoadingType.GenerateMany, "Generating many paragraphs and actions."],
+    [LoadingType.GenerateNewAction, "Generating new action."],
   ]);
   const message = typeMessage.get(loadingType);
 
@@ -35,6 +36,7 @@ export const displayLoadedNotification = (loadingType: LoadingType) => {
     [LoadingType.ConnectingNodes, "Nodes were successfully connected."],
     [LoadingType.InitialStory, "Initial story was generated successfully."],
     [LoadingType.GenerateMany, "Many paragraphs and actions were generated successfully."],
+    [LoadingType.GenerateNewAction, "Action was generated successfully."],
   ]);
   const message = typeMessage.get(loadingType);
 

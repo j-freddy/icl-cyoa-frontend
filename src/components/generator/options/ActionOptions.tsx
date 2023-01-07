@@ -7,6 +7,7 @@ import {
 import { regenerateEnding, regenerateMany, regenerateParagraph } from "../../../store/features/storySlice";
 import { useAppDispatch } from "../../../store/hooks";
 import { ActionNode } from "../../../utils/graph/types";
+import DeleteButton from "./DeleteButton";
 
 const useStyles = createStyles((theme) => ({
   buttonStack: {
@@ -46,10 +47,10 @@ function ActionOptions(props: ActionOptionsProps) {
 
 
   return (
-    <>
+    <Stack spacing="xs">
       {
         actionNode.childrenIds.length === 0 ? (
-          <Stack spacing="xs">
+          <>
             <Button variant="outline" className={classes.buttonStack} onClick={onGenerateClick}>
               Generate
             </Button>
@@ -59,9 +60,9 @@ function ActionOptions(props: ActionOptionsProps) {
             <Button variant="outline" className={classes.buttonStack} onClick={onGenerateEndingClick}>
               Generate Ending
             </Button>
-          </Stack>
+          </>
         ) : (
-          <Stack spacing="xs">
+          <>
             <Popover position="bottom" withArrow shadow="md">
               <Popover.Target>
                 <Button variant="outline">Regenerate </Button>
@@ -94,10 +95,13 @@ function ActionOptions(props: ActionOptionsProps) {
                 </Button>
               </Popover.Dropdown>
             </Popover>
-          </Stack>
+          </>
         )
       }
-    </>
+    
+      <DeleteButton nodeId={actionNode.nodeId} />
+
+    </Stack>
   );
 }
 

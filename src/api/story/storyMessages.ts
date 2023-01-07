@@ -68,7 +68,8 @@ export const generateActionsMsg = (
 export const addActionMsg = (
   temperature: number,
   graph: Graph,
-  nodeToExpand: number
+  nodeToExpand: number,
+  numNewActions: number,
 ) => {
   return JSON.stringify({
     type: "addAction",
@@ -76,6 +77,7 @@ export const addActionMsg = (
     data: {
       nodeToExpand,
       graph: graphToGraphMessage(graph),
+      numNewActions,
     },
   });
 };

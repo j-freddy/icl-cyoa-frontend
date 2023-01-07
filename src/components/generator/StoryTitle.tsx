@@ -1,7 +1,7 @@
 import {
   ActionIcon, Button, Container, createStyles,
   Divider,
-  Group, Text, Textarea,
+  Group, Text,
   TextInput,
   Title
 } from '@mantine/core';
