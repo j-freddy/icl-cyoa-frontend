@@ -6,7 +6,7 @@ import { INITIAL_INPUT_PAGE } from '../../utils/pages';
 
 
 const useStyles = createStyles((theme, _params) => ({
-  
+
   titleStack: {
     justifyContent: "center",
     align: "center",
@@ -44,14 +44,13 @@ const useStyles = createStyles((theme, _params) => ({
     justifyContent: "center",
     spacing: "xl",
     width: "100",
-    backgroundColor: "white",
+    background: theme.fn.gradient({ from: 'white', to: 'transparent', deg: 180 })
   },
 
   group: {
     width: "100",
     height: "100vh",
     alignItems: "center",
-    background: "white",
     padding: "10px"
   },
 
@@ -71,7 +70,7 @@ const useStyles = createStyles((theme, _params) => ({
 
 const WelcomeView = () => {
   const { classes } = useStyles();
-  
+
   return (
     <>
       <Stack

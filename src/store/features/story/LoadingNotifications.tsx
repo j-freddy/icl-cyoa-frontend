@@ -31,7 +31,7 @@ export const displayGenerateManyUpdate = (loadingUpdate: LoadingUpdate) => {
 };
 
 export const displayLoadingNotification = (loadingType: LoadingType) => {
-  
+
   const typeMessage = new Map<LoadingType, string>([
     [LoadingType.GenerateParagraph, "Generating paragraph."],
     [LoadingType.GenerateActions, "Generating actions."],
@@ -39,7 +39,9 @@ export const displayLoadingNotification = (loadingType: LoadingType) => {
     [LoadingType.ConnectingNodes, "Connecting nodes."],
     [LoadingType.InitialStory, "Generating initial story."],
     [LoadingType.GenerateMany, "Generating many paragraphs and actions."],
-    [LoadingType.GenerateNewAction, "Generating new action."],
+    [LoadingType.SaveName, "Updating Story Title."],
+    [LoadingType.SaveStory, "Saving current story and graph."],
+    [LoadingType.GenerateNewAction, "Generating new action."]
   ]);
   const message = typeMessage.get(loadingType);
 
@@ -63,7 +65,9 @@ export const displayLoadedNotification = (loadingType: LoadingType) => {
     [LoadingType.ConnectingNodes, "Nodes were successfully connected."],
     [LoadingType.InitialStory, "Initial story was generated successfully."],
     [LoadingType.GenerateMany, "Many paragraphs and actions were generated successfully."],
-    [LoadingType.GenerateNewAction, "Action was generated successfully."],
+    [LoadingType.SaveName, "Updated Story Title."],
+    [LoadingType.SaveStory, "Saved current story and graph successfully."],
+    [LoadingType.GenerateNewAction, "Action was generated successfully."]
   ]);
   const message = typeMessage.get(loadingType);
 

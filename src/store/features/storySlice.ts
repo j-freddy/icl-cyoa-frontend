@@ -50,8 +50,6 @@ export const regenerateParagraph = regenerateParagraphThunk;
 export const regenerateActions = regenerateActionsThunk;
 export const regenerateEnding = regenerateEndingThunk;
 export const regenerateMany = regenerateManyThunk;
-export const saveName = saveNameThunk;
-export const saveGraph = saveGraphThunk;
 export const getGraph = getGraphThunk;
 export const initStory = initStoryThunk;
 
@@ -61,8 +59,20 @@ export const storySlice = createSlice({
   initialState,
   reducers: {
     reset: () => initialState,
+    saveName: (state) => {
+      state.loadingSection = LoadingType.SaveName;
+      displayLoadingNotification(LoadingType.SaveName);
+      saveNameThunk
+      displayLoadedNotification(state.loadingSection);
+    },
     setName: (state, action: PayloadAction<string>) => {
       state.title = action.payload;
+    },
+    saveGraph: (state) => {
+      state.loadingSection = LoadingType.SaveStory;
+      displayLoadingNotification(LoadingType.SaveStory);
+      saveGraphThunk
+      displayLoadedNotification(state.loadingSection);
     },
     setGraph: (state, action: PayloadAction<Graph>) => {
       state.graph = action.payload;
@@ -196,6 +206,8 @@ export const {
   reset,
   setGraph,
   setName,
+  saveName,
+  saveGraph,
   deleteNode,
   deleteChildNodes,
   setNodeData,

@@ -1,7 +1,8 @@
 import { List, Popover, Text } from "@mantine/core";
+import { selectApiKey } from "../../store/features/accountSlice";
 import { generateInitialStory } from "../../store/features/initialInputSlice";
 import { generateInitialStoryBasic, initStory } from "../../store/features/storySlice";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import AttributeTable from "./AttributeTable";
 import GenerateButton from "./GenerateButton";
 import { GenreOption } from "./GenreOptions";
@@ -28,7 +29,6 @@ function GenreHandler(props: GenreHandlerProps) {
     dispatch(initStory()).unwrap().then(() =>
       dispatch(generateInitialStory()));
   };
-
 
   switch (props.genre) {
     case GenreOption.None:
