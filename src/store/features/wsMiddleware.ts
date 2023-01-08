@@ -13,7 +13,7 @@ import {
   generateActions,
   generateNewAction,
   generateEnding, generateInitialStoryAdvanced, generateInitialStoryBasic, generateMany,
-  generateParagraph, setGraph, requestComplete, progressUpdate, openAIError, rateLimitError, disconnectedError
+  generateParagraph, setGraph, requestComplete, progressUpdate, openAIError, rateLimitError, disconnectedError, nlpParseError
 } from './storySlice';
 import { connectionEstablished, disconnected, startConnecting } from './wsSlice';
 
@@ -22,6 +22,7 @@ enum ResponseType {
   ProgressUpdate = "progressUpdate",
   RateLimitError = "rateLimitError",
   OpenAIError = "openaiError",
+  NlpParseError = "nlpParseError",
 };
 
 type Response = {
@@ -77,6 +78,8 @@ const wsMiddleware: Middleware = store => {
           store.dispatch(openAIError());
         } else if (resType === ResponseType.RateLimitError) {
           store.dispatch(rateLimitError());
+        } else if (resType === ResponseType.NlpParseError) {
+          store.dispatch(nlpParseError());
         }
       };
 

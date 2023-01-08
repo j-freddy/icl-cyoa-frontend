@@ -81,14 +81,14 @@ export const displayLoadedNotification = (loadingType: LoadingType) => {
   });
 }
 
-export const displayErrorUpdate = (message: string) => {
+export const displayErrorUpdate = (title: string, message: string='Try again...') => {
   updateNotification({
     id: 'load-data',
     color: 'red',
-    title: message,
-    message: 'Try again...',
+    title,
+    message,
     icon: <IconAlertTriangle size={16} />,
-    autoClose: 1500,
+    autoClose: 2000,
   });
 }
 
