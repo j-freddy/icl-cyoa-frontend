@@ -1,13 +1,16 @@
 import {
   Button,
   createStyles,
+  NumberInput,
   Popover,
   Stack
 } from "@mantine/core";
-import { regenerateEnding, regenerateMany, regenerateParagraph } from "../../../store/features/storySlice";
-import { useAppDispatch } from "../../../store/hooks";
+import { useCallback, useMemo } from "react";
+import { regenerateEnding, regenerateMany, regenerateParagraph, selectGenerateManyDepth, selectLoadingSection, setGenerateManyDepth } from "../../../store/features/storySlice";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { ActionNode } from "../../../utils/graph/types";
 import DeleteButton from "./DeleteButton";
+import { SplitButton } from "./SplitButton";
 
 const useStyles = createStyles((theme) => ({
   buttonStack: {
@@ -28,6 +31,27 @@ function ActionOptions(props: ActionOptionsProps) {
 
   const dispatch = useAppDispatch();
 
+  const loadingSection = useAppSelector(selectLoadingSection);
+  const actionsDisabled = useMemo(() => loadingSection !== null, [loadingSection]);
+
+  const generateManyDepth = useAppSelector(selectGenerateManyDepth);
+
+  const GenerateManyDepthInput = useCallback(() => {
+    const onChange = (depth: number) => {
+      dispatch(setGenerateManyDepth(depth));
+    };
+
+    return (
+      <NumberInput 
+        size="xs" 
+        defaultValue={generateManyDepth} 
+        label="Depth to generate:" 
+        onChange={onChange}
+        max={3}
+        min={1}
+      />
+    )
+  }, [dispatch, generateManyDepth]);
 
   const onGenerateEndingClick = (): void => {
     dispatch(regenerateEnding(actionNode.nodeId))
@@ -40,8 +64,6 @@ function ActionOptions(props: ActionOptionsProps) {
   const onGenerateManyClick = async () => {
     dispatch(regenerateMany({
       fromNode: actionNode.nodeId,
-      // TODO Customisable max depth
-      maxDepth: 2,
     }))
   }
 
@@ -51,13 +73,13 @@ function ActionOptions(props: ActionOptionsProps) {
       {
         actionNode.childrenIds.length === 0 ? (
           <>
-            <Button variant="outline" className={classes.buttonStack} onClick={onGenerateClick}>
-              Generate
+            <Button disabled={actionsDisabled} variant="outline" className={classes.buttonStack} onClick={onGenerateClick}>
+              Generate Next
             </Button>
-            <Button variant="outline" className={classes.buttonStack} onClick={onGenerateManyClick}>
-              Generate Many
-            </Button>
-            <Button variant="outline" className={classes.buttonStack} onClick={onGenerateEndingClick}>
+            <SplitButton confirmation={false} text="Generate Many" disabled={actionsDisabled} onClick={onGenerateManyClick}>
+              <GenerateManyDepthInput />
+            </SplitButton>
+            <Button disabled={actionsDisabled} variant="outline" className={classes.buttonStack} onClick={onGenerateEndingClick}>
               Generate Ending
             </Button>
           </>
@@ -65,29 +87,22 @@ function ActionOptions(props: ActionOptionsProps) {
           <>
             <Popover position="bottom" withArrow shadow="md">
               <Popover.Target>
-                <Button variant="outline">Regenerate </Button>
+                <Button disabled={actionsDisabled} variant="outline">Regenerate Next</Button>
               </Popover.Target>
               <Popover.Dropdown>
                 <Button variant="subtle" className={classes.buttonStack} onClick={onGenerateClick}>
-                  Confirm:<br />Regenerate
+                  Confirm:<br />Regenerate next
                 </Button>
               </Popover.Dropdown>
             </Popover>
 
-            <Popover position="bottom" withArrow shadow="md">
-              <Popover.Target>
-                <Button variant="outline">Regenerate Many</Button>
-              </Popover.Target>
-              <Popover.Dropdown>
-                <Button variant="subtle" className={classes.buttonStack} onClick={onGenerateManyClick}>
-                  Confirm:<br />Regenerate Many
-                </Button>
-              </Popover.Dropdown>
-            </Popover>
+            <SplitButton confirmation text="Regenerate Many" disabled={actionsDisabled} onClick={onGenerateManyClick}>
+              <GenerateManyDepthInput />
+            </SplitButton>
 
             <Popover position="bottom" withArrow shadow="md">
               <Popover.Target>
-                <Button variant="outline">Regenerate Ending</Button>
+                <Button disabled={actionsDisabled} variant="outline">Regenerate Ending</Button>
               </Popover.Target>
               <Popover.Dropdown>
                 <Button variant="subtle" className={classes.buttonStack} onClick={onGenerateEndingClick}>
@@ -99,7 +114,7 @@ function ActionOptions(props: ActionOptionsProps) {
         )
       }
     
-      <DeleteButton nodeId={actionNode.nodeId} />
+      <DeleteButton onlyChildren={false} disabled={actionsDisabled} nodeId={actionNode.nodeId} />
 
     </Stack>
   );

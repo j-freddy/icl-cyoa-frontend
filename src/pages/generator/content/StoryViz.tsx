@@ -83,8 +83,6 @@ const StoryViz = () => {
         return 0;
       }
 
-      console.log(activeNodeId, storyGraph)
-
       const node: NodeData = storyGraph.nodeLookup[activeNodeId];
 
       if (isAction(node)) {

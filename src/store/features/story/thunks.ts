@@ -51,7 +51,6 @@ export const regenerateEndingThunk = createAsyncThunk(
 
 type regenerateManyThunkProps = {
   fromNode: number,
-  maxDepth: number,
 };
 export const regenerateManyThunk = createAsyncThunk(
   'story/regenerateMany',

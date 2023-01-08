@@ -24,13 +24,9 @@ import NarrativeFlowNode from './graph/FlowNodeNarrative';
 import ActionFlowNode from './graph/FlowNodeAction';
 import { IconInfoCircle } from '@tabler/icons';
 import { mantineBlue } from '../../utils/utils';
-import { selectStoryGraph } from '../../store/features/storySlice';
+import { selectLoadingSection, selectStoryGraph } from '../../store/features/storySlice';
 import { useAppSelector } from '../../store/hooks';
 import { isValidConnectNodes, isValidDeleteEdge } from '../../utils/graph/graphUtils';
-
-const useStyles = createStyles((theme) => ({
-
-}));
 
 
 enum Layout {
@@ -67,7 +63,9 @@ const GraphViz = (props: GraphVizProps) => {
 
 const GraphVizInner = (props: GraphVizProps) => {
   const graph = useAppSelector(selectStoryGraph);
-  const { classes } = useStyles();
+
+  const loadingSection = useAppSelector(selectLoadingSection);
+  const actionsDisabled = useMemo(() => loadingSection !== null, [loadingSection]);
 
   const [layout, setLayout] = useState<Layout>(Layout.LR);
   const [connectingData, setConnectingData] = useState<ConnectingData | null>(null);
@@ -123,16 +121,16 @@ const GraphVizInner = (props: GraphVizProps) => {
         onChange={() => setGenerateMiddleNode(prev => !prev)}
         label='Generate middle node'
       />
-      <Button onClick={onConnectClick} className="mx-2" variant='light'>Connect</Button>
+      <Button disabled={actionsDisabled} onClick={onConnectClick} className="mx-2" variant='light'>Connect</Button>
       <Button onClick={onCancelClick} className="mx-2" variant='light'>Cancel</Button>
     </Card>
-  }, [connectingData, generateMiddleNode, setGenerateMiddleNode, onConnectClick, onCancelClick]);
+  }, [connectingData, generateMiddleNode, setGenerateMiddleNode, onConnectClick, onCancelClick, actionsDisabled]);
 
   const DeleteEdgeDisplay = useCallback(() => {
     return <>
-      <Button onClick={onDeleteEdge} className="mx-2" variant='light'>Delete edge</Button>
+      <Button disabled={actionsDisabled} onClick={onDeleteEdge} className="mx-2" variant='light'>Delete edge</Button>
     </>
-  }, [deleteEdgeData, onCancelClick, onDeleteEdge]);
+  }, [deleteEdgeData, onCancelClick, onDeleteEdge, actionsDisabled]);
 
   const { nodes, edges } = useMemo(
     () => {

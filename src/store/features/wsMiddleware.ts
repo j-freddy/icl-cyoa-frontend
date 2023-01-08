@@ -13,9 +13,30 @@ import {
   generateActions,
   generateNewAction,
   generateEnding, generateInitialStoryAdvanced, generateInitialStoryBasic, generateMany,
-  generateParagraph, graphResponse
+  generateParagraph, setGraph, requestComplete, progressUpdate, openAIError, rateLimitError, disconnectedError
 } from './storySlice';
 import { connectionEstablished, disconnected, startConnecting } from './wsSlice';
+
+enum ResponseType {
+  RequestComplete = "requestComplete",
+  ProgressUpdate = "progressUpdate",
+  RateLimitError = "rateLimitError",
+  OpenAIError = "openaiError",
+};
+
+type Response = {
+  resType: ResponseType,
+};
+
+type RequestCompleteResponse = {
+  graph: GraphMessage,
+};
+
+type ProgressUpdateResponse = {
+  graph: GraphMessage,
+  numNodesGenerated: number,
+  percentage: number,
+};
 
 
 const wsMiddleware: Middleware = store => {
@@ -34,17 +55,38 @@ const wsMiddleware: Middleware = store => {
       };
 
       socket.onmessage = (msg) => {
-        const jsonMsg = JSON.parse(msg.data) as { graph: GraphMessage }
-        const graph = graphMessageToGraphLookup(jsonMsg.graph);
-        store.dispatch(graphResponse(graph))
+        const jsonMsg = JSON.parse(msg.data);
+
+        const resType = (jsonMsg as Response).resType;
+
+        if (resType === ResponseType.RequestComplete) {
+          const msg = jsonMsg as RequestCompleteResponse;
+
+          const graph = graphMessageToGraphLookup(msg.graph);
+          store.dispatch(setGraph(graph));
+          store.dispatch(requestComplete());
+        } else if (resType === ResponseType.ProgressUpdate) {
+          const msg = jsonMsg as ProgressUpdateResponse;
+
+          const graph = graphMessageToGraphLookup(msg.graph);
+          store.dispatch(setGraph(graph));
+          store.dispatch(progressUpdate(
+            { percentage: msg.percentage, numNodesGenerated: msg.numNodesGenerated }
+          ));
+        } else if (resType === ResponseType.OpenAIError) {
+          store.dispatch(openAIError());
+        } else if (resType === ResponseType.RateLimitError) {
+          store.dispatch(rateLimitError());
+        }
       };
 
       socket.onclose = () => {
         store.dispatch(disconnected());
+        store.dispatch(disconnectedError());
         // reconnect in 2 seconds
         setTimeout(() => {
           store.dispatch(startConnecting());
-        }, 2000)
+        }, 3000)
       };
     }
 
@@ -96,18 +138,26 @@ const wsMiddleware: Middleware = store => {
           action.payload.toNode
         ));
       }
-    }
 
-    if (generateMany.match(action)) {
-      socket.send(generateManyMsg(
-        state.story.temperature,
-        state.story.graph,
-        action.payload.fromNode,
-        action.payload.maxDepth,
-        state.story.storyId
-      ));
+      if (generateMany.match(action)) {
+        socket.send(generateManyMsg(
+          state.story.temperature,
+          state.story.graph,
+          action.payload.fromNode,
+          state.story.generateManyDepth,
+          state.story.storyId
+        ));
+      }
+    } else if (generateInitialStoryBasic.match(action) 
+              || generateInitialStoryAdvanced.match(action)
+              || generateActions.match(action)
+              || generateNewAction.match(action)
+              || generateParagraph.match(action)
+              || generateEnding.match(action)
+              || connectNodesWithMiddle.match(action)
+              || generateMany.match(action)) {
+      store.dispatch(disconnectedError());
     }
-
     next(action);
   }
 }

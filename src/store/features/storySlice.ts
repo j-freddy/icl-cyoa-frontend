@@ -3,7 +3,7 @@ import { connectNodesOnGraph, deleteEdgeOnGraph, deleteNodeFromGraph, findParent
 import { Graph, LoadingType, NarrativeNode } from '../../utils/graph/types';
 import { RootState } from '../store';
 import { handleGetGraphFulfilled, handleInitStoryFulfilled } from './story/thunkHandlers';
-import { displayLoadedNotification, displayLoadingNotification } from './story/LoadingNotifications';
+import { displayErrorUpdate, displayGenerateManyLoadingNotification, displayGenerateManyUpdate, displayLoadedNotification, displayLoadingNotification, LoadingUpdate } from './story/LoadingNotifications';
 import { getGraphThunk, initStoryThunk, regenerateActionsThunk, regenerateEndingThunk, regenerateManyThunk, regenerateParagraphThunk, saveGraphThunk, saveNameThunk } from './story/thunks';
 
 
@@ -14,6 +14,7 @@ export interface StoryState {
   graphWasLoaded: boolean;
   activeNodeId: number;
 
+  generateManyDepth: number,
   numActionsToAdd: number,
   temperature: number;
   descriptor: string;
@@ -32,6 +33,7 @@ const initialState: StoryState = {
   graphWasLoaded: false,
   activeNodeId: 0,
 
+  generateManyDepth: 2,
   numActionsToAdd: 2,
   temperature: 0.6,
   descriptor: "",
@@ -87,6 +89,9 @@ export const storySlice = createSlice({
     setNumActionsToAdd: (state, action: PayloadAction<number>) => {
       state.numActionsToAdd = action.payload;
     },
+    setGenerateManyDepth: (state, action: PayloadAction<number>) => {
+      state.generateManyDepth = action.payload;
+    },
     setTemperature: (state, action: PayloadAction<number>) => {
       state.temperature = action.payload;
     },
@@ -114,12 +119,34 @@ export const storySlice = createSlice({
     /* 
       Reducers for the WS middleware.
     */
-    graphResponse: (state, action: PayloadAction<Graph>) => {
+    requestComplete: (state) => {
       if (state.loadingSection !== null) {
         displayLoadedNotification(state.loadingSection);
+        state.loadingSection = null;
       }
-      state.loadingSection = null;
-      state.graph = action.payload;
+    },
+    progressUpdate: (state, action: PayloadAction<LoadingUpdate>) => {
+      if (state.loadingSection !== null) {
+        displayGenerateManyUpdate(action.payload);
+      };
+    },
+    openAIError: (state) => {
+      if (state.loadingSection !== null) {
+        displayErrorUpdate("Open AI Unavailable Error");
+        state.loadingSection = null;
+      }
+    },
+    rateLimitError: (state) => {
+      if (state.loadingSection !== null) {
+        displayErrorUpdate("Open AI Rate Limit Error");
+        state.loadingSection = null;
+      }
+    },
+    disconnectedError: (state) => {
+      if (state.loadingSection !== null) {
+        displayErrorUpdate("Server Disconnection Error");
+        state.loadingSection = null;
+      }
     },
     generateInitialStoryBasic: (state, _action: PayloadAction<{ prompt: string }>) => {
       state.loadingSection = LoadingType.InitialStory;
@@ -153,9 +180,9 @@ export const storySlice = createSlice({
       state.loadingSection = LoadingType.ConnectingNodes;
       displayLoadingNotification(LoadingType.ConnectingNodes);
     },
-    generateMany: (state, _action: PayloadAction<{ fromNode: number, maxDepth: number }>) => {
+    generateMany: (state, _action: PayloadAction<{ fromNode: number }>) => {
       state.loadingSection = LoadingType.GenerateMany;
-      displayLoadingNotification(LoadingType.GenerateMany);
+      displayGenerateManyLoadingNotification();
     },
   },
   extraReducers: (builder) => {
@@ -176,12 +203,17 @@ export const {
   setId,
   setGoToGenerator,
   setNumActionsToAdd,
+  setGenerateManyDepth,
   setTemperature,
   setDescriptor,
   setDetails,
   setStyle,
   setActiveNodeId,
-  graphResponse,
+  requestComplete,
+  progressUpdate,
+  openAIError,
+  rateLimitError,
+  disconnectedError,
   generateInitialStoryBasic,
   generateInitialStoryAdvanced,
   generateParagraph,
@@ -204,6 +236,7 @@ export const selectStoryTitle = (state: RootState) => state.story.title;
 export const selectLoadingSection = (state: RootState) => state.story.loadingSection;
 export const selectActiveNodeId = (state: RootState) => state.story.activeNodeId;
 export const selectNumActionsToAdd = (state: RootState) => state.story.numActionsToAdd;
+export const selectGenerateManyDepth = (state: RootState) => state.story.generateManyDepth;
 
 
 export default storySlice.reducer;
