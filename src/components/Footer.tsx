@@ -1,13 +1,23 @@
 import {
   Center,
+  createStyles,
   Footer,
   Text
 } from '@mantine/core';
 
+const useStyles = createStyles((theme) => ({
+  footer: {
+    backgroundColor: theme.fn.rgba(theme.black, 0.08),
+  },
+}));
+
 export default function AppFooter() {
+
+  const { classes } = useStyles();
 
   return (
     <Footer
+      className={classes.footer}
       height={"8vh"}
       p="md"
     >

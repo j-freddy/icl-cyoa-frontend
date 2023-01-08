@@ -2,7 +2,7 @@ import {
   ActionIcon,
   Button,
   Group,
-  Textarea
+  Textarea,
 } from "@mantine/core";
 import { IconEdit } from "@tabler/icons";
 import { useState } from "react";
@@ -35,7 +35,6 @@ function GPT3KeyForm(props: GPT3KeyFormProps) {
     setEditable(false);
     dispatch(updateApiKey(key))
   }
-
 
   return (
     <Group align="center" position="apart">

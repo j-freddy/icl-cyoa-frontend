@@ -1,4 +1,5 @@
 import {
+  ThemeIcon,
   Button,
   Container,
   createStyles,
@@ -6,9 +7,10 @@ import {
   Group,
   Loader,
   Stack,
+  Text,
   Title
 } from '@mantine/core';
-import { IconPlus } from '@tabler/icons';
+import { IconPlus, IconInfoCircle } from '@tabler/icons';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StoryListItem from '../../components/dashboard/StoryListItem';
@@ -88,6 +90,26 @@ const DashboardView = () => {
         </Button>
       </Group>
       <Divider my="sm" />
+      <Group
+        spacing="xs"
+
+        ml={15}
+        mb={15}>
+        <ThemeIcon
+          radius="lg"
+          variant="light">
+          <IconInfoCircle />
+        </ThemeIcon>
+        <Text
+          fz="xs"
+          fs="italic"
+          c="dark.04"
+          weight={600}
+        >
+          <Text>We use GPT3 to generate your stories.</Text>
+          For faster story generation, you can supply your own API key for GPT3 under Account Settings.
+        </Text>
+      </Group>
       <StoryList />
     </Container >
 

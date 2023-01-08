@@ -55,7 +55,6 @@ function InitialInputView() {
     return () => ctx.revert();
   }, []);
 
-
   return (
     <Flex justify="center" id="page-body" className="flex-grow-1">
       <Stack
@@ -72,7 +71,9 @@ function InitialInputView() {
         </Title>
 
         <div id="genre-dropdown">
-          <GenreDropdown genre={genre} setGenre={setGenre} />
+          <Stack spacing="md">
+            <GenreDropdown genre={genre} setGenre={setGenre} />
+          </Stack>
         </div>
 
         <GenreHandler genre={genre} />
