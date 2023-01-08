@@ -148,7 +148,13 @@ export const storySlice = createSlice({
     },
     rateLimitError: (state) => {
       if (state.loadingSection !== null) {
-        displayErrorUpdate("Open AI Rate Limit Error");
+        displayErrorUpdate("Open AI Rate Limit Error", "Please wait for a few seconds and try again...");
+        state.loadingSection = null;
+      }
+    },
+    nlpParseError: (state) => {
+      if (state.loadingSection !== null) {
+        displayErrorUpdate("Failed to Generate", "Try changing the previous text or creativity and generating again...");
         state.loadingSection = null;
       }
     },
@@ -225,6 +231,7 @@ export const {
   progressUpdate,
   openAIError,
   rateLimitError,
+  nlpParseError,
   disconnectedError,
   generateInitialStoryBasic,
   generateInitialStoryAdvanced,
