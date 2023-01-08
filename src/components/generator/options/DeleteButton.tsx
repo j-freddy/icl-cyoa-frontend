@@ -1,29 +1,45 @@
-import { Button, Popover } from "@mantine/core";
-import { deleteNode } from "../../../store/features/storySlice";
+import { Button, createStyles, Popover } from "@mantine/core";
+import { deleteChildNodes, deleteNode } from "../../../store/features/storySlice";
 import { useAppDispatch } from "../../../store/hooks";
 
 
 interface DeleteButtonProps {
-    nodeId: number
+    nodeId: number,
+    disabled: boolean,
+    onlyChildren: boolean,
 };
+
+const useStyles = createStyles((theme) => ({
+  deleteButton: {
+    textAlign: "center"
+  },
+
+}));
 
 
 const DeleteButton = (props: DeleteButtonProps) => {
 
-    const dispatch = useAppDispatch();
+  const { classes } = useStyles();
+  const dispatch = useAppDispatch();
 
-    return (
-        <Popover position="bottom" withArrow shadow="md">
-        <Popover.Target>
-          <Button variant="outline" color={"red"}>Delete</Button>
-        </Popover.Target>
-        <Popover.Dropdown>
-          <Button variant="subtle" onClick={() => dispatch(deleteNode(props.nodeId))}>
-            Confirm: Delete
-          </Button>
-        </Popover.Dropdown>
-      </Popover>
-    );
+  const text = props.onlyChildren ? "Delete All Actions" : "Delete";
+
+  const onClick = props.onlyChildren ? 
+    () => dispatch(deleteChildNodes(props.nodeId)) 
+    : () => dispatch(deleteNode(props.nodeId))
+
+  return (
+    <Popover position="bottom" withArrow shadow="md">
+      <Popover.Target>
+        <Button disabled={props.disabled} variant="outline" color={"red"}>{text}</Button>
+      </Popover.Target>
+      <Popover.Dropdown>
+        <Button variant="subtle" onClick={onClick} className={classes.deleteButton}>
+          Confirm:<br />{text}
+        </Button>
+      </Popover.Dropdown>
+    </Popover>
+  );
 }
 
 

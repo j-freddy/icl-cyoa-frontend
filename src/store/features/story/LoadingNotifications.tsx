@@ -1,7 +1,34 @@
 import { showNotification, updateNotification, } from "@mantine/notifications";
 import { LoadingType } from "../../../utils/graph/types";
-import { IconCheck } from '@tabler/icons';
+import { IconAlertTriangle, IconCheck, IconCross, IconError404 } from '@tabler/icons';
+import { Progress, Tooltip } from "@mantine/core";
 
+export type LoadingUpdate = {
+  percentage: number,
+  numNodesGenerated: number,
+}
+
+export const displayGenerateManyLoadingNotification = () => {
+  showNotification({
+    id: 'load-data',
+    loading: true,
+    title: "Generating many paragraphs and actions.",
+    message: <Progress value={0} />,
+    autoClose: false,
+    disallowClose: true,
+  });
+};
+
+export const displayGenerateManyUpdate = (loadingUpdate: LoadingUpdate) => {
+  updateNotification({
+    id: 'load-data',
+    loading: true,
+    title: "Generating many paragraphs and actions.",
+    message: <Progress value={loadingUpdate.percentage} />,
+    autoClose: false,
+    disallowClose: true,
+  });
+};
 
 export const displayLoadingNotification = (loadingType: LoadingType) => {
   
@@ -46,7 +73,18 @@ export const displayLoadedNotification = (loadingType: LoadingType) => {
     title: message,
     message: 'You can close this notification now.',
     icon: <IconCheck size={16} />,
-    autoClose: 2000,
+    autoClose: 1500,
+  });
+}
+
+export const displayErrorUpdate = (message: string) => {
+  updateNotification({
+    id: 'load-data',
+    color: 'red',
+    title: message,
+    message: 'Try again...',
+    icon: <IconAlertTriangle size={16} />,
+    autoClose: 1500,
   });
 }
 

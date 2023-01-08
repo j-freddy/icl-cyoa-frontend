@@ -104,8 +104,6 @@ export const deleteNodeFromGraph = (graph: Graph, nodeId: number, deleteThisNode
     )
   };
 
-  console.log(x)
-
   return x;
 };
 

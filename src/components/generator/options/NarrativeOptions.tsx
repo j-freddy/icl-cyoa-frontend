@@ -1,37 +1,20 @@
 import {
-  ActionIcon,
   Button,
   createStyles,
-  Group,
-  Menu,
   NumberInput,
   Popover,
   Stack
 } from "@mantine/core";
-import { IconChevronDown } from "@tabler/icons";
 import { useCallback, useMemo } from "react";
-import { generateActions, generateMany, regenerateActions, regenerateMany, generateNewAction, setEnding, selectNumActionsToAdd, setNumActionsToAdd } from "../../../store/features/storySlice";
+import { generateActions, generateMany, regenerateActions, regenerateMany, generateNewAction, setEnding, selectNumActionsToAdd, setNumActionsToAdd, selectLoadingSection, selectGenerateManyDepth, setGenerateManyDepth } from "../../../store/features/storySlice";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { NarrativeNode } from "../../../utils/graph/types";
 import DeleteButton from "./DeleteButton";
+import { SplitButton } from "./SplitButton";
 
 const useStyles = createStyles((theme) => ({
   buttonStack: {
     textAlign: "center"
-  },
-  splitButton: {
-    width: "100%",
-    textAlign: "center",
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
-    borderRight: `0.5px solid`,
-  },
-
-  splitMenu: {
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0,
-    // border: 0,
-    borderLeft: `0.5px solid`,
   },
 
 }));
@@ -49,32 +32,19 @@ function NarrativeOptions(props: NarrativeOptionsProps) {
 
   const dispatch = useAppDispatch();
 
-  const onGenerateClick = useCallback(() => {
-    dispatch(generateActions({ nodeToExpand: narrativeNode.nodeId }));
-  }, [dispatch, narrativeNode]);
-
-  const onRegenerateClick = useCallback(() => {
-    dispatch(regenerateActions(narrativeNode.nodeId));
-  }, [dispatch, narrativeNode]);
+  const loadingSection = useAppSelector(selectLoadingSection);
+  const actionsDisabled = useMemo(() => loadingSection !== null, [loadingSection]);
 
   const onAddActionClick = useCallback(() => {
     dispatch(generateNewAction({ nodeToExpand: narrativeNode.nodeId }));
   }, [dispatch, narrativeNode]);
 
   const onGenerateManyClick = useCallback(() => {
-    dispatch(generateMany({
-      fromNode: narrativeNode.nodeId,
-      // TODO Customisable max depth
-      maxDepth: 2,
-    }));
+    dispatch(generateMany({ fromNode: narrativeNode.nodeId }));
   }, [dispatch, narrativeNode]);
 
   const onRegenerateManyClick = useCallback(() => {
-    dispatch(regenerateMany({
-      fromNode: narrativeNode.nodeId,
-      // TODO Customisable max depth
-      maxDepth: 2,
-    }));
+    dispatch(regenerateMany({ fromNode: narrativeNode.nodeId }));
   }, [dispatch, narrativeNode]);
 
   const onMakeEnding = useCallback(() => {
@@ -88,9 +58,9 @@ function NarrativeOptions(props: NarrativeOptionsProps) {
   const numActionsToAdd = useAppSelector(selectNumActionsToAdd);
   const numActionsButtonText = useMemo(() => {
     if (numActionsToAdd === 1) {
-      return "Add 1 action";
+      return "Add 1 Action";
     };
-    return `Add ${numActionsToAdd} actions`
+    return `Add ${numActionsToAdd} Actions`
   }, [numActionsToAdd]);
 
   const AddActionNumberInput = useCallback(() => {
@@ -110,76 +80,62 @@ function NarrativeOptions(props: NarrativeOptionsProps) {
     )
   }, [dispatch, numActionsToAdd]);
 
+  const generateManyDepth = useAppSelector(selectGenerateManyDepth);
+
+  const GenerateManyDepthInput = useCallback(() => {
+    const onChange = (depth: number) => {
+      dispatch(setGenerateManyDepth(depth));
+    };
+
+    return (
+      <NumberInput 
+        size="xs" 
+        defaultValue={generateManyDepth} 
+        label="Depth to generate:" 
+        onChange={onChange}
+        max={3}
+        min={1}
+      />
+    )
+  }, [dispatch, generateManyDepth]);
+
   if (narrativeNode.isEnding) {
     return (
       <Stack spacing="xs">
-        <Button variant="outline" className={classes.buttonStack} onClick={onMakeNonEnding}>
+        <Button disabled={actionsDisabled} variant="outline" className={classes.buttonStack} onClick={onMakeNonEnding}>
           Make non-ending
         </Button>
+        {narrativeNode.nodeId !== 0 && <DeleteButton onlyChildren={false} disabled={actionsDisabled} nodeId={narrativeNode.nodeId} />}
       </Stack>
     )
   }
 
   return (
     <Stack spacing="xs">
+      <SplitButton confirmation={false} text={numActionsButtonText} disabled={actionsDisabled} onClick={onAddActionClick}>
+        <AddActionNumberInput />
+      </SplitButton>
     {narrativeNode.childrenIds.length === 0
         ?
         // Generate & Generate Many
         <>
-          <Button variant="outline" className={classes.buttonStack} onClick={onGenerateClick}>
-            Generate Actions
-          </Button>
-          <Button variant="outline" className={classes.buttonStack} onClick={onGenerateManyClick}>
-            Generate Many
-          </Button>
-          <Button variant="outline" className={classes.buttonStack} onClick={onMakeEnding}>
+          <SplitButton confirmation={false} text="Generate Many" disabled={actionsDisabled} onClick={onGenerateManyClick}>
+            <GenerateManyDepthInput />
+          </SplitButton>
+          <Button disabled={actionsDisabled} variant="outline" className={classes.buttonStack} onClick={onMakeEnding}>
             Make ending
           </Button>
         </>
         :
         // Regenerate
         <>
-          <Popover position="bottom" withArrow shadow="md">
-            <Popover.Target>
-              <Button variant="outline">Regenerate</Button>
-            </Popover.Target>
-            <Popover.Dropdown>
-              <Button variant="subtle" className={classes.buttonStack} onClick={onRegenerateClick}>
-                Confirm:<br />Regenerate
-              </Button>
-            </Popover.Dropdown>
-          </Popover>
-          <Popover position="bottom" withArrow shadow="md">
-            <Popover.Target>
-              <Button variant="outline">Regenerate Many</Button>
-            </Popover.Target>
-            <Popover.Dropdown>
-              <Button variant="subtle" className={classes.buttonStack} onClick={onRegenerateManyClick}>
-                Confirm:<br />Regenerate Ending
-              </Button>
-            </Popover.Dropdown>
-          </Popover>
+          <SplitButton confirmation text="Regenerate Many" disabled={actionsDisabled} onClick={onRegenerateManyClick}>
+            <GenerateManyDepthInput />
+          </SplitButton>
         </>
       }
-      <Group noWrap spacing={0} position="center">
-        <Button variant="outline" className={classes.splitButton} onClick={onAddActionClick}>{numActionsButtonText}</Button>
-        <Popover position="bottom" withArrow shadow="md">
-          <Popover.Target>
-            <ActionIcon
-              variant="outline"
-              size={36}
-              className={classes.splitMenu}
-            >
-              <IconChevronDown size={16} stroke={1.5} />
-            </ActionIcon>
-          </Popover.Target>
-          <Popover.Dropdown >
-            <AddActionNumberInput />
-          </Popover.Dropdown>
-        </Popover>
-      </Group>
-
-      {narrativeNode.nodeId !== 0 && <DeleteButton nodeId={narrativeNode.nodeId} />}
+      {narrativeNode.nodeId !== 0 && <DeleteButton onlyChildren={false} disabled={actionsDisabled} nodeId={narrativeNode.nodeId} />}
+      {narrativeNode.childrenIds.length !== 0 && <DeleteButton onlyChildren={true} disabled={actionsDisabled} nodeId={narrativeNode.nodeId} />}
     </Stack>
   );
 }
