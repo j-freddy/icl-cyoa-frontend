@@ -63,10 +63,11 @@ const wrapView = (content: JSX.Element) => {
 
   return (
     <main id="page-container" className="d-flex flex-column">
-      <AppHeader links={[
-        { label: "Home", link: HOME_PAGE },
-        { label: "Dashboard", link: DASHBOARD_PAGE }
-      ]}
+      <AppHeader
+        links={[
+          { label: "Home", link: HOME_PAGE },
+          { label: "Dashboard", link: DASHBOARD_PAGE }
+        ]}
       />
       <div id="page-body" className="flex-grow-1">
         {content}
