@@ -151,14 +151,16 @@ const wsMiddleware: Middleware = store => {
           state.story.storyId
         ));
       }
-    } else if (generateInitialStoryBasic.match(action)
+    } else if (
+      generateInitialStoryBasic.match(action)
       || generateInitialStoryAdvanced.match(action)
       || generateActions.match(action)
       || generateNewAction.match(action)
       || generateParagraph.match(action)
       || generateEnding.match(action)
       || connectNodesWithMiddle.match(action)
-      || generateMany.match(action)) {
+      || generateMany.match(action)
+    ) {
       store.dispatch(disconnectedError());
     }
     next(action);

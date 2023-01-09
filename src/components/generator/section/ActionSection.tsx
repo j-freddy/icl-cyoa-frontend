@@ -14,6 +14,7 @@ import { IconEdit, IconCheckbox } from '@tabler/icons';
 const useStyles = createStyles((theme) => ({
   action: {
     color: theme.black,
+    wordBreak: 'break-all',
   },
 
   text_input: {

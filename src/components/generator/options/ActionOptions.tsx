@@ -6,7 +6,7 @@ import {
   Stack
 } from "@mantine/core";
 import { useCallback, useMemo } from "react";
-import { regenerateEnding, regenerateMany, regenerateParagraph, selectGenerateManyDepth, selectLoadingSection, setGenerateManyDepth } from "../../../store/features/storySlice";
+import { regenerateEnding, regenerateMany, regenerateParagraph, selectGenerateManyDepth, selectLoadingType, setGenerateManyDepth } from "../../../store/features/storySlice";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { ActionNode } from "../../../utils/graph/types";
 import DeleteButton from "./DeleteButton";
@@ -25,14 +25,13 @@ interface ActionOptionsProps {
 };
 
 function ActionOptions(props: ActionOptionsProps) {
+  const { actionNode } = props;
+  
   const { classes } = useStyles();
 
-  const { actionNode } = props;
-
   const dispatch = useAppDispatch();
-
-  const loadingSection = useAppSelector(selectLoadingSection);
-  const actionsDisabled = useMemo(() => loadingSection !== null, [loadingSection]);
+  const loadingType = useAppSelector(selectLoadingType);
+  const actionsDisabled = useMemo(() => loadingType !== null, [loadingType]);
 
   const generateManyDepth = useAppSelector(selectGenerateManyDepth);
 

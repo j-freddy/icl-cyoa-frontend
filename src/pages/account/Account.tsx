@@ -1,4 +1,4 @@
-import { Container, Loader, TextInput, Divider, Text, List } from "@mantine/core";
+import { Container, Loader, TextInput, Divider, Text, List, LoadingOverlay, Center } from "@mantine/core";
 import { useEffect } from "react";
 import GPT3KeyForm from "../../components/account/GPT3KeyForm";
 import { getApiKey, selectApiKey, selectEmail } from "../../store/features/accountSlice";
@@ -11,30 +11,14 @@ function AccountView() {
   const email = useAppSelector(selectEmail);
   const apiKey = useAppSelector(selectApiKey);
 
+  const loaded = apiKey !== undefined;
+
 
   useEffect(() => {
     dispatch(getApiKey());
   }, [dispatch]);
 
 
-  const AccountData = () => {
-    if (apiKey === undefined) {
-      return (
-        <div className={"loader"}>
-          <Loader />
-        </div>
-      );
-    }
-
-    return (
-      <>
-        <TextInput label="Email" variant="filled" disabled={true} mb="lg"
-          value={email}
-        />
-        <GPT3KeyForm apiKey={apiKey} />
-      </>
-    )
-  }
 
   const ApiKeyInstructions = () => {
     return (
@@ -51,15 +35,35 @@ function AccountView() {
           </Text>
           <Text fs="italic" >  ** Do note that OpenAI charges a fee based on your monthly usage beyond initially given free credits.</Text>
         </Text>
-
       </>
-    )
+    );
   }
+
+  const Content = () => {
+
+    if (!loaded) {
+      return (
+        <Center style={{ height: 200 }}>
+          <Loader />
+        </Center>
+      );
+    }
+
+    return (
+      <>
+        <TextInput label="Email" variant="filled" disabled={true} mb="lg"
+          value={email}
+        />
+        <GPT3KeyForm apiKey={apiKey === undefined ? "" : apiKey} />
+        <ApiKeyInstructions />
+      </>
+    );
+  }
+
 
   return (
     <Container className="wrapper">
-      <AccountData />
-      <ApiKeyInstructions />
+      <Content />
     </Container>
   );
 }

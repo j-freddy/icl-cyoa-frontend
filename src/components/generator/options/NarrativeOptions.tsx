@@ -6,7 +6,7 @@ import {
   Stack
 } from "@mantine/core";
 import { useCallback, useMemo } from "react";
-import { generateActions, generateMany, regenerateActions, regenerateMany, generateNewAction, setEnding, selectNumActionsToAdd, setNumActionsToAdd, selectLoadingSection, selectGenerateManyDepth, setGenerateManyDepth } from "../../../store/features/storySlice";
+import { generateActions, generateMany, regenerateActions, regenerateMany, generateNewAction, setEnding, selectNumActionsToAdd, setNumActionsToAdd, selectLoadingType, selectGenerateManyDepth, setGenerateManyDepth } from "../../../store/features/storySlice";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { NarrativeNode } from "../../../utils/graph/types";
 import DeleteButton from "./DeleteButton";
@@ -25,15 +25,13 @@ interface NarrativeOptionsProps {
 };
 
 function NarrativeOptions(props: NarrativeOptionsProps) {
+  const { narrativeNode } = props;
 
   const { classes } = useStyles();
 
-  const { narrativeNode } = props;
-
   const dispatch = useAppDispatch();
-
-  const loadingSection = useAppSelector(selectLoadingSection);
-  const actionsDisabled = useMemo(() => loadingSection !== null, [loadingSection]);
+  const loadingType = useAppSelector(selectLoadingType);
+  const actionsDisabled = useMemo(() => loadingType !== null, [loadingType]);
 
   const onAddActionClick = useCallback(() => {
     dispatch(generateNewAction({ nodeToExpand: narrativeNode.nodeId }));

@@ -1,8 +1,7 @@
 import { List, Popover, Text } from "@mantine/core";
-import { selectApiKey } from "../../store/features/accountSlice";
 import { generateInitialStory } from "../../store/features/initialInputSlice";
-import { generateInitialStoryBasic, initStory } from "../../store/features/storySlice";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { generateInitialStoryBasic, initStory, saveGraph } from "../../store/features/storySlice";
+import { useAppDispatch } from "../../store/hooks";
 import AttributeTable from "./AttributeTable";
 import GenerateButton from "./GenerateButton";
 import { GenreOption } from "./GenreOptions";
@@ -18,17 +17,18 @@ function GenreHandler(props: GenreHandlerProps) {
   const dispatch = useAppDispatch();
 
 
-  const handleGenerateGenreText = (genre: string) => {
+  const handleGenerateGenreText = async (genre: string) => {
     const generateGenrePrompt = `Write a ${genre} story from a second person perspective.`;
 
-    dispatch(initStory()).unwrap().then(() =>
-      dispatch(generateInitialStoryBasic({ prompt: generateGenrePrompt })));
+    await dispatch(initStory());
+    dispatch(generateInitialStoryBasic({ prompt: generateGenrePrompt }));
   };
 
-  const handleGenerateInitialStory = () => {
-    dispatch(initStory()).unwrap().then(() =>
-      dispatch(generateInitialStory()));
+  const handleGenerateInitialStory = async () => {
+    await dispatch(initStory());
+    await dispatch(generateInitialStory());
   };
+
 
   switch (props.genre) {
     case GenreOption.None:

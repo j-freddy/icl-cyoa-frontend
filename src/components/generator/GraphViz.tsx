@@ -24,7 +24,7 @@ import NarrativeFlowNode from './graph/FlowNodeNarrative';
 import ActionFlowNode from './graph/FlowNodeAction';
 import { IconInfoCircle } from '@tabler/icons';
 import { mantineBlue } from '../../utils/utils';
-import { selectLoadingSection, selectStoryGraph } from '../../store/features/storySlice';
+import { selectLoadingType, selectStoryGraph } from '../../store/features/storySlice';
 import { useAppSelector } from '../../store/hooks';
 import { isValidConnectNodes, isValidDeleteEdge } from '../../utils/graph/graphUtils';
 
@@ -64,8 +64,8 @@ const GraphViz = (props: GraphVizProps) => {
 const GraphVizInner = (props: GraphVizProps) => {
   const graph = useAppSelector(selectStoryGraph);
 
-  const loadingSection = useAppSelector(selectLoadingSection);
-  const actionsDisabled = useMemo(() => loadingSection !== null, [loadingSection]);
+  const loadingType = useAppSelector(selectLoadingType);
+  const actionsDisabled = useMemo(() => loadingType !== null, [loadingType]);
 
   const [layout, setLayout] = useState<Layout>(Layout.LR);
   const [connectingData, setConnectingData] = useState<ConnectingData | null>(null);
