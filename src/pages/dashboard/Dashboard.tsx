@@ -12,13 +12,13 @@ import {
 } from '@mantine/core';
 import { IconPlus, IconInfoCircle } from '@tabler/icons';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import StoryListItem from '../../components/dashboard/StoryListItem';
 import {
   loadStories, selectStories
 } from '../../store/features/accountSlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { INITIAL_INPUT_PAGE } from '../../utils/pages';
+import { INITIAL_INPUT_PAGE, ACCOUNT_PAGE } from '../../utils/pages';
 
 const useStyles = createStyles((theme) => ({
 
@@ -107,7 +107,8 @@ const DashboardView = () => {
           weight={600}
         >
           <Text>We use GPT3 to generate your stories.</Text>
-          For faster story generation, you can supply your own API key for GPT3 under Account Settings.
+          For faster story generation, you can supply your own API key for GPT3 under
+          <Link to={ACCOUNT_PAGE} style={{ textDecoration: 'underline', color: '#467BE1' }}> Account Settings</Link>.
         </Text>
       </Group>
       <StoryList />
