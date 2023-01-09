@@ -1,4 +1,4 @@
-import { Container, Loader, TextInput } from "@mantine/core";
+import { Container, Loader, TextInput, Divider, Text, List } from "@mantine/core";
 import { useEffect } from "react";
 import GPT3KeyForm from "../../components/account/GPT3KeyForm";
 import { getApiKey, selectApiKey, selectEmail } from "../../store/features/accountSlice";
@@ -36,10 +36,30 @@ function AccountView() {
     )
   }
 
+  const ApiKeyInstructions = () => {
+    return (
+      <>
+        <Divider mb={15} />
+        <Text fz="sm" weight={400}>
+          Our software uses the GPT-3 AI language model developed by OpenAI.
+          Though we have set default API keys to access this model, you can supply your own to achieve faster and more consistent generation speeds.
+          <Text td="underline" mt={8}>To get and use your own API key, you can:</Text>
+          <Text ml={24} mt={3} mb={8}>
+            <Text>1. Create a free account on <a target="_blank" href="https://beta.openai.com/signup">Open AI</a>.</Text>
+            <Text>2. Navigate to your OpenAI <a target="_blank" href="https://beta.openai.com/account/api-keys">API keys page</a> and generate a new key.</Text>
+            <Text>3. Copy and paste your key into the form above.</Text>
+          </Text>
+          <Text fs="italic" >  ** Do note that OpenAI charges a fee based on your monthly usage beyond initially given free credits.</Text>
+        </Text>
+
+      </>
+    )
+  }
 
   return (
     <Container className="wrapper">
       <AccountData />
+      <ApiKeyInstructions />
     </Container>
   );
 }
