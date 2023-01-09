@@ -1,44 +1,39 @@
 import {
-	createStyles,
-	Container,
-	Group,
-	Header,
-	Button,
+	Container, createStyles, Flex, Group, Tabs
 } from '@mantine/core';
-import { Link } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AppMenu from './header/AppMenu';
 
+
 const useStyles = createStyles((theme) => ({
+
 	header: {
 		backgroundColor: theme.fn.rgba(theme.black, 0.08),
-	},
-
-	inner: {
-		display: 'flex',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		height: "7vh",
+		paddingTop: theme.spacing.sm,
+		borderBottom: `1px solid ${theme.colors.gray[2]}`,
 	},
 
 
-	links: {
-		width: 260,
-	},
-
-	userActive: {
-		backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.white,
+	appMenu: {
+		paddingBottom: theme.spacing.sm,
 	},
 
 
-	link: {
-		backgroundColor: "transparent",
-		color: 'black',
+	tabsList: {
+		borderBottom: '0 !important',
+	},
+	tab: {
+		backgroundColor: 'transparent',
+		fontWeight: 500,
 
 		'&:hover': {
 			backgroundColor: theme.colors.gray[0],
 		},
 	},
-
+	tabActive: {
+		backgroundColor: theme.white,
+		borderColor: theme.colors.gray[2],
+	}
 }));
 
 
@@ -46,29 +41,49 @@ interface AppHeaderProps {
 	links: { label: string, link: string; }[];
 }
 
-export default function AppHeader({ links }: AppHeaderProps) {
+function AppHeader({ links }: AppHeaderProps) {
+	const { classes, cx } = useStyles();
 
-	const { classes } = useStyles();
+	const navigate = useNavigate();
 
-	const linkButtons = links.map((link) => (
-		<Link to={link.link} key={link.label} style={{ textDecoration: 'none' }}>
-			<Button
-				mr={15}
-				className={classes.link}
-			>
-				{link.label}
-			</Button>
-		</Link >
+	const location = useLocation();
+	const activeLink = links.find((link) => link.link == location.pathname)?.link
+
+
+	const linkTabs = links.map((link) => (
+		<Tabs.Tab value={link.link} key={link.label}
+			className={cx(classes.tab, { [classes.tabActive]: activeLink === link.link })}
+		>
+			{link.label}
+		</Tabs.Tab>
 	));
 
+
 	return (
-		<Header className={classes.header} height={56}>
-			<Container className={classes.inner}>
-				<Group className={classes.links} spacing={5}>
-					{linkButtons}
+		<div className={classes.header}>
+			<Container>
+				<Group
+					position="apart"
+					align="flex-end"
+				>
+					<Tabs
+						variant="outline"
+						classNames={{
+							tabsList: classes.tabsList,
+						}}
+						onTabChange={(value) => navigate(`${value}`)}
+					>
+						<Tabs.List>{linkTabs}</Tabs.List>
+					</Tabs>
+
+					<div className={classes.appMenu}>
+						<AppMenu />
+					</div>
+
 				</Group>
-				<AppMenu />
 			</Container>
-		</Header>
+		</ div>
 	);
 }
+
+export default AppHeader;

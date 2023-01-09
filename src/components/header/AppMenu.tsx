@@ -19,23 +19,17 @@ const useStyles = createStyles((theme) => ({
 
   user: {
     color: theme.black,
-    padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+    padding: '8px 12px',
     borderRadius: theme.radius.sm,
     transition: 'background-color 100ms ease',
 
     '&:hover': {
       backgroundColor: theme.white,
     },
-
-    [theme.fn.smallerThan('xs')]: {
-      display: 'none',
-    },
   },
-
   userActive: {
     backgroundColor: theme.white,
   },
-
 }));
 
 
@@ -45,6 +39,7 @@ export default function AppMenu() {
   const navigate = useNavigate();
 
   const [userMenuOpened, setUserMenuOpened] = useState(false);
+
 
   return (
     <Menu
