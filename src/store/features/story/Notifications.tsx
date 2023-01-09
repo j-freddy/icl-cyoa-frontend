@@ -1,36 +1,13 @@
-import { showNotification, updateNotification, } from "@mantine/notifications";
+import { Progress } from "@mantine/core";
+import { showNotification, updateNotification } from "@mantine/notifications";
+import { IconAlertTriangle, IconCheck } from '@tabler/icons';
 import { LoadingType } from "../../../utils/graph/types";
-import { IconAlertTriangle, IconCheck, IconCross, IconError404 } from '@tabler/icons';
-import { Progress, Tooltip } from "@mantine/core";
 
-export type LoadingUpdate = {
-  percentage: number,
-  numNodesGenerated: number,
-}
 
-export const displayGenerateManyLoadingNotification = () => {
-  showNotification({
-    id: 'load-data',
-    loading: true,
-    title: "Generating many paragraphs and actions.",
-    message: <Progress value={0} />,
-    autoClose: false,
-    disallowClose: true,
-  });
-};
-
-export const displayGenerateManyUpdate = (loadingUpdate: LoadingUpdate) => {
-  updateNotification({
-    id: 'load-data',
-    loading: true,
-    title: "Generating many paragraphs and actions.",
-    message: <Progress value={loadingUpdate.percentage} />,
-    autoClose: false,
-    disallowClose: true,
-  });
-};
-
-export const displayLoadingNotification = (loadingType: LoadingType) => {
+export const displayLoadingNotification = (loadingType: LoadingType | null) => {
+  if (loadingType === null) {
+    return;
+  }
 
   const typeMessage = new Map<LoadingType, string>([
     [LoadingType.GenerateParagraph, "Generating paragraph."],
@@ -56,7 +33,10 @@ export const displayLoadingNotification = (loadingType: LoadingType) => {
 }
 
 
-export const displayLoadedNotification = (loadingType: LoadingType) => {
+export const displayLoadedNotification = (loadingType: LoadingType | null) => {
+  if (loadingType === null) {
+    return;
+  }
 
   const typeMessage = new Map<LoadingType, string>([
     [LoadingType.GenerateParagraph, "Paragraph was generated successfully."],
@@ -81,6 +61,7 @@ export const displayLoadedNotification = (loadingType: LoadingType) => {
   });
 }
 
+
 export const displayErrorUpdate = (title: string, message: string='Try again...') => {
   updateNotification({
     id: 'load-data',
@@ -92,3 +73,28 @@ export const displayErrorUpdate = (title: string, message: string='Try again...'
   });
 }
 
+
+export type LoadingUpdate = {
+  percentage: number,
+  numNodesGenerated: number,
+}
+export const displayGenerateManyUpdate = (loadingUpdate: LoadingUpdate) => {
+  updateNotification({
+    id: 'load-data',
+    loading: true,
+    title: "Generating many paragraphs and actions.",
+    message: <Progress value={loadingUpdate.percentage} />,
+    autoClose: false,
+    disallowClose: true,
+  });
+};
+export const displayGenerateManyLoadingNotification = () => {
+  showNotification({
+    id: 'load-data',
+    loading: true,
+    title: "Generating many paragraphs and actions.",
+    message: <Progress value={0} />,
+    autoClose: false,
+    disallowClose: true,
+  });
+};

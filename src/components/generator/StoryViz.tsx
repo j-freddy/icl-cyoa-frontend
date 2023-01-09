@@ -1,21 +1,19 @@
 import {
-  Pagination,
-  Container,
-  Group,
-  createStyles,
+  Container, createStyles, Group, Pagination
 } from "@mantine/core";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import GraphViz from "../../../components/generator/GraphViz";
-import StorySection from "../../../components/generator/StorySection";
-import { 
-  connectNodes, connectNodesWithMiddle, deleteEdge, 
-  selectActiveNodeId, selectLoadingSection, selectStoryGraph, setActiveNodeId 
-} from "../../../store/features/storySlice";
-import { isAction } from "../../../utils/graph/graphUtils";
-import { getStoryNodes } from "../../../utils/graph/storyUtils";
-import { NodeData, StoryNode } from "../../../utils/graph/types";
-import NodeOptions from "../../../components/generator/options/NodeOptions";
+import { useCallback, useEffect, useMemo } from "react";
+import {
+  connectNodes, connectNodesWithMiddle, deleteEdge,
+  selectActiveNodeId, selectLoadingType, selectStoryGraph, setActiveNodeId
+} from "../../store/features/storySlice";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { isAction } from "../../utils/graph/graphUtils";
+import { getStoryNodes } from "../../utils/graph/storyUtils";
+import { NodeData, StoryNode } from "../../utils/graph/types";
+import GraphViz from "./GraphViz";
+import NodeOptions from "./options/NodeOptions";
+import StorySection from "./StorySection";
+
 
 const useStyles = createStyles(() => ({
   container: {
@@ -38,19 +36,22 @@ const useStyles = createStyles(() => ({
   },
 }));
 
-const StoryViz = () => {
+
+function StoryViz() {
   const { classes } = useStyles();
 
   const dispatch = useAppDispatch();
   const storyGraph = useAppSelector(selectStoryGraph);
-  const loadingSection = useAppSelector(selectLoadingSection);
+  const loadingType = useAppSelector(selectLoadingType);
 
   const activeNodeId = useAppSelector(selectActiveNodeId);
   const setActiveNodeIdLocal = useCallback((id: number) => dispatch(setActiveNodeId(id)), [dispatch]);
 
+
   useEffect(() => {
     setActiveNodeIdLocal(0);
   }, []);
+
 
   const story = useMemo(() => {
       return getStoryNodes(storyGraph, false);
@@ -65,12 +66,12 @@ const StoryViz = () => {
       }
 
       // Block if there are other requests.
-      if (loadingSection !== null)
+      if (loadingType !== null)
         return;
 
       dispatch(connectNodesWithMiddle({ fromNode, toNode }))
     },
-    [dispatch, loadingSection]
+    [dispatch, loadingType]
   );
 
   const onEdgeDelete = useCallback((fromNode: number, toNode: number) => {
@@ -138,6 +139,5 @@ const StoryViz = () => {
     </Container>
   );
 }
-
 
 export default StoryViz;

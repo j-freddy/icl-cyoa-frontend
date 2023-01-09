@@ -1,39 +1,40 @@
 import {
-  ThemeIcon,
   Button,
+  Center,
   Container,
   createStyles,
   Divider,
   Group,
   Loader,
   Stack,
-  Text,
-  Title
+  Text, ThemeIcon, Title
 } from '@mantine/core';
-import { IconPlus, IconInfoCircle } from '@tabler/icons';
+import { IconInfoCircle, IconPlus } from '@tabler/icons';
 import { useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import StoryListItem from '../../components/dashboard/StoryListItem';
 import {
   loadStories, selectStories
 } from '../../store/features/accountSlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { INITIAL_INPUT_PAGE, ACCOUNT_PAGE } from '../../utils/pages';
+import { ACCOUNT_PAGE, INITIAL_INPUT_PAGE } from '../../utils/pages';
 
 const useStyles = createStyles((theme) => ({
 
   createNewStoryButton: {
     float: 'right',
   },
-
 }));
 
-const DashboardView = () => {
+
+function DashboardView() {
   const { classes } = useStyles();
   const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
   const stories = useAppSelector(selectStories);
+
+  const loaded = stories !== undefined;
 
 
   useEffect(() => {
@@ -48,11 +49,11 @@ const DashboardView = () => {
 
   const StoryList = () => {
 
-    if (stories === undefined) {
+    if (!loaded) {
       return (
-        <div className={"loader"}>
+        <Center style={{ height: 200 }}>
           <Loader />
-        </div>
+        </Center>
       );
     }
 
@@ -113,8 +114,7 @@ const DashboardView = () => {
       </Group>
       <StoryList />
     </Container >
-
   );
 }
 
-export default DashboardView
+export default DashboardView;

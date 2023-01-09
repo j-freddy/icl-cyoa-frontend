@@ -10,8 +10,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { saveName, selectStoryGraph, selectStoryTitle, setName } from '../../store/features/storySlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { getStoryNodes } from '../../utils/graph/storyUtils';
-import Downloader from './Downloader';
-import Saver from './Saver';
+import DownloadButton from './buttons/DownloadButton';
+import SaveButton from './buttons/SaveButton';
 
 
 const useStyles = createStyles((theme) => ({
@@ -65,10 +65,10 @@ export default function StoryTitle() {
 
           <Group className={classes.rightBox}>
             <Group className={classes.buttons}>
-              <Saver />
+              <SaveButton />
             </Group>
             <Group className={classes.buttons}>
-              <Downloader story={story} />
+              <DownloadButton story={story} />
             </Group>
           </Group>
         </Group>

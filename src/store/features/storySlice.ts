@@ -2,8 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { connectNodesOnGraph, deleteEdgeOnGraph, deleteNodeFromGraph, findParent, isGraphEmpty, isNarrative } from '../../utils/graph/graphUtils';
 import { Graph, LoadingType, NarrativeNode } from '../../utils/graph/types';
 import { RootState } from '../store';
-import { handleGetGraphFulfilled, handleInitStoryFulfilled } from './story/thunkHandlers';
-import { displayErrorUpdate, displayGenerateManyLoadingNotification, displayGenerateManyUpdate, displayLoadedNotification, displayLoadingNotification, LoadingUpdate } from './story/LoadingNotifications';
+import { handleGetGraphFulfilled, handleInitStoryFulfilled, handleSaveGraphFulfilled, handleSaveGraphPending, handleSaveNameFulfilled, handleSaveNamePending } from './story/thunkHandlers';
+import { displayErrorUpdate, displayGenerateManyLoadingNotification, displayGenerateManyUpdate, displayLoadedNotification, displayLoadingNotification, LoadingUpdate } from './story/Notifications';
 import { getGraphThunk, initStoryThunk, regenerateActionsThunk, regenerateEndingThunk, regenerateManyThunk, regenerateParagraphThunk, saveGraphThunk, saveNameThunk } from './story/thunks';
 
 
@@ -21,7 +21,7 @@ export interface StoryState {
   details: string;
   style: string;
 
-  loadingSection: LoadingType | null;
+  loadingType: LoadingType | null;
 
   goToGenerator: boolean;
 };
@@ -40,7 +40,7 @@ const initialState: StoryState = {
   details: "",
   style: "",
 
-  loadingSection: null,
+  loadingType: null,
 
   goToGenerator: false,
 };
@@ -52,6 +52,8 @@ export const regenerateEnding = regenerateEndingThunk;
 export const regenerateMany = regenerateManyThunk;
 export const getGraph = getGraphThunk;
 export const initStory = initStoryThunk;
+export const saveGraph = saveGraphThunk;
+export const saveName = saveNameThunk;
 
 
 export const storySlice = createSlice({
@@ -59,27 +61,15 @@ export const storySlice = createSlice({
   initialState,
   reducers: {
     reset: () => initialState,
-    saveName: (state) => {
-      state.loadingSection = LoadingType.SaveName;
-      displayLoadingNotification(LoadingType.SaveName);
-      saveNameThunk
-      displayLoadedNotification(state.loadingSection);
-    },
     setName: (state, action: PayloadAction<string>) => {
       state.title = action.payload;
-    },
-    saveGraph: (state) => {
-      state.loadingSection = LoadingType.SaveStory;
-      displayLoadingNotification(LoadingType.SaveStory);
-      saveGraphThunk
-      displayLoadedNotification(state.loadingSection);
     },
     setGraph: (state, action: PayloadAction<Graph>) => {
       state.graph = action.payload;
     },
     deleteNode: (state, action: PayloadAction<number>) => {
       state.activeNodeId = findParent(state.graph, action.payload) || 0;
-      state.graph =  deleteNodeFromGraph(state.graph, action.payload, true);
+      state.graph = deleteNodeFromGraph(state.graph, action.payload, true);
     },
     deleteChildNodes: (state, action: PayloadAction<number>) => {
       state.graph = deleteNodeFromGraph(state.graph, action.payload, false);
@@ -117,12 +107,12 @@ export const storySlice = createSlice({
     setActiveNodeId: (state, action: PayloadAction<number>) => {
       state.activeNodeId = action.payload;
     },
-    connectNodes: (state, action: PayloadAction<{fromNode: number, toNode: number}>) => {
+    connectNodes: (state, action: PayloadAction<{ fromNode: number, toNode: number }>) => {
       const fromData = state.graph.nodeLookup[action.payload.fromNode];
       if (isNarrative(fromData) && (fromData as NarrativeNode).isEnding) return; // can't connect ending
       state.graph = connectNodesOnGraph(state.graph, action.payload.fromNode, action.payload.toNode);
     },
-    deleteEdge: (state, action: PayloadAction<{fromNode: number, toNode: number}>) => {
+    deleteEdge: (state, action: PayloadAction<{ fromNode: number, toNode: number }>) => {
       state.graph = deleteEdgeOnGraph(state.graph, action.payload.fromNode, action.payload.toNode);
     },
 
@@ -130,74 +120,74 @@ export const storySlice = createSlice({
       Reducers for the WS middleware.
     */
     requestComplete: (state) => {
-      if (state.loadingSection !== null) {
-        displayLoadedNotification(state.loadingSection);
-        state.loadingSection = null;
+      if (state.loadingType !== null) {
+        displayLoadedNotification(state.loadingType);
+        state.loadingType = null;
       }
     },
     progressUpdate: (state, action: PayloadAction<LoadingUpdate>) => {
-      if (state.loadingSection !== null) {
+      if (state.loadingType !== null) {
         displayGenerateManyUpdate(action.payload);
       };
     },
     openAIError: (state) => {
-      if (state.loadingSection !== null) {
+      if (state.loadingType !== null) {
         displayErrorUpdate("Open AI Unavailable Error");
-        state.loadingSection = null;
+        state.loadingType = null;
       }
     },
     rateLimitError: (state) => {
-      if (state.loadingSection !== null) {
+      if (state.loadingType !== null) {
         displayErrorUpdate("Open AI Rate Limit Error", "Please wait for a few seconds and try again...");
-        state.loadingSection = null;
+        state.loadingType = null;
       }
     },
     nlpParseError: (state) => {
-      if (state.loadingSection !== null) {
+      if (state.loadingType !== null) {
         displayErrorUpdate("Failed to Generate", "Try changing the previous text or creativity and generating again...");
-        state.loadingSection = null;
+        state.loadingType = null;
       }
     },
     disconnectedError: (state) => {
-      if (state.loadingSection !== null) {
+      if (state.loadingType !== null) {
         displayErrorUpdate("Server Disconnection Error");
-        state.loadingSection = null;
+        state.loadingType = null;
       }
     },
     generateInitialStoryBasic: (state, _action: PayloadAction<{ prompt: string }>) => {
-      state.loadingSection = LoadingType.InitialStory;
+      state.loadingType = LoadingType.InitialStory;
       displayLoadingNotification(LoadingType.InitialStory);
     },
     generateInitialStoryAdvanced: (state, _action: PayloadAction<{
       values: { attribute: string, content: string }[]
     }>) => {
-      state.loadingSection = LoadingType.InitialStory;
+      state.loadingType = LoadingType.InitialStory;
     },
     generateParagraph: (state, _action: PayloadAction<{ nodeToExpand: number }>) => {
-      state.loadingSection = LoadingType.GenerateParagraph;
+      state.loadingType = LoadingType.GenerateParagraph;
       displayLoadingNotification(LoadingType.GenerateParagraph);
     },
     generateActions: (state, _action: PayloadAction<{ nodeToExpand: number }>) => {
-      state.loadingSection = LoadingType.GenerateActions;
+      state.loadingType = LoadingType.GenerateActions;
       displayLoadingNotification(LoadingType.GenerateActions);
     },
     generateNewAction: (state, _action: PayloadAction<{ nodeToExpand: number }>) => {
-      state.loadingSection = LoadingType.GenerateNewAction;
+      state.loadingType = LoadingType.GenerateNewAction;
       displayLoadingNotification(LoadingType.GenerateNewAction);
     },
     generateEnding: (state, _action: PayloadAction<{ nodeToEnd: number }>) => {
-      state.loadingSection = LoadingType.GenerateEnding;
+      state.loadingType = LoadingType.GenerateEnding;
       displayLoadingNotification(LoadingType.GenerateEnding);
     },
     connectNodesWithMiddle: (state, _action: PayloadAction<{ fromNode: number, toNode: number }>) => {
       const fromData = state.graph.nodeLookup[_action.payload.fromNode];
       if (isNarrative(fromData) && (fromData as NarrativeNode).isEnding) return; // can't connect ending
 
-      state.loadingSection = LoadingType.ConnectingNodes;
+      state.loadingType = LoadingType.ConnectingNodes;
       displayLoadingNotification(LoadingType.ConnectingNodes);
     },
     generateMany: (state, _action: PayloadAction<{ fromNode: number }>) => {
-      state.loadingSection = LoadingType.GenerateMany;
+      state.loadingType = LoadingType.GenerateMany;
       displayGenerateManyLoadingNotification();
     },
   },
@@ -205,6 +195,12 @@ export const storySlice = createSlice({
     builder.addCase(getGraph.fulfilled, handleGetGraphFulfilled);
 
     builder.addCase(initStory.fulfilled, handleInitStoryFulfilled);
+
+    builder.addCase(saveGraph.pending, handleSaveGraphPending);
+    builder.addCase(saveGraph.fulfilled, handleSaveGraphFulfilled);
+
+    builder.addCase(saveName.pending, handleSaveNamePending);
+    builder.addCase(saveName.fulfilled, handleSaveNameFulfilled);
   },
 });
 
@@ -212,8 +208,6 @@ export const {
   reset,
   setGraph,
   setName,
-  saveName,
-  saveGraph,
   deleteNode,
   deleteChildNodes,
   setNodeData,
@@ -252,7 +246,7 @@ export const selectStoryGraphWasLoaded = (state: RootState) => state.story.graph
 export const selectStoryIsEmpty = (state: RootState) => isGraphEmpty(state.story.graph);
 export const selectStoryId = (state: RootState) => state.story.id;
 export const selectStoryTitle = (state: RootState) => state.story.title;
-export const selectLoadingSection = (state: RootState) => state.story.loadingSection;
+export const selectLoadingType = (state: RootState) => state.story.loadingType;
 export const selectActiveNodeId = (state: RootState) => state.story.activeNodeId;
 export const selectNumActionsToAdd = (state: RootState) => state.story.numActionsToAdd;
 export const selectGenerateManyDepth = (state: RootState) => state.story.generateManyDepth;

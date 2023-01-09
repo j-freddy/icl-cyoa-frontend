@@ -1,4 +1,3 @@
-import { Loader } from '@mantine/core';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEffect } from 'react';
 import { Route, Routes, useNavigate } from "react-router-dom";
@@ -30,13 +29,13 @@ function App() {
 
   const HomePage = () => wrapView(<WelcomeView />);
 
-  const LoginPage = () => checkLoginOnAuthPage(wrapView(<LoginView />));
-  const SignupPage = () => checkLoginOnAuthPage(wrapView(<SignupView />));
-  const AccountPage = () => checkLogin(wrapView(<AccountView />));
+  const LoginPage = () => wrapView(checkLoginOnAuthPage(<LoginView />));
+  const SignupPage = () => wrapView(checkLoginOnAuthPage(<SignupView />));
+  const AccountPage = () => wrapView(checkLogin(<AccountView />));
 
-  const DashboardPage = () => checkLogin(wrapView(<DashboardView />));
-  const InitialInputPage = () => checkLogin(wrapView(<InitialInputView />));
-  const GeneratorPage = () => checkLogin(wrapView(<GeneratorView />));
+  const DashboardPage = () => wrapView(checkLogin(<DashboardView />));
+  const InitialInputPage = () => wrapView(checkLogin(<InitialInputView />));
+  const GeneratorPage = () => wrapView(checkLogin(<GeneratorView />));
 
 
   return (
@@ -104,14 +103,10 @@ const checkLogin = (content: JSX.Element) => {
 
 
   if (loggedIn) {
-    return (<>{content}</>);
+    return content;
   }
 
-  return (
-    <div className={"loader"}>
-      <Loader />
-    </div>
-  );
+  return (<></>);
 };
 
 
@@ -141,12 +136,8 @@ const checkLoginOnAuthPage = (content: JSX.Element) => {
 
 
   if (!loggedIn && sessionLoginFail) {
-    return (<>{content}</>);
+    return content;
   }
 
-  return (
-    <div className={"loader"}>
-      <Loader />
-    </div>
-  );
+  return (<></>);
 }

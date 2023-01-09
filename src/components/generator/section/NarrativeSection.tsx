@@ -11,6 +11,7 @@ import { StoryNode } from '../../../utils/graph/types';
 const useStyles = createStyles((theme) => ({
   paragraph: {
     color: theme.black,
+    wordBreak: 'break-all',
   },
 
   text_input: {

@@ -12,14 +12,20 @@ import ActionOptions from './ActionOptions';
 import NarrativeOptions from './NarrativeOptions';
 
 const useStyles = createStyles((theme) => ({
+
   slider: {
     paddingBottom: "2em",
     marginLeft: "8px",
     marginRight: "8px",
   },
+
   textarea: {
     paddingBottom: "1em"
-  }
+  },
+
+  text: {
+    wordBreak: 'break-all',
+  },
 }));
 
 function nodeDataToString(data: NodeData) {
@@ -53,7 +59,7 @@ const NodeOptions = (props: NodeOptionsProps) => {
         <Tabs.Panel value="actions" pt="xs">
           <ScrollArea.Autosize maxHeight={310}>
             <b>Selected: {nodeDataToString(props.nodeData)}</b>
-            <Text lineClamp={3}>
+            <Text lineClamp={3} className={classes.text}>
               {props.nodeData.data}
             </Text>
 
