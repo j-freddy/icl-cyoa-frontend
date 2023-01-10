@@ -8,6 +8,7 @@ import {
   Paragraph,
   TextRun
 } from "docx";
+import { getShuffledId } from "./txtUtils";
 
 // https://docx.js.org/
 
@@ -124,7 +125,7 @@ function main(story: StoryNode[], indexCache: number[]): ISectionOptions {
   // Section
   for (const node of story) {
     // Section title
-    paragraphs.push(createSectionTitle(`Section ${node.sectionId}`));
+    paragraphs.push(createSectionTitle(`Section ${getShuffledId(node.sectionId, indexCache)}`));
 
     // Section paragraph
     paragraphs.push(createSectionParagraph(node.paragraph));
@@ -140,11 +141,21 @@ function main(story: StoryNode[], indexCache: number[]): ISectionOptions {
         if (sectionId !== null) {
           // + 1 to move from 0-indexed to 1-indexed
           paragraphs.push(
-            createActionRedirect(`Go to Section ${sectionId}`
-              + ` (Page ${indexCache[sectionId - 1] + 1})`)
+            // Use shuffled id as section id
+            createActionRedirect(`Go to Section ${getShuffledId(sectionId, indexCache)}`)
           );
         }
       }
+    } else if (node.childrenIds.length > 0) {
+      // Narrative node connected to narrative node
+      // assert node.childrenIds.length === 1
+
+      const sectionId = story.find((storyNode) => storyNode.nodeId === node.childrenIds[0])!.sectionId;
+
+      paragraphs.push(
+        // Use shuffled id as section id
+        createActionRedirect(`Go to Section ${getShuffledId(sectionId, indexCache)}`)
+      );
     }
 
     paragraphs.push(pageBreak());
