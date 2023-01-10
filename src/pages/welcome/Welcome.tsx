@@ -2,7 +2,7 @@ import { Button, Container, createStyles, Group, Image, Stack, Text, Title } fro
 import { IconCaretRight } from '@tabler/icons';
 import { Link } from 'react-router-dom';
 import '../../style/base.css';
-import { INITIAL_INPUT_PAGE } from '../../utils/pages';
+import { DASHBOARD_PAGE } from '../../utils/pages';
 
 
 const useStyles = createStyles((theme, _params) => ({
@@ -49,7 +49,23 @@ const useStyles = createStyles((theme, _params) => ({
 
   group: {
     width: "100",
-    height: "100vh",
+    height: "60vh",
+    alignItems: "center",
+    background: "white",
+    padding: "10px"
+  },
+
+  groupTall: {
+    width: "100",
+    height: "80vh",
+    alignItems: "center",
+    background: "white",
+    padding: "10px"
+  },
+
+  groupShort: {
+    width: "100",
+    height: "40vh",
     alignItems: "center",
     padding: "10px"
   },
@@ -83,7 +99,7 @@ const WelcomeView = () => {
           Quickly generate a complete, editable gamebook with a single prompt.
         </Text>
 
-        <Link to={INITIAL_INPUT_PAGE}>
+        <Link to={DASHBOARD_PAGE}>
           <Button
             variant="filled"
             color="indigo.8"
@@ -108,18 +124,18 @@ const WelcomeView = () => {
 
           <Image
             radius="md"
-            src="https://images.unsplash.com/photo-1511216335778-7cb8f49fa7a3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=720&q=80"
-            alt="Random unsplash image"
+            src="img/first.gif"
+            alt="Gif - generating story"
             width="35vw"
             fit="contain"
           />
         </Group>
 
-        <Group className={classes.group}>
+        <Group className={classes.groupTall}>
           <Image
             radius="md"
-            src="https://images.unsplash.com/photo-1511216335778-7cb8f49fa7a3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=720&q=80"
-            alt="Random unsplash image"
+            src="img/second.gif"
+            alt="Gif - polishing story"
             width="35vw"
             fit="contain"
           />
@@ -131,14 +147,51 @@ const WelcomeView = () => {
           </Container>
 
         </Group>
+        
         <Group className={classes.group}>
-          <Text
-            variant="gradient"
-            gradient={{ from: 'indigo.9', to: 'blue', deg: 45 }}
-            className={classes.endText}
-          >
-            Start writing now.
-          </Text>
+
+          <Container className={classes.textSubGroup}>
+            <Title>
+              Fine-tune the flow of your story
+            </Title>
+          </Container>
+
+          <Image
+            radius="md"
+            src="img/third.gif"
+            alt="Gif - showing settings"
+            width="35vw"
+            fit="contain"
+          />
+        </Group>
+
+        <Group className={classes.group}>
+          <Image
+            radius="md"
+            src="img/fourth.gif"
+            alt="Gif - showing dashboard"
+            width="35vw"
+            fit="contain"
+          />
+
+          <Container className={classes.textSubGroup}>
+            <Title>
+              Keep your work on multiple stories
+            </Title>
+          </Container>
+
+        </Group>
+
+        <Group className={classes.groupShort}>
+          <Link to={DASHBOARD_PAGE}>
+            <Text
+              variant="gradient"
+              gradient={{ from: 'indigo.9', to: 'blue', deg: 45 }}
+              className={classes.endText}
+            >
+              Start writing now.
+            </Text>
+          </Link>
         </Group>
       </Stack>
 
