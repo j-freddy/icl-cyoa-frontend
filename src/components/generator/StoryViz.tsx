@@ -45,7 +45,10 @@ function StoryViz() {
   const loadingType = useAppSelector(selectLoadingType);
 
   const activeNodeId = useAppSelector(selectActiveNodeId);
-  const setActiveNodeIdLocal = useCallback((id: number) => dispatch(setActiveNodeId(id)), [dispatch]);
+
+  const setActiveNodeIdLocal = (id: number) => {
+    dispatch(setActiveNodeId(id));
+  }
 
 
   useEffect(() => {
@@ -53,58 +56,77 @@ function StoryViz() {
   }, []);
 
 
-  const story = useMemo(() => {
-      return getStoryNodes(storyGraph, false);
-    }, [storyGraph]
-  );
+  /****************************************************************
+  **** Functions.
+  ****************************************************************/
 
-  const sendConnectNodesMessage = useCallback(
-    (fromNode: number, toNode: number, generateMiddleNode: boolean) => {
-      if (!generateMiddleNode) {
-        dispatch(connectNodes({ fromNode, toNode }));
-        return;
-      }
+  const sendConnectNodesMessage = (
+    fromNode: number,
+    toNode: number,
+    generateMiddleNode: boolean
+  ) => {
+    if (!generateMiddleNode) {
+      dispatch(connectNodes({ fromNode, toNode }));
+      return;
+    }
 
-      // Block if there are other requests.
-      if (loadingType !== null)
-        return;
+    // Block if there are other requests.
+    if (loadingType !== null)
+      return;
 
-      dispatch(connectNodesWithMiddle({ fromNode, toNode }))
-    },
-    [dispatch, loadingType]
-  );
+    dispatch(connectNodesWithMiddle({ fromNode, toNode }))
+  }
 
-  const onEdgeDelete = useCallback((fromNode: number, toNode: number) => {
+  const onEdgeDelete = (fromNode: number, toNode: number) => {
     dispatch(deleteEdge({ fromNode, toNode }));
-  }, [dispatch]);
+  }
 
-  const activeSectionId = useMemo(
-    () => {
-      if (activeNodeId === null) {
-        return 0;
-      }
 
-      const node: NodeData = storyGraph.nodeLookup[activeNodeId];
+  /****************************************************************
+  **** Data.
+  ****************************************************************/
 
-      if (isAction(node)) {
-        const parentNarrativeNode = Object.values(storyGraph.nodeLookup)
-          .find((parent: NodeData) => parent.childrenIds.includes(activeNodeId))!
-        return story.find((node) => node.nodeId === parentNarrativeNode.nodeId)!.sectionId;
-      }
+  const story = useMemo(() => {
+    return getStoryNodes(storyGraph, false);
+  },
+    [storyGraph]
+  );
 
-      return story.find((storyNode) => storyNode.nodeId === node.nodeId)!.sectionId;
-    },
+  const activeSectionId = useMemo(() => {
+    if (activeNodeId === null) {
+      return 0;
+    }
+
+    const node: NodeData = storyGraph.nodeLookup[activeNodeId];
+
+    if (isAction(node)) {
+      const parentNarrativeNode = Object.values(storyGraph.nodeLookup)
+        .find((parent: NodeData) => parent.childrenIds.includes(activeNodeId))!
+      return story.find((node) => node.nodeId === parentNarrativeNode.nodeId)!.sectionId;
+    }
+
+    return story.find((storyNode) => storyNode.nodeId === node.nodeId)!.sectionId;
+  },
     [story, storyGraph, activeNodeId]
   );
 
-  const setActiveSectionId = useCallback(
-    (page: number) => {
-      const storyNode: StoryNode = story.find((storyNode) => storyNode.sectionId === page)!
-      setActiveNodeIdLocal(storyNode.nodeId);
-    },
+  const setActiveSectionId = useCallback((page: number) => {
+    const storyNode: StoryNode = story.find((storyNode) => storyNode.sectionId === page)!
+    setActiveNodeIdLocal(storyNode.nodeId);
+  },
     [story, setActiveNodeIdLocal]
-  )
+  );
 
+  const activeStory = useMemo(() => {
+    return story.find((storyNode) => storyNode.sectionId === activeSectionId)
+  },
+    [story, activeSectionId]
+  );
+
+
+  /****************************************************************
+  **** Return.
+  ****************************************************************/
 
   return (
     <Container className={classes.container}>
@@ -117,8 +139,7 @@ function StoryViz() {
         />
 
         <Container className={classes.optionsContainer}>
-          {
-            activeNodeId !== null && 
+          {activeNodeId !== null &&
             <NodeOptions nodeData={storyGraph.nodeLookup[activeNodeId!]} />
           }
         </Container>
@@ -134,7 +155,7 @@ function StoryViz() {
         radius="lg"
         withEdges
       />
-      <StorySection {...story.find((storyNode) => storyNode.sectionId === activeSectionId)!} />
+      <StorySection {...activeStory!} />
 
     </Container>
   );

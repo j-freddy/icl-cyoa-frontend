@@ -1,32 +1,24 @@
-import './GraphViz.css'
+import { Button, Card, Checkbox, Popover, Text, Title, UnstyledButton } from '@mantine/core';
+import { IconInfoCircle } from '@tabler/icons';
 import {
-  memo,
-  useCallback,
-  useMemo,
+  memo, useMemo,
   useState
 } from "react";
-import ReactFlow, {
-  Node,
-  Edge,
-  ConnectionLineType,
-  Connection,
-  useReactFlow,
-  ReactFlowProvider,
-  Panel,
-} from 'reactflow';
 import {
   MdAlignHorizontalLeft,
   MdAlignVerticalTop
 } from "react-icons/md";
-import { Button, Card, Checkbox, createStyles, Popover, Text, Title, UnstyledButton } from '@mantine/core'
-import { getGraphNodesAndEdges } from './graph/graphViz';
-import NarrativeFlowNode from './graph/FlowNodeNarrative';
-import ActionFlowNode from './graph/FlowNodeAction';
-import { IconInfoCircle } from '@tabler/icons';
-import { mantineBlue } from '../../utils/utils';
+import ReactFlow, {
+  Connection, ConnectionLineType, Edge, Node, Panel, ReactFlowProvider, useReactFlow
+} from 'reactflow';
 import { selectLoadingType, selectStoryGraph } from '../../store/features/storySlice';
 import { useAppSelector } from '../../store/hooks';
 import { isValidConnectNodes, isValidDeleteEdge } from '../../utils/graph/graphUtils';
+import { mantineBlue } from '../../utils/utils';
+import ActionFlowNode from './graph/FlowNodeAction';
+import NarrativeFlowNode from './graph/FlowNodeNarrative';
+import { getGraphNodesAndEdges } from './graph/graphViz';
+import './GraphViz.css';
 
 
 enum Layout {
@@ -39,12 +31,6 @@ const nodeTypes = {
   action: ActionFlowNode,
 };
 
-type GraphVizProps = {
-  setActiveNodeId: (nodeId: number) => void,
-  onConnectNodes: (fromNode: number, toNode: number, generateMiddleNode: boolean) => void,
-  onEdgeDelete: (fromNode: number, toNode: number) => void,
-};
-
 type ConnectingData = {
   fromNode: number, toNode: number
 };
@@ -53,97 +39,82 @@ type DeleteEdgeData = {
   fromNode: number, toNode: number
 };
 
+
+type GraphVizProps = {
+  setActiveNodeId: (nodeId: number) => void,
+  onConnectNodes: (fromNode: number, toNode: number, generateMiddleNode: boolean) => void,
+  onEdgeDelete: (fromNode: number, toNode: number) => void,
+};
+
 const GraphViz = (props: GraphVizProps) => {
   return (
     <ReactFlowProvider>
       <GraphVizInner {...props}></GraphVizInner>
     </ReactFlowProvider>
-  )
+  );
 };
 
 const GraphVizInner = (props: GraphVizProps) => {
-  const graph = useAppSelector(selectStoryGraph);
 
+  const graph = useAppSelector(selectStoryGraph);
   const loadingType = useAppSelector(selectLoadingType);
-  const actionsDisabled = useMemo(() => loadingType !== null, [loadingType]);
+
+  const actionsDisabled = loadingType !== null;
 
   const [layout, setLayout] = useState<Layout>(Layout.LR);
   const [connectingData, setConnectingData] = useState<ConnectingData | null>(null);
   const [deleteEdgeData, setDeleteEdgeData] = useState<DeleteEdgeData | null>(null);
+  const [generateMiddleNode, setGenerateMiddleNode] = useState(false);
 
   const reactFlowInstance = useReactFlow();
 
-  const [generateMiddleNode, setGenerateMiddleNode] = useState(false);
 
-  const InformationDisplay = useCallback(() => {
-    return (
-      <Popover position="bottom" withArrow shadow="md">
-        <Popover.Target>
-          <UnstyledButton>
-            <IconInfoCircle size={32} color={mantineBlue}/>
-          </UnstyledButton>
-        </Popover.Target>
-        <Popover.Dropdown>
-        <Title order={6}><Text span variant="gradient" gradient={{ from: 'indigo', to: 'cyan', deg: 45 }} inherit>Connect nodes </Text>
-        by dragging the cursor from one handle to another.</Title>
-        <Title order={6}>
-          <Text span variant="gradient" gradient={{ from: 'indigo', to: 'cyan', deg: 45 }} inherit>Disconnect nodes </Text> 
-          by clicking on an edge and pressing delete.
-        </Title>
-        </Popover.Dropdown>
-      </Popover>
-    )
-  }, []);
+  /****************************************************************
+  **** Functions.
+  ****************************************************************/
 
-  const onConnectClick = useCallback(() => {
-    if (connectingData === null) return;
+  const onConnectClick = () => {
+    if (connectingData === null)
+      return;
 
     props.onConnectNodes(connectingData.fromNode, connectingData.toNode, generateMiddleNode);
     setConnectingData(null);
-  }, [generateMiddleNode, connectingData, setConnectingData]);
+  }
 
-  const onCancelClick = useCallback(() => {
+  const onCancelClick = () => {
     setConnectingData(null);
     setDeleteEdgeData(null);
-  }, [setConnectingData, setDeleteEdgeData]);
+  }
 
-  const onDeleteEdge = useCallback(() => {
-    if (deleteEdgeData === null) return;
+  const onDeleteEdge = () => {
+    if (deleteEdgeData === null)
+      return;
 
     props.onEdgeDelete(deleteEdgeData.fromNode, deleteEdgeData.toNode);
     setDeleteEdgeData(null);
-  }, [deleteEdgeData, setDeleteEdgeData]);
+  }
 
-  const ConnectDisplay = useCallback(() => {
+  const onNodeClick = (_: React.MouseEvent, node: Node) => {
+    props.setActiveNodeId(parseInt(node.id));
+  }
 
-    return <Card>
-      <Checkbox checked={generateMiddleNode} 
-        onChange={() => setGenerateMiddleNode(prev => !prev)}
-        label='Generate middle node'
-      />
-      <Button disabled={actionsDisabled} onClick={onConnectClick} className="mx-2" variant='light'>Connect</Button>
-      <Button onClick={onCancelClick} className="mx-2" variant='light'>Cancel</Button>
-    </Card>
-  }, [connectingData, generateMiddleNode, setGenerateMiddleNode, onConnectClick, onCancelClick, actionsDisabled]);
+  const onEdgeClick = (edge: Edge) => {
+    if (!edge.source || !edge.target || connectingData !== null) {
+      setDeleteEdgeData(null);
+      return;
+    }
+    const fromNode = parseInt(edge.source);
+    const toNode = parseInt(edge.target);
 
-  const DeleteEdgeDisplay = useCallback(() => {
-    return <>
-      <Button disabled={actionsDisabled} onClick={onDeleteEdge} className="mx-2" variant='light'>Delete edge</Button>
-    </>
-  }, [deleteEdgeData, onCancelClick, onDeleteEdge, actionsDisabled]);
+    if (!isValidDeleteEdge(graph, fromNode, toNode)) {
+      setDeleteEdgeData(null); // only display popup if valid disconnection
+      return;
+    }
 
-  const { nodes, edges } = useMemo(
-    () => {
-      // TODO: focus on newly generated nodes (and highlight them)
-      // render component and then call fitView
-      setTimeout(() => reactFlowInstance.fitView(), 10);
+    setDeleteEdgeData({ fromNode, toNode });
+  }
 
-      return getGraphNodesAndEdges(layout, graph);
-    },
-    [layout, graph]
-  );
-
-  const onConnect = useCallback((params: Edge<any> | Connection) => {
+  const onConnect = (params: Edge<any> | Connection) => {
     if (params.source && params.target) {
       const fromNode = parseInt(params.source);
       const toNode = parseInt(params.target);
@@ -156,34 +127,85 @@ const GraphVizInner = (props: GraphVizProps) => {
         })
       }
     }
-  }, [setConnectingData, setDeleteEdgeData, graph]);
-
-  const onEdgeClick = useCallback((edge: Edge) => {
-      if (!edge.source || !edge.target || connectingData !== null) {
-        setDeleteEdgeData(null);
-        return;
-      }
-      const fromNode = parseInt(edge.source);
-      const toNode = parseInt(edge.target);
-
-      if (!isValidDeleteEdge(graph, fromNode, toNode)) {
-        setDeleteEdgeData(null); // only display popup if valid disconnection
-        return;
-      }
-      
-      setDeleteEdgeData({ fromNode, toNode });
-  }, [graph, connectingData, setDeleteEdgeData]);
-
-  const onNodeClick = (_: React.MouseEvent, node: Node) => {
-    props.setActiveNodeId(parseInt(node.id));
   }
 
-  const onLayout = useCallback(
-    (direction: Layout) => {
-      setLayout(direction);
-    },
-    [setLayout]
-  );
+
+  /****************************************************************
+  **** Components.
+  ****************************************************************/
+
+  const InformationDisplay = () => {
+    return (
+      <Popover position="bottom" withArrow shadow="md">
+        <Popover.Target>
+          <UnstyledButton>
+            <IconInfoCircle size={32} color={mantineBlue} />
+          </UnstyledButton>
+        </Popover.Target>
+
+        <Popover.Dropdown>
+          <Title order={6}>
+            <Text span variant="gradient" gradient={{ from: 'indigo', to: 'cyan', deg: 45 }} inherit>
+              Connect nodes </Text>
+            by dragging the cursor from one handle to another.
+          </Title>
+
+          <Title order={6}>
+            <Text span variant="gradient" gradient={{ from: 'indigo', to: 'cyan', deg: 45 }} inherit>
+              Disconnect nodes </Text>
+            by clicking on an edge and pressing delete.
+          </Title>
+        </Popover.Dropdown>
+      </Popover>
+    );
+  }
+
+  const ConnectDisplay = () => {
+    return (
+      <Card>
+        <Checkbox checked={generateMiddleNode}
+          onChange={() => setGenerateMiddleNode(prev => !prev)}
+          label='Generate middle node'
+        />
+        <Button disabled={actionsDisabled} onClick={onConnectClick} className="mx-2" variant='light'>
+          Connect
+        </Button>
+        <Button onClick={onCancelClick} className="mx-2" variant='light'>
+          Cancel
+        </Button>
+      </Card>
+    );
+  }
+
+  const DeleteEdgeDisplay = () => {
+    return (
+      <Button disabled={actionsDisabled} onClick={onDeleteEdge} className="mx-2" variant='light'>
+        Delete edge
+      </Button>
+    );
+  }
+
+
+  /****************************************************************
+  **** React Flow data.
+  ****************************************************************/
+
+  const { nodes, edges } = useMemo(() => {
+    // TODO: focus on newly generated nodes (and highlight them)
+    // render component and then call fitView
+    setTimeout(() => reactFlowInstance.fitView(), 10);
+
+    return getGraphNodesAndEdges(layout, graph);
+  }, [layout, graph]);
+
+  const onLayout = (direction: Layout) => {
+    setLayout(direction);
+  }
+
+
+  /****************************************************************
+  **** Return.
+  ****************************************************************/
 
   return (
     <div className="layoutflow" style={{ height: 400 }}>
@@ -196,21 +218,29 @@ const GraphVizInner = (props: GraphVizProps) => {
         onConnect={onConnect}
         onEdgeClick={(_, edge) => onEdgeClick(edge)}
         connectionLineType={ConnectionLineType.SmoothStep}
-        onInit={() => {reactFlowInstance.fitView();}}
+        onInit={() => { reactFlowInstance.fitView(); }}
         fitViewOptions={{
           minZoom: 120,
         }}
+        proOptions={{
+          hideAttribution: true
+        }}
       >
         <Panel position="top-left">
-          {
-            connectingData === null ? 
-              (<>
-              <InformationDisplay/> {deleteEdgeData === null || <DeleteEdgeDisplay/>}</>)
-              :
-              <ConnectDisplay />
+          {connectingData === null
+            ?
+            <>
+              <InformationDisplay />
+              {deleteEdgeData === null ||
+                <DeleteEdgeDisplay />
+              }
+            </>
+            :
+            <ConnectDisplay />
           }
         </Panel>
       </ReactFlow>
+
       <div className="controls react-flow-ctrls">
         <Button onClick={() => onLayout(Layout.TB)}>
           <MdAlignVerticalTop />
@@ -219,7 +249,7 @@ const GraphVizInner = (props: GraphVizProps) => {
           <MdAlignHorizontalLeft />
         </Button>
       </div>
-    </div>
+    </div >
   );
 }
 

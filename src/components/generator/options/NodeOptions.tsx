@@ -24,15 +24,19 @@ const useStyles = createStyles((theme) => ({
   },
 
   text: {
-    wordBreak: 'break-all',
+    wordBreak: "break-word",
+    overflowWrap: "break-word",
+    hyphens: "auto",
   },
 }));
 
 function nodeDataToString(data: NodeData) {
-  if (data.type === NodeType.Action) return "Option";
+  if (data.type === NodeType.Action)
+    return "Option";
 
   const narrativeData = data as NarrativeNode;
-  if (narrativeData.isEnding) return "Ending";
+  if (narrativeData.isEnding)
+    return "Ending";
   return "Paragraph";
 }
 
@@ -87,7 +91,7 @@ const NodeOptions = (props: NodeOptionsProps) => {
             }
 
             <p>Creativity: </p>
-            <Slider 
+            <Slider
               className={classes.slider}
               value={temperature}
               onChange={(t) => dispatch(setTemperature(t))}
@@ -96,18 +100,18 @@ const NodeOptions = (props: NodeOptionsProps) => {
               step={0.2}
               label={(value) => value.toFixed(1)}
               marks={[
-                { value: 0, label: "0"},
-                { value: 0.2 }, 
-                { value: 0.4 }, 
+                { value: 0, label: "0" },
+                { value: 0.2 },
+                { value: 0.4 },
                 { value: 0.6 },
                 { value: 0.8 },
-                { value: 1, label: "1"},
+                { value: 1, label: "1" },
               ]}
             />
           </ScrollArea.Autosize>
         </Tabs.Panel>
       </Tabs>
-      </Container>
+    </Container>
   );
 };
 

@@ -1,6 +1,7 @@
 import {
-  ActionIcon, Button, Container, createStyles,
+  ActionIcon, Button, Center, Container, createStyles,
   Divider,
+  Flex,
   Group, Text,
   TextInput,
   Title
@@ -28,20 +29,17 @@ const useStyles = createStyles((theme) => ({
     width: "100%",
     alignItems: 'left',
   },
+
   leftBox: {
     width: "72%",
   },
   rightBox: {
     width: "24%",
   },
-  buttons: {
-    width: "100%", 
-    justifyContent: 'center',
-  },
 }));
 
 
-export default function StoryTitle() {
+function StoryTitle() {
   const { classes } = useStyles();
 
   const storyGraph = useAppSelector(selectStoryGraph);
@@ -50,33 +48,39 @@ export default function StoryTitle() {
     return getStoryNodes(storyGraph, false);
   }, [storyGraph]);
 
+
   return (
-    <>
-      <Container size="xl" className={classes.titleBox}>
-        <Group>
-          <Group className={classes.leftBox}>
-            <Group className={classes.title}>
-              <Text fz="md" td="underline" fs="italic" fw={500}>Story Title:</Text>
-            </Group>
-            <EditableTitle />
-          </Group>
-          
-          <Divider orientation='vertical' variant='dashed'/>
+    <Container size="xl" className={classes.titleBox}>
+      <Group noWrap={true}>
+        <Flex className={classes.leftBox}
+          align="flex-start"
+          direction="column"
+          wrap="nowrap"
+          gap="md"
+        >
+          <Text fz="md" td="underline" fs="italic" fw={500}>Story Title:</Text>
 
-          <Group className={classes.rightBox}>
-            <Group className={classes.buttons}>
-              <SaveButton />
-            </Group>
-            <Group className={classes.buttons}>
-              <DownloadButton story={story} />
-            </Group>
-          </Group>
-        </Group>
+          <EditableTitle />
+        </Flex>
 
-      </Container>
-    </>
+        <Divider orientation='vertical' variant='dashed' />
+
+        <Flex className={classes.rightBox}
+          align="center"
+          direction="column"
+          wrap="nowrap"
+          gap="md"
+        >
+          <SaveButton />
+
+          <DownloadButton story={story} />
+        </Flex>
+      </Group>
+    </Container>
   );
 }
+
+export default StoryTitle;
 
 
 const EditableTitle = () => {
@@ -86,10 +90,19 @@ const EditableTitle = () => {
   const [editable, setEditable] = useState(false);
   const [title, setTitle] = useState(storyTitle);
 
+
+  /****************************************************************
+  **** Effects.
+  ****************************************************************/
+
   useEffect(() => {
     setTitle(storyTitle);
   }, [storyTitle]);
 
+
+  /****************************************************************
+  **** Functions.
+  ****************************************************************/
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setTitle(event.target.value);
@@ -105,33 +118,49 @@ const EditableTitle = () => {
     dispatch(saveName());
   }
 
+
+  /****************************************************************
+  **** Components.
+  ****************************************************************/
+
+  const TitleDisplay = () => {
+    if (title) {
+      return (
+        <Title order={2} sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }} > {title} </Title>
+      );
+    }
+
+    return (
+      <Text fz="xl" fw={700} fs="italic" c="dimmed">
+        Enter your story title
+      </Text>
+    );
+  }
+
+
+  /****************************************************************
+  **** Return.
+  ****************************************************************/
+
   if (editable) {
     return (
-      <>
+      <Group noWrap={true} position="apart" style={{ width: "100%" }}>
         <TextInput value={title} onChange={handleTextChange} disabled={!editable} size="lg" />
+
         <Button onClick={onSaveClick}>
           Save Title
         </Button>
-      </>
+      </Group>
     );
   }
 
   return (
-    <>
-      {title
-        ?
-        <Title order={2}> {title} </Title>
-        :
-        <Text fz="xl" fw={700} fs="italic" c="dimmed">
-          Enter your story title
-        </Text>
-      }
+    <Group noWrap={true} position="apart" style={{ width: "100%" }}>
+      <TitleDisplay />
 
       <ActionIcon variant="filled" size="md" color="blue" onClick={onIconClick}>
         <IconEdit size={20} />
       </ActionIcon>
-
-    </>
-
+    </Group>
   );
 }

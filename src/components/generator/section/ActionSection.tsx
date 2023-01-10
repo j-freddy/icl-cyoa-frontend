@@ -1,20 +1,18 @@
 import {
-  Text,
-  Group,
-  ActionIcon,
-  Textarea,
-  createStyles,
+  ActionIcon, createStyles, Group, Text, Textarea
 } from '@mantine/core';
-import React, { useState } from 'react';
-import { useAppDispatch } from '../../../store/hooks';
-import { setNodeData } from '../../../store/features/storySlice';
-import { IconEdit, IconCheckbox } from '@tabler/icons';
+import { IconCheckbox, IconEdit } from '@tabler/icons';
+import React, { useEffect, useState } from 'react';
+import { decrementNumOfEdits, incrementNumOfEdits, resetNumOfEdits, selectGraphIsLoading, setNodeData } from '../../../store/features/storySlice';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 
 
 const useStyles = createStyles((theme) => ({
   action: {
     color: theme.black,
-    wordBreak: 'break-all',
+    wordBreak: "break-word",
+    overflowWrap: "break-word",
+    hyphens: "auto",
   },
 
   text_input: {
@@ -31,28 +29,53 @@ interface ActionSectionProps {
 
 const ActionSection = (props: ActionSectionProps) => {
   const { classes } = useStyles();
-  const [action, setAction] = useState(props.action);
-  const [editable, changeEditable] = useState(false);
 
   const dispatch = useAppDispatch();
+  const graphIsLoading = useAppSelector(selectGraphIsLoading);
+
+  const [action, setAction] = useState(props.action);
+  const [editable, setEditable] = useState(false);
+
+  const editIsDisabled = graphIsLoading;
+
+
+  /****************************************************************
+  **** Effects.
+  ****************************************************************/
+
+  useEffect(() => {
+    setEditable(false);
+    dispatch(resetNumOfEdits());
+  }, [props.nodeId]);
+
+
+  /****************************************************************
+  **** Functions.
+  ****************************************************************/
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
     setAction(event.target.value);
   };
 
   const onEditClick = (): void => {
-    changeEditable(true);
+    dispatch(incrementNumOfEdits());
+    setEditable(true);
   };
 
   const onDoneClick = (): void => {
+    setEditable(false);
     dispatch(setNodeData({ nodeId: props.nodeId, data: action }));
-    changeEditable(false);
+    dispatch(decrementNumOfEdits());
   };
 
 
+  /****************************************************************
+  **** Return.
+  ****************************************************************/
+
   if (editable) {
     return (
-      <Group noWrap={true} align="top">
+      <Group noWrap={true} align="center">
         <Textarea
           size="md"
           autosize
@@ -62,6 +85,7 @@ const ActionSection = (props: ActionSectionProps) => {
           onChange={handleTextChange}
           className={classes.text_input}
         />
+
         <ActionIcon onClick={onDoneClick}>
           <IconCheckbox color="blue" />
         </ActionIcon>
@@ -70,11 +94,12 @@ const ActionSection = (props: ActionSectionProps) => {
   }
 
   return (
-    <Group noWrap={true} align="top">
+    <Group noWrap={true} align="center">
       <Text className={classes.action}>
         {action}
       </Text>
-      <ActionIcon onClick={onEditClick}>
+
+      <ActionIcon onClick={onEditClick} disabled={editIsDisabled}>
         <IconEdit />
       </ActionIcon>
     </Group>
