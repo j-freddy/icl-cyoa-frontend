@@ -22,6 +22,7 @@ export interface StoryState {
   style: string;
 
   loadingType: LoadingType | null;
+  numOfEdits: number,
 
   goToGenerator: boolean;
 };
@@ -41,6 +42,7 @@ const initialState: StoryState = {
   style: "",
 
   loadingType: null,
+  numOfEdits: 0,
 
   goToGenerator: false,
 };
@@ -78,7 +80,8 @@ export const storySlice = createSlice({
       state.graph.nodeLookup[action.payload.nodeId].data = action.payload.data;
     },
     setEnding: (state, action: PayloadAction<{ nodeId: number, isEnding: boolean }>) => {
-      (state.graph.nodeLookup[action.payload.nodeId] as NarrativeNode).isEnding = action.payload.isEnding;
+      (state.graph.nodeLookup[action.payload.nodeId] as NarrativeNode).isEnding
+        = action.payload.isEnding;
     },
     setId: (state, action: PayloadAction<{ storyId: string }>) => {
       state.id = action.payload.storyId;
@@ -109,16 +112,28 @@ export const storySlice = createSlice({
     },
     connectNodes: (state, action: PayloadAction<{ fromNode: number, toNode: number }>) => {
       const fromData = state.graph.nodeLookup[action.payload.fromNode];
-      if (isNarrative(fromData) && (fromData as NarrativeNode).isEnding) return; // can't connect ending
+      if (isNarrative(fromData) && (fromData as NarrativeNode).isEnding)
+        return; // can't connect ending
       state.graph = connectNodesOnGraph(state.graph, action.payload.fromNode, action.payload.toNode);
     },
     deleteEdge: (state, action: PayloadAction<{ fromNode: number, toNode: number }>) => {
       state.graph = deleteEdgeOnGraph(state.graph, action.payload.fromNode, action.payload.toNode);
     },
+    incrementNumOfEdits: (state) => {
+      state.numOfEdits += 1;
+    },
+    decrementNumOfEdits: (state) => {
+      state.numOfEdits -= 1;
+    },
+    resetNumOfEdits: (state) => {
+      state.numOfEdits = 0;
+    },
 
-    /* 
-      Reducers for the WS middleware.
-    */
+
+    /****************************************************************
+    **** Reducers for the WS middleware.
+    ****************************************************************/
+
     requestComplete: (state) => {
       if (state.loadingType !== null) {
         displayLoadedNotification(state.loadingType);
@@ -138,13 +153,19 @@ export const storySlice = createSlice({
     },
     rateLimitError: (state) => {
       if (state.loadingType !== null) {
-        displayErrorUpdate("Open AI Rate Limit Error", "Please wait for a few seconds and try again...");
+        displayErrorUpdate(
+          "Open AI Rate Limit Error",
+          "Please wait for a few seconds and try again..."
+        );
         state.loadingType = null;
       }
     },
     nlpParseError: (state) => {
       if (state.loadingType !== null) {
-        displayErrorUpdate("Failed to Generate", "Try changing the previous text or creativity and generating again...");
+        displayErrorUpdate(
+          "Failed to Generate",
+          "Try changing the previous text or creativity and generating again..."
+        );
         state.loadingType = null;
       }
     },
@@ -154,6 +175,12 @@ export const storySlice = createSlice({
         state.loadingType = null;
       }
     },
+
+
+    /****************************************************************
+    **** Story Generation.
+    ****************************************************************/
+
     generateInitialStoryBasic: (state, _action: PayloadAction<{ prompt: string }>) => {
       state.loadingType = LoadingType.InitialStory;
       displayLoadingNotification(LoadingType.InitialStory);
@@ -221,12 +248,17 @@ export const {
   setDetails,
   setStyle,
   setActiveNodeId,
+  incrementNumOfEdits,
+  decrementNumOfEdits,
+  resetNumOfEdits,
+
   requestComplete,
   progressUpdate,
   openAIError,
   rateLimitError,
   nlpParseError,
   disconnectedError,
+
   generateInitialStoryBasic,
   generateInitialStoryAdvanced,
   generateParagraph,
@@ -247,6 +279,8 @@ export const selectStoryIsEmpty = (state: RootState) => isGraphEmpty(state.story
 export const selectStoryId = (state: RootState) => state.story.id;
 export const selectStoryTitle = (state: RootState) => state.story.title;
 export const selectLoadingType = (state: RootState) => state.story.loadingType;
+export const selectGraphIsLoading = (state: RootState) => state.story.loadingType !== null;
+export const selectGraphIsBeingEdited = (state: RootState) => state.story.numOfEdits !== 0;
 export const selectActiveNodeId = (state: RootState) => state.story.activeNodeId;
 export const selectNumActionsToAdd = (state: RootState) => state.story.numActionsToAdd;
 export const selectGenerateManyDepth = (state: RootState) => state.story.generateManyDepth;

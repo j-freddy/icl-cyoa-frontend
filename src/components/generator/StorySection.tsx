@@ -41,7 +41,7 @@ const useStyles = createStyles((theme) => ({
 
 export interface StorySectionProps extends StoryNode { };
 
-function StorySection (props: StorySectionProps) {
+function StorySection(props: StorySectionProps) {
   const { classes } = useStyles();
 
   const ListOfActions = () => {
@@ -68,7 +68,6 @@ function StorySection (props: StorySectionProps) {
 
   return (
     <Box className={classes.sectionArea}>
-
       <Stack spacing="sm" className={classes.stack}>
         <Text>
           <Title order={2} className={classes.paragraph_title}>
@@ -78,16 +77,16 @@ function StorySection (props: StorySectionProps) {
         </Text>
         <NarrativeSection {...props} />
 
-        {
-          props.isEnding ? <></> 
-          : <>
+        {props.isEnding
+          ?
+          <></>
+          :
+          <>
             <Divider my="sm" variant="dashed" />
             <ListOfActions />
           </>
         }
-
       </Stack>
-
     </Box>
   );
 };

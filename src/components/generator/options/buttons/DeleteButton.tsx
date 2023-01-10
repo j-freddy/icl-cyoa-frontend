@@ -1,12 +1,12 @@
 import { Button, createStyles, Popover } from "@mantine/core";
-import { deleteChildNodes, deleteNode } from "../../../store/features/storySlice";
-import { useAppDispatch } from "../../../store/hooks";
+import { deleteChildNodes, deleteNode } from "../../../../store/features/storySlice";
+import { useAppDispatch } from "../../../../store/hooks";
 
 
 interface DeleteButtonProps {
-    nodeId: number,
-    disabled: boolean,
-    onlyChildren: boolean,
+  nodeId: number,
+  disabled: boolean,
+  onlyChildren: boolean,
 };
 
 const useStyles = createStyles((theme) => ({
@@ -24,8 +24,8 @@ const DeleteButton = (props: DeleteButtonProps) => {
 
   const text = props.onlyChildren ? "Delete All Actions" : "Delete";
 
-  const onClick = props.onlyChildren ? 
-    () => dispatch(deleteChildNodes(props.nodeId)) 
+  const onClick = props.onlyChildren
+    ? () => dispatch(deleteChildNodes(props.nodeId))
     : () => dispatch(deleteNode(props.nodeId))
 
   return (
