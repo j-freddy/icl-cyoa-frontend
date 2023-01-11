@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEffect } from 'react';
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Navigate, redirect, Route, Routes, useNavigate } from "react-router-dom";
 import 'reactflow/dist/style.css';
 import AppFooter from './components/Footer';
 import AppHeader from './components/Header';
@@ -25,41 +25,7 @@ import {
 } from './utils/pages';
 
 
-function App() {
-
-  const HomePage = () => wrapView(<WelcomeView />);
-
-  const LoginPage = () => wrapView(checkLoginOnAuthPage(<LoginView />));
-  const SignupPage = () => wrapView(checkLoginOnAuthPage(<SignupView />));
-  const AccountPage = () => wrapView(checkLogin(<AccountView />));
-
-  const DashboardPage = () => wrapView(checkLogin(<DashboardView />));
-  const InitialInputPage = () => wrapView(checkLogin(<InitialInputView />));
-  const GeneratorPage = () => wrapView(checkLogin(<GeneratorView />));
-
-
-  return (
-    <Routes>
-      <Route path={HOME_PAGE} element={<HomePage />} />
-
-      <Route path={LOGIN_PAGE} element={<LoginPage />} />
-      <Route path={SIGNUP_PAGE} element={<SignupPage />} />
-      <Route path={ACCOUNT_PAGE} element={<AccountPage />} />
-
-      <Route path={DASHBOARD_PAGE} element={<DashboardPage />} />
-      <Route path={INITIAL_INPUT_PAGE} element={<InitialInputPage />} />
-      <Route path={GENERATOR_PAGE + "*"} element={<GeneratorPage />} />
-    </Routes>
-  );
-}
-
-export default App;
-
-
-
-
 const wrapView = (content: JSX.Element) => {
-
   return (
     <main id="page-container" className="d-flex flex-column">
       <AppHeader
@@ -77,13 +43,16 @@ const wrapView = (content: JSX.Element) => {
 };
 
 
-const checkLogin = (content: JSX.Element) => {
-  const navigate = useNavigate();
+function App() {
 
   const dispatch = useAppDispatch();
   const loggedIn = useAppSelector(selectLoggedIn);
   const sessionLoginFail = useAppSelector(selectSessionLoginFail);
 
+
+  /****************************************************************
+  **** Effects.
+  ****************************************************************/
 
   useEffect(() => {
     dispatch(startConnecting());
@@ -95,49 +64,76 @@ const checkLogin = (content: JSX.Element) => {
     }
   }, [dispatch, loggedIn]);
 
-  useEffect(() => {
-    if (!loggedIn && sessionLoginFail) {
-      navigate(LOGIN_PAGE);
-    }
-  }, [navigate, loggedIn, sessionLoginFail]);
 
+  /****************************************************************
+  **** Return.
+  ****************************************************************/
 
   if (loggedIn) {
-    return content;
+    return <LoggedInRoutes />;
   }
 
-  return (<></>);
-};
-
-
-const checkLoginOnAuthPage = (content: JSX.Element) => {
-  const navigate = useNavigate();
-
-  const dispatch = useAppDispatch();
-  const loggedIn = useAppSelector(selectLoggedIn);
-  const sessionLoginFail = useAppSelector(selectSessionLoginFail);
-
-
-  useEffect(() => {
-    dispatch(startConnecting());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (!loggedIn) {
-      dispatch(loginWithSession());
-    }
-  }, [dispatch, loggedIn]);
-
-  useEffect(() => {
-    if (loggedIn) {
-      navigate(DASHBOARD_PAGE);
-    }
-  }, [navigate, loggedIn]);
-
-
-  if (!loggedIn && sessionLoginFail) {
-    return content;
+  if (sessionLoginFail) {
+    return <SessionLoginFailedRoutes />;
   }
 
-  return (<></>);
+  return <LoadingRoutes />;
+
+}
+
+export default App;
+
+
+const HomePage = () => wrapView(<WelcomeView />);
+
+const LoginPage = () => wrapView(<LoginView />);
+const SignupPage = () => wrapView(<SignupView />);
+
+const AccountPage = () => wrapView(<AccountView />);
+const DashboardPage = () => wrapView(<DashboardView />);
+const InitialInputPage = () => wrapView(<InitialInputView />);
+const GeneratorPage = () => wrapView(<GeneratorView />);
+
+const LoadingPage = () => wrapView(<></>);
+
+
+const LoggedInRoutes = () => {
+  return (
+    <Routes>
+      <Route path={HOME_PAGE} element={<HomePage />} />
+
+      <Route path={LOGIN_PAGE} element={<Navigate to={DASHBOARD_PAGE} />} />
+      <Route path={SIGNUP_PAGE} element={<Navigate to={DASHBOARD_PAGE} />} />
+
+      <Route path={ACCOUNT_PAGE} element={<AccountPage />} />
+      <Route path={DASHBOARD_PAGE} element={<DashboardPage />} />
+      <Route path={INITIAL_INPUT_PAGE} element={<InitialInputPage />} />
+      <Route path={GENERATOR_PAGE + "*"} element={<GeneratorPage />} />
+
+      <Route path={"*"} element={<Navigate to={HOME_PAGE} />} />
+    </Routes>
+  );
+}
+
+const SessionLoginFailedRoutes = () => {
+  return (
+    <Routes>
+      <Route path={HOME_PAGE} element={<HomePage />} />
+
+      <Route path={LOGIN_PAGE} element={<LoginPage />} />
+      <Route path={SIGNUP_PAGE} element={<SignupPage />} />
+
+      <Route path={"*"} element={<Navigate to={LOGIN_PAGE} />} />
+    </Routes>
+  );
+}
+
+const LoadingRoutes = () => {
+  return (
+    <Routes>
+      <Route path={HOME_PAGE} element={<HomePage />} />
+
+      <Route path={"*"} element={<LoadingPage />} />
+    </Routes>
+  );
 }
