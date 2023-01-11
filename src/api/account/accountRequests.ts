@@ -1,4 +1,4 @@
-import { API_KEY_URL, LOGIN_URL, SIGNUP_URL, STORIES_URL } from "../links";
+import { API_KEY_URL, LOGIN_URL, LOGOUT_URL, SIGNUP_URL, STORIES_URL } from "../links";
 
 
 export const reqSignup = async (email: string, password: string) => {
@@ -12,6 +12,16 @@ export const reqSignup = async (email: string, password: string) => {
 			"Content-Type": "application/json",
 		},
 		// Required to set session cookie on signup
+		credentials: "include",
+	});
+};
+
+export const reqLogout = async () => {
+	return fetch(LOGOUT_URL, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
 		credentials: "include",
 	});
 };

@@ -97,3 +97,9 @@ export const handleDeleteStoryFulfilled = (
 ) => {
   state.stories = state.stories?.filter((story) => story.storyId !== action.payload);
 };
+
+export const handleLogoutComplete = (
+  state: AccountState
+) => {
+  state.loggedIn = false;
+};

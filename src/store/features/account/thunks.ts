@@ -4,12 +4,20 @@ import {
   reqGetStories,
   reqLogin,
   reqLoginWithSession,
+  reqLogout,
   reqSignup,
   reqUpdateApiKey
 } from "../../../api/account/accountRequests";
 import { reqDeleteStory } from "../../../api/story/storyRequests";
 import { StoryListEntry } from "./types";
 
+
+export const logoutThunk = createAsyncThunk(
+  'account/logout',
+  async () => {
+    await reqLogout();
+  }
+);
 
 export const loginThunk = createAsyncThunk(
   'account/login',

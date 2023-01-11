@@ -80,7 +80,7 @@ const LoginView = () => {
             <Group position="center">
               <Link to={SIGNUP_PAGE}>
                 <Text fz="sm" c="blue" td="underline">
-                  Register here.
+                  Create an Account
                 </Text>
               </Link>
             </Group>

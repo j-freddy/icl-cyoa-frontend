@@ -3,12 +3,13 @@ import { RootState } from "../store";
 import {
   handleDeleteStoryFulfilled, handleGetApiKeyFulfilled, handleLoadStoriesFulfilled, handleLoginFulfilled,
   handleLoginRejected, handleLoginWithSessionFulfilled, handleLoginWithSessionRejected,
+  handleLogoutComplete,
   handleSignupFulfilled, handleSignupRejected, handleUpdateApiKeyFulfilled
 } from "./account/thunkHandlers";
 import {
   deleteStoryThunk, getApiKeyThunk,
   loadStoriesThunk,
-  loginThunk, loginWithSessionThunk, signupThunk, updateApiKeyThunk
+  loginThunk, loginWithSessionThunk, logoutThunk, signupThunk, updateApiKeyThunk
 } from "./account/thunks";
 import { StoryListEntry } from "./account/types";
 
@@ -33,6 +34,7 @@ const initialState: AccountState = {
 };
 
 
+export const logout = logoutThunk;
 export const login = loginThunk;
 export const loginWithSession = loginWithSessionThunk;
 export const signup = signupThunk;
@@ -63,6 +65,9 @@ export const accountSlice = createSlice({
     builder.addCase(updateApiKey.fulfilled, handleUpdateApiKeyFulfilled);
 
     builder.addCase(deleteStory.fulfilled, handleDeleteStoryFulfilled);
+
+    builder.addCase(logout.fulfilled, handleLogoutComplete);
+    builder.addCase(logout.rejected, handleLogoutComplete);
   }
 });
 

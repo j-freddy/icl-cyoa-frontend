@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   createStyles,
   UnstyledButton,
@@ -11,9 +11,12 @@ import {
   IconSettings,
   IconChevronDown,
   IconUserCircle,
+  IconLogin,
 } from '@tabler/icons';
 import { useNavigate } from 'react-router-dom';
-import { ACCOUNT_PAGE } from '../../utils/pages';
+import { ACCOUNT_PAGE, LOGIN_PAGE } from '../../utils/pages';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { logout, selectLoggedIn } from '../../store/features/accountSlice';
 
 const useStyles = createStyles((theme) => ({
 
@@ -37,8 +40,15 @@ export default function AppMenu() {
   const { classes, cx } = useStyles();
 
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [userMenuOpened, setUserMenuOpened] = useState(false);
+
+  const loggedIn = useAppSelector(selectLoggedIn);
+
+  const onClickLogout = useCallback(() => {
+    dispatch(logout());
+  }, [dispatch]);
 
 
   return (
@@ -71,9 +81,16 @@ export default function AppMenu() {
         >
           Account settings
         </Menu.Item>
-        <Menu.Item icon={<IconLogout size={14} stroke={1.5} />}>
-          Logout
-        </Menu.Item>
+        {
+          loggedIn ? 
+            <Menu.Item icon={<IconLogout size={14} stroke={1.5} />} onClick={onClickLogout}>
+              Log Out
+            </Menu.Item>
+            :
+            <Menu.Item icon={<IconLogin size={14} stroke={1.5} />} onClick={() => navigate(LOGIN_PAGE)}>
+            Log In
+            </Menu.Item>
+        }
       </Menu.Dropdown>
     </Menu>
   );
