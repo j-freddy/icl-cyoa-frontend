@@ -78,7 +78,7 @@ const SignupView = () => {
 						<Group position="center">
 							<Link to={LOGIN_PAGE}>
 								<Text fz="sm" c="blue" td="underline">
-									Already a user? LOGIN.
+									Already a user? Log In.
 								</Text>
 							</Link>
 						</Group>
