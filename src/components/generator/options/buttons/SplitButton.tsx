@@ -31,22 +31,21 @@ export type SplitButtonProps = {
   onClick: () => void,
 }
 
-function SplitButton(props: React.PropsWithChildren<SplitButtonProps>) {
+const SplitButton = (props: React.PropsWithChildren<SplitButtonProps>) => {
   const { classes } = useStyles();
 
 
-  const MainButton = () => {
-    return (
-      <Button
-        disabled={props.disabled}
-        variant="outline"
-        className={classes.splitButton}
-        onClick={props.confirmation ? undefined : props.onClick}
-      >
-        {props.text}
-      </Button>
-    );
-  }
+  const MainButton = (
+    <Button
+      disabled={props.disabled}
+      variant="outline"
+      className={classes.splitButton}
+      onClick={props.confirmation ? undefined : props.onClick}
+    >
+      {props.text}
+    </Button>
+  );
+
 
 
   return (
@@ -55,7 +54,7 @@ function SplitButton(props: React.PropsWithChildren<SplitButtonProps>) {
         ?
         <Popover position="bottom" withArrow shadow="md">
           <Popover.Target>
-            <MainButton />
+            {MainButton}
           </Popover.Target>
 
           <Popover.Dropdown>
@@ -65,7 +64,7 @@ function SplitButton(props: React.PropsWithChildren<SplitButtonProps>) {
           </Popover.Dropdown>
         </Popover>
         :
-        <MainButton />
+        MainButton
       }
 
       <Popover position="bottom" withArrow shadow="md">

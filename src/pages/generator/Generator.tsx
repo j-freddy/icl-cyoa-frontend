@@ -1,5 +1,5 @@
 import { Center, Container, Loader, Stack } from "@mantine/core";
-import { useEffect } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import StoryTitle from '../../components/generator/StoryTitle';
 import { deleteStory } from "../../store/features/accountSlice";
@@ -22,16 +22,17 @@ function GeneratorView() {
   const storyId = useAppSelector(selectStoryId);
   const loadingType = useAppSelector(selectLoadingType);
 
-  const url: string = useLocation().pathname;
-  const splitUrl = url.split('/');
-  const id = splitUrl[splitUrl.length - 1];
+  const loc = useLocation();
+  const pathname = useMemo(() => loc.pathname, [loc])
+  const splitUrl = useMemo(() => pathname.split('/'), [pathname]);
+  const id = useMemo(() => splitUrl[splitUrl.length - 1], [splitUrl]);
 
 
   useEffect(() => {
     if (id !== null && id !== storyId) {
       dispatch(getGraph({ storyId: id }));
     }
-  }, [dispatch, storyId]);
+  }, [dispatch, storyId, id]);
 
   useEffect(() => {
     if (storyGraphWasLoaded && id === storyId && storyIsEmpty && loadingType === null) {
@@ -40,15 +41,28 @@ function GeneratorView() {
     }
   }, [dispatch, navigate, storyGraphWasLoaded, storyId, storyIsEmpty, loadingType]);
 
+  const Viz = useMemo(() => {
+    return (
+      <StoryViz />
+    )
+  }, [])
 
-  const StoryContent = () => {
+  const Story = useMemo(() => {
+    return (
+      <Stack align="center">
+        <StoryTitle />
+        {Viz}
+      </Stack>
+    )
+  }, [])
+
+  const StoryContent = useMemo(() => {
 
     if (storyGraphWasLoaded && id === storyId) {
       if (!storyIsEmpty) {
         return (
           <Stack align="center">
-            <StoryTitle />
-            <StoryViz />
+            {Story}
           </Stack>
         );
       }
@@ -63,14 +77,14 @@ function GeneratorView() {
         <Loader />
       </Center>
     );
-  }
+  }, [storyGraphWasLoaded, id, storyId, storyIsEmpty, loadingType])
 
 
   return (
     <Container className="wrapper">
-      <StoryContent />
+      {StoryContent}
     </Container>
   );
 }
 
-export default GeneratorView;
+export default memo(GeneratorView);

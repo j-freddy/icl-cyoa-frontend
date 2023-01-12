@@ -1,7 +1,7 @@
 import { Button, Card, Checkbox, Popover, Text, Title, UnstyledButton } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons';
 import {
-  memo, useMemo,
+  memo, useCallback, useMemo,
   useState
 } from "react";
 import {
@@ -59,7 +59,7 @@ const GraphVizInner = (props: GraphVizProps) => {
   const graph = useAppSelector(selectStoryGraph);
   const loadingType = useAppSelector(selectLoadingType);
 
-  const actionsDisabled = loadingType !== null;
+  const actionsDisabled = useMemo(() => loadingType !== null, [loadingType]);
 
   const [layout, setLayout] = useState<Layout>(Layout.LR);
   const [connectingData, setConnectingData] = useState<ConnectingData | null>(null);
@@ -73,32 +73,32 @@ const GraphVizInner = (props: GraphVizProps) => {
   **** Functions.
   ****************************************************************/
 
-  const onConnectClick = () => {
+  const onConnectClick = useCallback(() => {
     if (connectingData === null)
       return;
 
     props.onConnectNodes(connectingData.fromNode, connectingData.toNode, generateMiddleNode);
     setConnectingData(null);
-  }
+  }, [connectingData, setConnectingData, generateMiddleNode])
 
-  const onCancelClick = () => {
+  const onCancelClick = useCallback(() => {
     setConnectingData(null);
     setDeleteEdgeData(null);
-  }
+  }, [setConnectingData, setDeleteEdgeData])
 
-  const onDeleteEdge = () => {
+  const onDeleteEdge = useCallback(() => {
     if (deleteEdgeData === null)
       return;
 
     props.onEdgeDelete(deleteEdgeData.fromNode, deleteEdgeData.toNode);
     setDeleteEdgeData(null);
-  }
+  }, [deleteEdgeData, setDeleteEdgeData])
 
-  const onNodeClick = (_: React.MouseEvent, node: Node) => {
+  const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     props.setActiveNodeId(parseInt(node.id));
-  }
+  }, [])
 
-  const onEdgeClick = (edge: Edge) => {
+  const onEdgeClick = useCallback((edge: Edge) => {
     if (!edge.source || !edge.target || connectingData !== null) {
       setDeleteEdgeData(null);
       return;
@@ -112,9 +112,9 @@ const GraphVizInner = (props: GraphVizProps) => {
     }
 
     setDeleteEdgeData({ fromNode, toNode });
-  }
+  }, [setDeleteEdgeData, graph])
 
-  const onConnect = (params: Edge<any> | Connection) => {
+  const onConnect = useCallback((params: Edge<any> | Connection) => {
     if (params.source && params.target) {
       const fromNode = parseInt(params.source);
       const toNode = parseInt(params.target);
@@ -127,7 +127,7 @@ const GraphVizInner = (props: GraphVizProps) => {
         })
       }
     }
-  }
+  }, [graph, setDeleteEdgeData, setConnectingData])
 
 
   /****************************************************************
@@ -160,7 +160,7 @@ const GraphVizInner = (props: GraphVizProps) => {
     );
   }
 
-  const ConnectDisplay = () => {
+  const ConnectDisplay = useCallback(() => {
     return (
       <Card>
         <Checkbox checked={generateMiddleNode}
@@ -175,15 +175,15 @@ const GraphVizInner = (props: GraphVizProps) => {
         </Button>
       </Card>
     );
-  }
+  }, [generateMiddleNode, setGenerateMiddleNode, actionsDisabled, onConnectClick, onCancelClick])
 
-  const DeleteEdgeDisplay = () => {
+  const DeleteEdgeDisplay = useCallback(() => {
     return (
       <Button disabled={actionsDisabled} onClick={onDeleteEdge} className="mx-2" variant='light'>
         Delete edge
       </Button>
     );
-  }
+  }, [actionsDisabled, onDeleteEdge])
 
 
   /****************************************************************
@@ -198,9 +198,9 @@ const GraphVizInner = (props: GraphVizProps) => {
     return getGraphNodesAndEdges(layout, graph);
   }, [layout, graph]);
 
-  const onLayout = (direction: Layout) => {
+  const onLayout = useCallback((direction: Layout) => {
     setLayout(direction);
-  }
+  }, [setLayout])
 
 
   /****************************************************************

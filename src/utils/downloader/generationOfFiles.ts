@@ -28,7 +28,6 @@ export const generateTxtFile = (
   element.download = `${storyTitle}.txt`;
   document.body.appendChild(element);
   element.click();
-  console.log("Text document created successfully");
   document.body.removeChild(element);
 };
 
@@ -52,7 +51,6 @@ export const generateDocxFile = (
     .toBlob(doc)
     .then((blob: Blob) => {
       saveAs(blob, `${storyTitle}.docx`);
-      console.log("Docx document created successfully");
     });
 }
 
@@ -74,8 +72,6 @@ const shuffleStory = (story: StoryNode[]): ShuffledList<StoryNode> => {
   const newTail = shuffledList.list;
   // + 1 to make space for Head
   const cache = shuffledList.indexCache.map(i => i + 1);
-
-  console.log([0].concat(cache));
 
   return {
     list: [head].concat(newTail),
