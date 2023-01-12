@@ -69,7 +69,7 @@ export const displayErrorUpdate = (title: string, message: string='Try again...'
     title,
     message,
     icon: <IconAlertTriangle size={16} />,
-    autoClose: 2000,
+    autoClose: false,
   });
 }
 
