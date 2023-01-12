@@ -60,11 +60,7 @@ function GeneratorView() {
 
     if (storyGraphWasLoaded && id === storyId) {
       if (!storyIsEmpty) {
-        return (
-          <Stack align="center">
-            {Story}
-          </Stack>
-        );
+        return Story;
       }
 
       if (loadingType !== null) {
