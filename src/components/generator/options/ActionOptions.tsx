@@ -5,6 +5,7 @@ import {
   Popover,
   Stack
 } from "@mantine/core";
+import { useCallback, useMemo } from "react";
 import { regenerateEnding, regenerateMany, regenerateParagraph, selectGenerateManyDepth, selectGraphIsBeingEdited, selectGraphIsLoading, setGenerateManyDepth } from "../../../store/features/storySlice";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { ActionNode } from "../../../utils/graph/types";
@@ -33,26 +34,27 @@ function ActionOptions(props: ActionOptionsProps) {
   const graphIsBeingEdited = useAppSelector(selectGraphIsBeingEdited);
   const generateManyDepth = useAppSelector(selectGenerateManyDepth);
 
-  const actionsDisabled = graphIsLoading || graphIsBeingEdited;
+  const actionsDisabled = useMemo(() => graphIsLoading || graphIsBeingEdited, 
+    [graphIsLoading, graphIsBeingEdited]);
 
 
   /****************************************************************
   **** Functions.
   ****************************************************************/
 
-  const onGenerateEndingClick = (): void => {
+  const onGenerateEndingClick = useCallback((): void => {
     dispatch(regenerateEnding(actionNode.nodeId))
-  };
+  }, [dispatch, actionNode]);
 
-  const onGenerateClick = async () => {
+  const onGenerateClick = useCallback(() => {
     dispatch(regenerateParagraph(actionNode.nodeId))
-  };
+  }, [dispatch, actionNode]);
 
-  const onGenerateManyClick = async () => {
+  const onGenerateManyClick = useCallback(() => {
     dispatch(regenerateMany({
       fromNode: actionNode.nodeId,
     }));
-  }
+  }, [dispatch, actionNode])
 
 
   /****************************************************************

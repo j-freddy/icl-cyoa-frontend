@@ -3,6 +3,7 @@ import {
   Space, Tabs, Text
 } from '@mantine/core';
 import { IconPlus, IconSettings } from '@tabler/icons';
+import { memo } from 'react';
 import { setTemperature } from '../../../store/features/storySlice';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { isNarrative } from '../../../utils/graph/graphUtils';
@@ -115,4 +116,4 @@ const NodeOptions = (props: NodeOptionsProps) => {
   );
 };
 
-export default NodeOptions;
+export default memo(NodeOptions);

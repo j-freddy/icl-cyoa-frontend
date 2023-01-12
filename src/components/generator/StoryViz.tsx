@@ -1,7 +1,7 @@
 import {
   Container, createStyles, Group, Pagination
 } from "@mantine/core";
-import { useCallback, useEffect, useMemo } from "react";
+import { memo, useCallback, useEffect, useMemo } from "react";
 import {
   connectNodes, connectNodesWithMiddle, deleteEdge,
   selectActiveNodeId, selectLoadingType, selectStoryGraph, setActiveNodeId
@@ -46,9 +46,9 @@ function StoryViz() {
 
   const activeNodeId = useAppSelector(selectActiveNodeId);
 
-  const setActiveNodeIdLocal = (id: number) => {
+  const setActiveNodeIdLocal = useCallback((id: number) => {
     dispatch(setActiveNodeId(id));
-  }
+  }, [dispatch])
 
 
   useEffect(() => {
@@ -60,7 +60,7 @@ function StoryViz() {
   **** Functions.
   ****************************************************************/
 
-  const sendConnectNodesMessage = (
+  const sendConnectNodesMessage = useCallback((
     fromNode: number,
     toNode: number,
     generateMiddleNode: boolean
@@ -75,11 +75,11 @@ function StoryViz() {
       return;
 
     dispatch(connectNodesWithMiddle({ fromNode, toNode }))
-  }
+  }, [dispatch, loadingType])
 
-  const onEdgeDelete = (fromNode: number, toNode: number) => {
+  const onEdgeDelete = useCallback((fromNode: number, toNode: number) => {
     dispatch(deleteEdge({ fromNode, toNode }));
-  }
+  }, [dispatch])
 
 
   /****************************************************************
@@ -123,6 +123,16 @@ function StoryViz() {
     [story, activeSectionId]
   );
 
+  const Graph = useMemo(() => {
+    return (
+      <GraphViz
+        setActiveNodeId={setActiveNodeIdLocal}
+        onConnectNodes={sendConnectNodesMessage}
+        onEdgeDelete={onEdgeDelete}
+      />
+    )
+  }, [setActiveNodeIdLocal, sendConnectNodesMessage, onEdgeDelete])
+
 
   /****************************************************************
   **** Return.
@@ -132,11 +142,7 @@ function StoryViz() {
     <Container className={classes.container}>
       <Group spacing="xl" className={classes.group}>
 
-        <GraphViz
-          setActiveNodeId={setActiveNodeIdLocal}
-          onConnectNodes={sendConnectNodesMessage}
-          onEdgeDelete={onEdgeDelete}
-        />
+        {Graph}
 
         <Container className={classes.optionsContainer}>
           {activeNodeId !== null &&
@@ -161,4 +167,4 @@ function StoryViz() {
   );
 }
 
-export default StoryViz;
+export default memo(StoryViz);

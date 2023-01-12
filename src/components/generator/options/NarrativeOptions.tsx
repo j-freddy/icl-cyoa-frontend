@@ -3,6 +3,7 @@ import {
   createStyles,
   NumberInput, Stack
 } from "@mantine/core";
+import { useCallback, useMemo } from "react";
 import { generateMany, generateNewAction, regenerateMany, selectGenerateManyDepth, selectGraphIsBeingEdited, selectGraphIsLoading, selectNumActionsToAdd, setEnding, setGenerateManyDepth, setNumActionsToAdd } from "../../../store/features/storySlice";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { NarrativeNode } from "../../../utils/graph/types";
@@ -32,41 +33,45 @@ function NarrativeOptions(props: NarrativeOptionsProps) {
   const numActionsToAdd = useAppSelector(selectNumActionsToAdd);
   const generateManyDepth = useAppSelector(selectGenerateManyDepth);
 
-  const actionsDisabled = graphIsLoading || graphIsBeingEdited;
+  const actionsDisabled = useMemo(() => graphIsLoading || graphIsBeingEdited, 
+    [graphIsLoading, graphIsBeingEdited]);
 
 
   /****************************************************************
   **** Functions.
   ****************************************************************/
 
-  const onAddActionClick = () => {
+  const onAddActionClick = useCallback(() => {
     dispatch(generateNewAction({ nodeToExpand: narrativeNode.nodeId }));
-  }
+  }, [dispatch, narrativeNode])
 
-  const onGenerateManyClick = () => {
+  const onGenerateManyClick = useCallback(() => {
     dispatch(generateMany({ fromNode: narrativeNode.nodeId }));
-  }
+  }, [dispatch, narrativeNode])
 
-  const onRegenerateManyClick = () => {
+  const onRegenerateManyClick = useCallback(() => {
     dispatch(regenerateMany({ fromNode: narrativeNode.nodeId }));
-  }
+  }, [dispatch, narrativeNode])
 
-  const onMakeEnding = () => {
+  const onMakeEnding = useCallback(() => {
     dispatch(setEnding({ nodeId: narrativeNode.nodeId, isEnding: true }));
-  }
+  }, [dispatch, narrativeNode])
 
-  const onMakeNonEnding = () => {
+  const onMakeNonEnding = useCallback(() => {
     dispatch(setEnding({ nodeId: narrativeNode.nodeId, isEnding: false }));
-  }
+  }, [dispatch, narrativeNode])
 
 
   /****************************************************************
   **** Components.
   ****************************************************************/
 
-  const numActionsButtonText = numActionsToAdd === 1
-    ? "Add 1 Action"
-    : `Add ${numActionsToAdd} Actions`;
+  const numActionsButtonText = useMemo(() => {
+    return numActionsToAdd === 1
+      ? "Add 1 Action"
+      : `Add ${numActionsToAdd} Actions`;
+  }, [numActionsToAdd])
+
 
   const AddActionNumberInput = () => {
     const onChange = (newNumber: number) => {
